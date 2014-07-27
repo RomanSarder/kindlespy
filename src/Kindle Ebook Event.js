@@ -429,10 +429,11 @@ function processWhenDone() {
 	}
 }
 
+var ParentUrl;
 
 $(window).ready(function () {
 	var Url = location.href;
-	var ParentUrl = Url;
+	ParentUrl = Url;
 
 	if (ParentUrl.indexOf("/ref=") >= 0)
 	{
@@ -748,3 +749,10 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
 
     xhr.send();
 }
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        var page = request.page;
+        var pageUrl = ParentUrl + "?pg=" + page;
+        setTimeout(LoadPage.bind(null, pageUrl, ParentUrl, false), 0);
+    });

@@ -76,7 +76,7 @@ function AutoAddFunc()
 			if (obj.length > 0)
 			{
 				if (PageNum > 1)
-					InsertDatas(1);
+					InsertDatas(PageNum-1);
 	            else if (obj.length > 0)
 					InsertDatas(0);
 			}
@@ -522,7 +522,7 @@ function InsertDatas(PageNumber)
     var min = (PageNumber + 1) * 20 - 19;
     var max = (PageNumber + 1) * 20;
 
-    if (obj.length <= (PageNumber+1) * 20 || PageNumber >= 4)
+    if (PageNumber >= 4)
     {
         $('#result1').html(1 + "-" + (obj.length));
         $('#PullResult').html("");
@@ -818,9 +818,12 @@ function UpdateTable(obj)
     var link3 = document.getElementById('PullResult');
 
     link3.addEventListener('click', function(){
-        if (PageNum >= (obj.length/20))
-        {
-            return;
+        if(PageNum>1){
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {page: PageNum}, function(response) {
+                });
+            });
+
         }
 
         PageNum++;
