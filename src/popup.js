@@ -899,9 +899,6 @@ function LoadInfos()
             obj.pop();
         }
 
-        PageNum = 1;
-
-
         for (var i = 0; i < settingLen; i++)
         {
             if (settings.Book[i].ParentUrl === currentUrl)
