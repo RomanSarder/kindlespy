@@ -573,7 +573,7 @@ function ExportSellResult()
     x[0][4] = "Sales Rev.";
     x[0][5] = "Reviews";
     x[0][6] = "Sales Rank";
-	x[0][7] = "Pages No";
+	x[0][7] = "Page No(s)";
 	x[0][8] = "Book URL";
 
     for(var index = 0; index < obj.length; index ++) {
@@ -716,7 +716,7 @@ function UpdateTable(obj)
         var link2 = document.getElementById('ClickHere');
         link2.addEventListener('click', function() {
             chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
-                chrome.tabs.update(response.ID, {url: "http://www.kdspy.com/u/amazonkindle"});
+                chrome.tabs.update(response.ID, {url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html"});
                 window.close();
                 return;
             });
@@ -847,7 +847,7 @@ function frun()
         if (response.URL.indexOf("http://www.amazon.com/") < 0) //Go To Amazone Page
         {
             //chrome.tabs.update(response.ID, {url: "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore"});
-            chrome.tabs.create({url: "http://www.kdspy.com/u/amazonkindle", active:true});
+            chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
             window.close();
             return;
         }
