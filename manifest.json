@@ -1,0 +1,47 @@
+{
+    "name": "KindleSpy",
+    "manifest_version": 1,
+    "description": "KindleSpy analyses Amazon Kindle categories & author pages allowing you to find luctrative niche markets with ease.",
+    "version": "1.0.8",
+    "icons": {
+        "16": "icons/zoom-16.png",
+        "48": "icons/zoom-48.png",
+        "128": "icons/zoom-128.png"
+    },
+    "permissions": [
+        "tabs",
+        "storage",
+        "http://*/*",
+        "https://*/*"
+    ],
+    "background": {
+        "scripts": ["libs/jquery-2.0.3.min.js",
+                    "src/background.js"],
+        "persistent": false
+    },
+    "browser_action": {
+        "default_icon": {
+            "19": "icons/zoom-19.png",
+            "38": "icons/zoom-38.png"
+        },
+
+        "default_title": "KindleSpy",
+        "default_popup": "src/popup.html"
+    },
+
+    "content_scripts":[
+        {
+            "matches": [
+                "http://www.amazon.com/*",
+                "https://www.amazon.com/*"
+            ],
+            "run_at": "document_start",
+            "js": [
+                "libs/jquery-2.0.3.min.js",
+                "libs/xpathjs.min.js",
+                "src/Kindle Ebook Event.js"
+            ]
+        }
+    ],
+    "manifest_version": 2
+}
