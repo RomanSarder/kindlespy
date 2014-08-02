@@ -3,6 +3,7 @@ var defaultSetting = {
     "version": "0.0.0",
     "PullStatus": true,
     "CurrentUrl" : "",
+    "PageNum" : "1",
     "Book":
         [
             {"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":""}
@@ -87,6 +88,13 @@ function SaveSettings(num, url, parentUrl, nextUrl, title, price, estsales, sale
     localStorage.settings = JSON.stringify(setting);
 }
 
+function SavePageNum(pageNum)
+{
+    var setting = getSetting();
+    setting.PageNum = pageNum;
+    localStorage.settings = JSON.stringify(setting);
+}
+
 var MainUrlContent;
 var CurrentTabUrl;
 var CurrentTabID;
@@ -110,6 +118,10 @@ function onMessageReceived(b, a, d){
     else if ("save-settings" === b.type)
     {
         SaveSettings(b.No, b.URL, b.ParentURL, b.NextUrl, b.Title, b.Price, b.EstSales, b.SalesRecv, b.Reviews, b.SalesRank, b.Category, b.CategoryKind, b.PrintLength);
+    }
+    else if ("save-PageNum" === b.type)
+    {
+        SavePageNum(b.PageNum);
     }
     else if ("set-current-Tab" === b.type)
     {

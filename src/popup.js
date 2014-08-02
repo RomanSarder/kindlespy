@@ -6,6 +6,17 @@ var CurrentPageUrl = "";
 var refresed = false;
 var bIsSellWin = true;
 var IsErrorWindow = false;
+var columnGetterFunctions = new Array();
+columnGetterFunctions['no'] = function(a){return parseInt(a.No)}
+columnGetterFunctions['title-book'] = function(a){return a.Title}
+columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace('$', ''))}
+columnGetterFunctions['est-sales'] = function(a){return a.EstSales}
+columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv}
+columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(',', ''))}
+columnGetterFunctions['sales-rank'] = function(a){return parseInt(a.SalesRank)}
+
+var currentSortColumn = 'no';
+var currentSortDirection = 1; //1 = ask, -1 = desc
 
 var bDebug = false;
 
@@ -737,7 +748,7 @@ function UpdateTable(obj)
     //var ContentHtml = "<table class=\"data\" name=\"data\"><thead><th style=\"text-align:right;padding-right: 4px;\">#</th><th>Kindle Book Title</th><th>Price</th><th>Est.Sales</th><th>Sales Rev.</th><th>Reviews</th><th>Sales Rank</th><th style=\"width:10px\">&nbsp;</th></thead><tbody></tbody></table>";
 	var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a></div>";
 	var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
-    var tableHead = "<label style=\"padding-left:6px;\">#</label><label style=\"padding-left:10px;\"> Kindle Book Title</label><label style=\"padding-left:285px;\">Price</label><label style=\"padding-left:12px;\" >Est. Sales</label><label style=\"padding-left:15px;\" >Sales Rev.</label><label style=\"padding-left:22px;\" >Reviews</label><label style=\"padding-left:15px;\" >Sales Rank</label>"
+    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:290px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">Price</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Est. Sales</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Sales Rev.</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" >Sales Rank</label>"
     var InfoHtml = "<div class=\"info-item\"><span style=\"font-size:11px\">Results:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rank:</span><div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">2,233</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rev:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">$7,000.00</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Price:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">$7.95</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. No. Reviews:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">31</div></div>";
     var footerHtml = "<div style=\"float:left;width:25%;margin-top: 22px;\"><div style=\"/*margin: 0 auto;*/display: table;text-align: center;\"><a href=\"#\" style=\"margin-left: 29px;\" id=\"PullResult\">Pull Results 1-20</a></div></div><div style=\"float:left;width:30%;margin-top: 10px;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-top: 5px;\"><span style=\"font-size:11px\">Total Sales Revenue:</span><div style=\"font-size:16px;font-weight:bold\" id=\"totalReSalesRecv\">$97,000.00</div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Refresh</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/refresh.png\" id=\"refresh\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 0px solid black; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Export</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/download.png\" id=\"Export\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:25%;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-left: 0px;padding-top: 5px;\"><span style=\"font-size:11px\">Pull Data in Background</span><div class=\"switch\"><input type=\"checkbox\" value=\"1\" id=\"1\" name=\"checkbox\" checked=\"checked\"/><label class=\"check\" for=\"1\"></label></div></div></div>";
     //if($(".content").hasClass("border"))$(".content").removeClass("border");
@@ -827,9 +838,9 @@ function UpdateTable(obj)
         }
 
         PageNum++;
+        chrome.runtime.sendMessage({type: "save-PageNum", PageNum: PageNum});
 
-        $('#TitleWordCloud').text("Titles: Word Cloud (" + (PageNum) * 20 + ")");
-        InsertDatas(PageNum-1);
+        SetActivePage(PageNum);
     });
 
     var link4 = document.getElementById('Export');
@@ -837,9 +848,26 @@ function UpdateTable(obj)
     link4.addEventListener('click', function() {
         ExportSellResult();
     });
+   $('.sort-column').each(function( index ){
+       $(this).click(function() {
+           newSortColumn = $(this).attr('id');
+           currentSortDirection *= -1;
+
+           if(currentSortColumn != newSortColumn)
+               currentSortDirection = 1;
+
+           currentSortColumn = newSortColumn;
+       });
+   })
 
     $('#TitleWordCloud').text("Titles: Word Cloud (20)");
     InsertDatas(0);
+}
+
+function SetActivePage(pageNum)
+{
+    $('#TitleWordCloud').text("Titles: Word Cloud (" + (pageNum) * 20 + ")");
+    InsertDatas(pageNum-1);
 }
 
 function frun()
@@ -864,10 +892,11 @@ function frun()
 }
 
 function compare(a,b) {
-    if (parseInt(a.No) < parseInt(b.No))
-        return -1;
-    if (parseInt(a.No) > parseInt(b.No))
-        return 1;
+    var func = columnGetterFunctions[currentSortColumn];
+    if (func(a) < func(b))
+        return -1 * currentSortDirection;
+    if (func(a) > func(b))
+        return 1 * currentSortDirection;
     return 0;
 }
 
@@ -898,6 +927,8 @@ function LoadInfos()
         while(obj.length > 0) {
             obj.pop();
         }
+
+        PageNum = settings.PageNum;
 
         for (var i = 0; i < settingLen; i++)
         {
