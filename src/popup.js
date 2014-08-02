@@ -405,6 +405,8 @@ function WordsInfoUpdate()
 
     $('.footer').html(footerHtml);
 
+    LoadAdvertisementBanner();
+
     chrome.runtime.sendMessage({type: "get-settings"}, function(response)
     {
         var setting = response.settings;
@@ -678,6 +680,8 @@ function UpdateTable(obj)
         $('.content').html("<div><div style=\"width:75%; margin-left:118px;margin-top:20px;line-height:25px;font-size:16px;\"><b>Oops, now this is embarrassing!</b><br><br>Please wait for 10 seconds, while I find the data you're looking for...<br><br><b>Please Note:</b> If this page does not refresh, you may be viewing a page that is not compatible ... KindleSpy can only gather data from Kindle Categories & Author Pages. To see the Kindle Bestsellers please...<br><br><br><b>>> </b><a href=\"#\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">Click HERE NOW</a></div></div>");
         $('.footer').html("<div style=\"float:left;width:25%;margin-top: 22px;\"><div style=\"margin: 0 auto;display: table;text-align: center;\"></div></div><div style=\"float:left;width:40%;margin-top: 13px;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-top: 5px;\"><span style=\"font-size:12px\"></span><div style=\"font-size:16px;font-weight:bold\" id=\"totalReSalesRecv\"></div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Refresh</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/refresh.png\" id=\"refresh\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:25%;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-left: 0px;padding-top: 5px;\"><div id=\"ad\"/></div></div>");
 
+        LoadAdvertisementBanner();
+
         $('#data-body').css("overflow-y" , "scroll");
         $('.content').css("overflow" , "inherit");
         $('.content').css("width" , "99%");
@@ -756,6 +760,8 @@ function UpdateTable(obj)
     $('.content').html(ContentHtml);
     $('.info').html(InfoHtml);
     $('.footer').html(footerHtml);
+    LoadAdvertisementBanner();
+
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(tableHead);
     $('.table-head').css("background-color" , "#333333");
