@@ -68,7 +68,7 @@ function GetReviewrInfo(responseText)
         pos = str.indexOf(pattern);
     }
 
-    return 0;
+    return "0";
 }
 
 function GetCategoryInfo(responseText)
@@ -650,7 +650,7 @@ function GetEstSale(salesRank)
         }
     }
 
-    return 0;
+    return "0";
 }
 
 function GetSalesRecv(estsales, price)
