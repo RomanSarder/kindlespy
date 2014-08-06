@@ -8,6 +8,10 @@ var bIsSellWin = true;
 var IsErrorWindow = false;
 var columnGetterFunctions = new Array();
 columnGetterFunctions['no'] = function(a){return parseInt(a.No)}
+columnGetterFunctions['pageno'] = function(a){
+    var printLength = parseInt(a.PrintLength);
+    return isNaN(printLength) ? 0 : printLength;
+}
 columnGetterFunctions['title-book'] = function(a){return a.Title}
 columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace('$', ''))}
 columnGetterFunctions['est-sales'] = function(a){return a.EstSales}
@@ -488,10 +492,11 @@ function InsertDatas(PageNumber)
 
         if (Math.floor(i / 20) <= PageNumber)
         {
+            var printLength = (obj[i].PrintLength !== '') ? obj[i].PrintLength : 'n/a';
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow'>" + obj[i].Title + "</td>" +
-                "<td style='width:50px;'>" + obj[i].PrintLength + "</td>" +
+                "<td style='width:50px;'>" + printLength + "</td>" +
                 "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
                 "<td style='width:60px;' align='right'>" + addCommas(obj[i].EstSales) +"</td>" +
                 "<td style='width:80px;'><div style='float:left'>$</div> <div style='float:right'>"+ addCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
