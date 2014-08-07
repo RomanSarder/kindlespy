@@ -593,6 +593,12 @@ function GetAuthorTitle(responseText)
     return ParseString(responseText, 'id="productTitle"', '>', '<');
 }
 
+function GetAuthor(responseText)
+{
+    var tmpResponseText = ParseString(responseText, 'contributorNameTrigger', '>', '/a>');
+    return ParseString(tmpResponseText, 'contributorNameTrigger', '>', '<');
+}
+
 function GetEstSale(salesRank)
 {
     data = [
@@ -688,6 +694,7 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
                 var entryEstSale = GetEstSale(entrySalesRank);
                 var entrySalesRecv = GetSalesRecv(entryEstSale, entryPrice);
 				var entryPrintLength = GetPrintLength(xhr.responseText);
+                var entryAuthor = GetAuthor(xhr.responseText);
 		
 		if(typeof reviews === "undefined") {
 			var rl_reviews = $(xhr.responseText).find("#acr .acrCount a:first");
@@ -727,13 +734,16 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
 				if (typeof entryPrintLength === "undefined")
 					entryPrintLength = "0";
 
+                if (typeof entryAuthor === "undefined")
+                    entryAuthor = "";
+
                 chrome.runtime.sendMessage({type:"get-settings"}, function(response){
                     if (response.settings.PullStatus) {
                         chrome.runtime.sendMessage({type: "save-settings", No: num, URL: entryUrl, ParentURL: entryParentUrl,
 				NextUrl: nextUrl, Title: entryTitle, Price: entryPrice, EstSales: entryEstSale,
 				SalesRecv: entrySalesRecv, Reviews: reviews, SalesRank: entrySalesRank,
 				Category:category, CategoryKind: categoryKind,
-				PrintLength:entryPrintLength});
+				PrintLength:entryPrintLength, Author:entryAuthor});
 		    }
                 });
             }
