@@ -13,7 +13,7 @@ columnGetterFunctions['pageno'] = function(a){
     return isNaN(printLength) ? 0 : printLength;
 }
 columnGetterFunctions['title-book'] = function(a){return a.Title}
-columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace('$', ''))}
+columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.substr(1))}
 columnGetterFunctions['est-sales'] = function(a){return a.EstSales}
 columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv}
 columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(',', ''))}
@@ -24,6 +24,7 @@ var currentSortDirection = 1; //1 = ask, -1 = desc
 
 var bDebug = false;
 
+var currency = "$";
 
 function AutoAddFunc()
 {
@@ -499,7 +500,7 @@ function InsertDatas(PageNumber)
                 "<td style='width:50px;'>" + printLength + "</td>" +
                 "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
                 "<td style='width:60px;' align='right'>" + addCommas(obj[i].EstSales) +"</td>" +
-                "<td style='width:80px;'><div style='float:left'>$</div> <div style='float:right'>"+ addCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
+                "<td style='width:80px;'><div style='float:left'> "+ currency +" </div> <div style='float:right'>"+ addCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
 
                 "<td style='width:50px;' align='right'>"+ obj[i].Reviews +"</td>" +
                 "<td style='width:80px;padding-right : 10px;' align='right'>"+ obj[i].SalesRank +"</td>"+
@@ -515,7 +516,7 @@ function InsertDatas(PageNumber)
                 if (price.indexOf("Free") >= 0)
                     averagePrice = 0;
                 else
-                    averagePrice += parseInt(price.replace("$", "").replace(",", "").trim());
+                    averagePrice += parseInt(price.substr(1).replace(",", "").trim());
 
                 //if(typeof review !== "undefined")
                 averageReview += parseInt(review.replace(",", "").trim());
@@ -569,10 +570,10 @@ function InsertDatas(PageNumber)
     $('#result2').html(addCommas(Math.floor(averageSalesRank / nTotalCnt)));
     //$('#result2').html("aaaaaaaaaaa");
 
-    $('#result3').html("$ " + addCommas(Math.floor(averageSalesRecv / nTotalCnt)));
-    $('#result4').html("$ " +  addCommas((averagePrice/nTotalCnt).toFixed(2)));
+    $('#result3').html(currency + " " + addCommas(Math.floor(averageSalesRecv / nTotalCnt)));
+    $('#result4').html(currency + " " +  addCommas((averagePrice/nTotalCnt).toFixed(2)));
     $('#result5').html(addCommas(Math.floor(averageReview / nTotalCnt)));
-    $('#totalReSalesRecv').html("$ " + addCommas(averageSalesRecv));/**/
+    $('#totalReSalesRecv').html(currency + " " + addCommas(averageSalesRecv));/**/
 
 
 }
@@ -890,7 +891,7 @@ function frun()
 
     chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
 
-        if (response.URL.indexOf("http://www.amazon.com/") < 0) //Go To Amazone Page
+        if (response.URL.indexOf("http://www.amazon.co") < 0) //Go To Amazone Page
         {
             //chrome.tabs.update(response.ID, {url: "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore"});
             chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
@@ -901,8 +902,19 @@ function frun()
         else
         {   /////////////////////load//////////////////////////
             CurrentPageUrl = response.URL;
+            var mainUrl =  "http://" + CurrentPageUrl.split('/')[2];
+            var paramUrlBestSellers = null;
+            if (mainUrl.indexOf("www.amazon.com")!=-1){
+                paramUrlBestSellers = "154606011";
+                currency = "$";
+            }else if(mainUrl.indexOf("www.amazon.co.uk")!=-1){
+                paramUrlBestSellers = "341689031";
+                currency = "&pound;";
+            }
+            chrome.runtime.sendMessage({type: "save-UrlParams", MainUrl: mainUrl, ParamUrlBestSellers:paramUrlBestSellers});
             LoadInfos();
         }
+
     });
 }
 
@@ -994,3 +1006,7 @@ function LoadAdvertisementBanner()
 chrome.runtime.sendMessage({type: "set-current-Tab"}, function(response) {
     setTimeout(frun, 100);
 });
+//ToDo with this smth
+function getCurrencyReplace(){
+    return(currency!="$")?"\u00A3":currency;
+}

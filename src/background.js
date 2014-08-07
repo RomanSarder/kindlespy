@@ -4,6 +4,8 @@ var defaultSetting = {
     "PullStatus": true,
     "CurrentUrl" : "",
     "PageNum" : "1",
+    "MainUrl": "http://www.amazon.com/",
+    "ParamUrlBestSellers" : "154606011",
     "Book":
         [
             {"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":""}
@@ -94,6 +96,13 @@ function SavePageNum(pageNum)
     setting.PageNum = pageNum;
     localStorage.settings = JSON.stringify(setting);
 }
+function SaveUrlParams(url, urlParamBestSellers)
+{
+    var setting = getSetting();
+    setting.MainUrl = url;
+    setting.ParamUrlBestSellers = urlParamBestSellers;
+    localStorage.settings = JSON.stringify(setting);
+}
 
 var MainUrlContent;
 var CurrentTabUrl;
@@ -122,6 +131,10 @@ function onMessageReceived(b, a, d){
     else if ("save-PageNum" === b.type)
     {
         SavePageNum(b.PageNum);
+    }
+    else if ("save-UrlParams" === b.type)
+    {
+        SaveUrlParams(b.MainUrl, b.ParamUrlBestSellers);
     }
     else if ("set-current-Tab" === b.type)
     {
@@ -158,7 +171,8 @@ function ParseEngine()
 {
     if (MainUrlContent == undefined)
     {
-        LoadAmazoneUrl("http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/");
+        var setting = getSetting();
+        LoadAmazoneUrl(setting.MainUrl + "/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + setting.ParamUrlBestSellers);
     }
 
 }
