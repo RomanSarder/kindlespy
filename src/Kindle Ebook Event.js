@@ -197,17 +197,7 @@ function GetAuthorCategory(responseText)
     return ParseString(responseText, 'EntityName', '<b>', '</b>');
 }
 
-function GetKindleEditionRow(responseText) {
-	var retval;
-	$(responseText).find(".tp").find("tr").each(function() {
-		if($(this).text().indexOf("Kindle Edition")>0)
-		retval= $(this);
-	});
-
-	return retval;
-}
-
-function AuthorPageParse(startIndex, responseText, parentUrl)
+function ParseAuthorPage(startIndex, responseText, parentUrl)
 {
     var pattern = 'id="result_';
     var str = responseText;
@@ -225,19 +215,18 @@ function AuthorPageParse(startIndex, responseText, parentUrl)
     var index = 0;
     var bIsExist = [];
 
-     
-    $(responseText).find(".result").each(function() {
-	    var krow = GetKindleEditionRow($(this));
+    $(responseText).find(".results").children().each(function() {
+	    var krow = SiteParser.GetKindleEditionRow($(this));
 	    if(typeof krow == "undefined") return;
 	    No[index] = parseInt(index) + 1 + parseInt(startIndex);
-            url[index] = $(krow).find(".tpType > a:first").attr("href");
-	    review[index] = $(this).find(".reviewsCount > a:first").text();
+        url[index] = SiteParser.GetUrlFromKindleEditionRow(krow);
+	    review[index] = SiteParser.GetReviewsCountFromResult($(this));
 	    if(!review[index]) review[index] = 0;
-	    var kprice = $(krow).find(".toeOurPrice > a:first");
+	    var kprice = SiteParser.GetPriceFromKindleEditionRow(krow);
 	    if(kprice.length<1) {
 		    kprice = $(krow).find(".toePrice a#buyPrice:first");
 	    }
-	    price[index] = $(kprice).text();
+	    price[index] = $(kprice).text().trim();
 	    url[index] = url[index].replace("&amp;", "&");
 	    url[index] = url[index].replace(" ", "%20");
 	    index++;
@@ -282,7 +271,7 @@ function LoadAuthorPage(url, parentUrl)
         if (xhr.readyState == 4){
             if (xhr.status == 200 && (typeof  xhr.responseText !== "undefined" || xhr.responseText.length > 1))
             {
-                setTimeout(AuthorPageParse.bind(null, 12, xhr.responseText, parentUrl), 1000);
+                setTimeout(ParseAuthorPage.bind(null, 12, xhr.responseText, parentUrl), 1000);
             }
         }
     }
@@ -319,7 +308,7 @@ function ParseSearchPage(startIndex, responseText, parentUrl, search)
 		    url[index] = $(result).find(".newaps a:first").attr("href");
 		    if(!url[index]) url[index] = "";
 		    var kprice = $(result).find(".red.bld");
-		    price[index] = $(kprice).length>0? $(kprice).first().text():"$0.00"; 
+		    price[index] = $(kprice).length>0? $(kprice).first().text().trim():SiteParser.CurrencySign + "0.00";
 		    review[index] = undefined; 
 
 		    url[index] = url[index].replace("&amp;", "&");
@@ -430,26 +419,19 @@ function processWhenDone() {
 }
 
 var ParentUrl;
-var MainUrl;
-var ParamUrlBestSellers;
+var SiteParser;
 
 $(window).ready(function () {
 	var Url = location.href;
 	ParentUrl = Url;
-    if(isAmazonCom(Url)){
-        MainUrl = "http://www.amazon.com";
-        ParamUrlBestSellers = "154606011";
-    }else if(isAmazonCoUk(Url)){
-        MainUrl = "http://www.amazon.co.uk";
-        ParamUrlBestSellers = "341689031";
-    }
+    SiteParser = GetSiteParser(Url);
 	if (ParentUrl.indexOf("/ref=") >= 0)
 	{
 		var _Pos = Url.lastIndexOf('/');
 		ParentUrl = Url.substr(0, _Pos);
 	}
 
-	if (Url.indexOf(MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0)
+	if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0)
 		return;
 
 	$("#nav-searchbar").submit(function() 
@@ -474,7 +456,7 @@ $(window).ready(function () {
                     {
                         chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
 
-                        AuthorPageParse(0, xhr.responseText, ParentUrl);
+                        ParseAuthorPage(0, xhr.responseText, ParentUrl);
 
                         var NextPageUrl = ParseString(xhr.responseText, 'class="pagnLink"', 'href="', '"');
 
@@ -485,7 +467,7 @@ $(window).ready(function () {
                         {
                             NextPageUrl = NextPageUrl.replace("&amp;", "&");
                             NextPageUrl = NextPageUrl.replace(" ", "%20");
-                            NextPageUrl = MainUrl + "/" + NextPageUrl;
+                            NextPageUrl = SiteParser.MainUrl + "/" + NextPageUrl;
                         }
 
                         LoadAuthorPage(NextPageUrl.trim(), ParentUrl);
@@ -498,12 +480,12 @@ $(window).ready(function () {
     }
 
 
-    else if (Url.indexOf(MainUrl +"/s/")==0 && Url.indexOf("digital-text")>0) {
+    else if (Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text")>0) {
 	    scrapeSearchPage(Url);
     }
 
 
-    else if (Url.indexOf(MainUrl +"/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") < 0)
+    else if (Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") < 0)
     {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", Url);
@@ -513,7 +495,7 @@ $(window).ready(function () {
 
                 if (xhr.status == 200 && (typeof xhr.responseText !== "undefined" || xhr.responseText.length > 1))
                 {
-                    if (xhr.responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(MainUrl +"/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + ParamUrlBestSellers) >= 0)
+                    if (xhr.responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + SiteParser.ParamUrlBestSellers) >= 0)
                     {
                         if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
                         {
@@ -539,12 +521,7 @@ function GetSalesRank(responseText)
 {
     if (typeof responseText !== "undefined" && responseText.length > 1)
     {
-        var szPattern;
-        if(isAmazonCom(MainUrl)){
-            szPattern = "Amazon Best Sellers Rank";
-        }else if(isAmazonCoUk(MainUrl)){
-            szPattern = "Amazon Bestsellers Rank";
-        }
+        var szPattern = SiteParser.AmazonBestSellersPattern;
         var pos = responseText.indexOf(szPattern);
 
         if (typeof pos === "undefined" || pos < 0)
@@ -579,12 +556,7 @@ function GetTitle(responseText)
 {
     if (typeof responseText !== "undefined" && responseText.length > 1)
     {
-        if(isAmazonCom(MainUrl)){
-            return ParseString(responseText, "id=\"btAsinTitle\"", '>', '<');
-        }else if(isAmazonCoUk(MainUrl)){
-            return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
-        }
-        return "";
+        return SiteParser.GetTitle(responseText);
     }
 }
 
@@ -703,7 +675,7 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
 		
 		if(typeof reviews === "undefined") {
 			var rl_reviews = $(xhr.responseText).find("#acr .acrCount a:first");
-			reviews = rl_reviews.length? $(rl_reviews).text():"0";
+			reviews = rl_reviews.length? parseInt($(rl_reviews).text()).toString():"0";
 
 		}
 
@@ -764,9 +736,10 @@ chrome.runtime.onMessage.addListener(
         var pageUrl = ParentUrl + "?pg=" + page;
         setTimeout(LoadPage.bind(null, pageUrl, ParentUrl, false), 0);
     });
-function isAmazonCom(url){
-    return (url.indexOf("www.amazon.com")!=-1);
-}
-function isAmazonCoUk(url){
-    return (url.indexOf("www.amazon.co.uk")!=-1);
+
+function GetSiteParser(url){
+    if(url.indexOf(AmazonComParser.MainUrl)!=-1)
+        return new AmazonComParser();
+    if(url.indexOf(AmazonCoUkParser.MainUrl)!=-1)
+        return new AmazonCoUkParser();
 }
