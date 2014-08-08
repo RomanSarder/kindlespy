@@ -640,7 +640,7 @@ function ExportSellResult()
                     fieldValue = fieldValue.replace("\n", "");
                 }
 
-				if(i == 8 && index > 0)
+				if(i == 9 && index > 0)
 					fieldValue =  "=HYPERLINK(\"" + fieldValue + "\")";
                 dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
             }
