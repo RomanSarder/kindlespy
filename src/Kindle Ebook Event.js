@@ -596,7 +596,12 @@ function GetAuthorTitle(responseText)
 function GetAuthor(responseText)
 {
     var tmpResponseText = ParseString(responseText, 'contributorNameTrigger', '>', '/a>');
-    return ParseString(tmpResponseText, 'contributorNameTrigger', '>', '<');
+    var author = ParseString(tmpResponseText, 'contributorNameTrigger', '>', '<');
+    if ((author == '')||(author == 'undefined')){
+        tmpResponseText = ParseString(responseText, "<div class=\"buying\">", 'parseasinTitle', "<span class=\"byLinePipe\">");
+        author = ParseString(tmpResponseText , "<a", '>', '</a>');
+    }
+    return author;
 }
 
 function GetEstSale(salesRank)
@@ -731,11 +736,11 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
                 if (typeof  entrySalesRank === "undefined" || entrySalesRank.length < 1)
                     entrySalesRank = "1";
 					
-				if (typeof entryPrintLength === "undefined")
-					entryPrintLength = "0";
+				if (typeof entryPrintLength === "undefined" || entryPrintLength =='')
+					entryPrintLength = "n/a";
 
-                if (typeof entryAuthor === "undefined")
-                    entryAuthor = "";
+                if (typeof entryAuthor === "undefined" || entryAuthor.length < 1)
+                    entryAuthor = "n/a";
 
                 chrome.runtime.sendMessage({type:"get-settings"}, function(response){
                     if (response.settings.PullStatus) {

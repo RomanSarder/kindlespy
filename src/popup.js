@@ -493,11 +493,10 @@ function InsertDatas(PageNumber)
 
         if (Math.floor(i / 20) <= PageNumber)
         {
-            var printLength = (obj[i].PrintLength !== '') ? obj[i].PrintLength : 'n/a';
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow'>" + obj[i].Title + "</td>" +
-                "<td style='width:50px;'>" + printLength + "</td>" +
+                "<td style='width:50px;'>" +obj[i].PrintLength + "</td>" +
                 "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
                 "<td style='width:60px;' align='right'>" + addCommas(obj[i].EstSales) +"</td>" +
                 "<td style='width:80px;'><div style='float:left'> "+ currency +" </div> <div style='float:right'>"+ addCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
@@ -606,7 +605,7 @@ function ExportSellResult()
             x[index + 1][2] = obj[index].Author;
             x[index + 1][3] = obj[index].Price;
             x[index + 1][4] = addCommas(obj[index].EstSales);
-            x[index + 1][5] = currency + " " + addCommas(Math.round(obj[index].SalesRecv));
+            x[index + 1][5] = currency+ " " + addCommas(Math.round(obj[index].SalesRecv));
             x[index + 1][6] = obj[index].Reviews;
             x[index + 1][7] = obj[index].SalesRank;
 			x[index + 1][8] = obj[index].PrintLength;
@@ -649,7 +648,7 @@ function ExportSellResult()
         }
     });
 
-    var blob = new Blob([csvContent], {type : 'text/csv'});
+    var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
     var url = URL.createObjectURL(blob);
 
     //var encodedUri = encodeURI(csvContent);
@@ -999,8 +998,6 @@ function LoadInfos()
 function LoadAdvertisementBanner()
 {
     $.get("http://www.kdspy.com/banner.html", function(data) {
-        console.debug(data);
-        var a = data;
         $("#ad").html(data);
     });
 }
