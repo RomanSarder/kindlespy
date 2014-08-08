@@ -515,7 +515,7 @@ function InsertDatas(PageNumber)
                 if (price.indexOf("Free") >= 0)
                     averagePrice = 0;
                 else
-                    averagePrice += parseInt(price.substr(1).replace(",", "").trim());
+                    averagePrice += parseFloat(price.substr(1).replace(",", "").trim());
 
                 //if(typeof review !== "undefined")
                 averageReview += parseInt(review.replace(",", "").trim());
