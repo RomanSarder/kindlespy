@@ -41,9 +41,10 @@
             "js": [
                 "libs/jquery-2.0.3.min.js",
                 "libs/xpathjs.min.js",
+                "src/HelperFunctions.js",
                 "src/AmazonComParser.js",
                 "src/AmazonCoUkParser.js",
-                "src/Kindle Ebook Event.js"
+                "src/KindleEbookEvent.js"
             ]
         }
     ],

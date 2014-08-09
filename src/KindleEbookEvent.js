@@ -3,6 +3,55 @@
  */
 
 var bDebug = false;
+var ParentUrl;
+var SiteParser;
+
+$(window).ready(function () {
+    var Url = location.href;
+    ParentUrl = Url;
+    SiteParser = GetSiteParser(Url);
+    if (ParentUrl.indexOf("/ref=") >= 0)
+    {
+        var _Pos = Url.lastIndexOf('/');
+        ParentUrl = Url.substr(0, _Pos);
+    }
+
+    if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0)
+        return;
+
+    $("#nav-searchbar").submit(function()
+    {
+        chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: false});
+        chrome.runtime.sendMessage({type: "remove-settings", ParentUrl: ParentUrl});
+        setTimeout("processWhenDone()", 1500);
+    });
+
+    if (IsAuthorPage())
+    {
+        scrapeAuthorPage(Url);
+    }
+
+    else if (IsSearchPage(Url)) {
+        scrapeSearchPage(Url);
+    }
+
+    else if (IsBestSellersPage(Url))
+    {
+        scrapeBestSellersPage(Url);
+    }
+});
+
+function IsAuthorPage(){
+    return document.documentElement.innerHTML.indexOf('Are You an Author') >= 0;
+}
+
+function IsSearchPage(Url){
+    return Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text")>0;
+}
+
+function IsBestSellersPage(Url){
+    return Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") < 0;
+}
 
 function ParseString(responseText, pattern, startchar, endchar)
 {
@@ -25,13 +74,6 @@ function ParseString(responseText, pattern, startchar, endchar)
         return "";
 
     return str.substr(0, pos).trim();
-}
-
-function getParameterByName(url, name) {
-	name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-	var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-	    results = regex.exec(url);
-	return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 function GetNoInfo(responseText)
@@ -243,8 +285,6 @@ function ParseAuthorPage(startIndex, responseText, parentUrl)
             category = tmpSplit[1];
     }
 
-
-
     chrome.runtime.sendMessage({type:"get-settings"}, function(response){
         for (var i = 0; i < url.length; i++)
         {
@@ -369,45 +409,107 @@ function LoadSearchPage(url, parentUrl, i, search)
     xhr.send();
 }
 
+function scrapeAuthorPage(Url){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", Url);
+
+    xhr.onreadystatechange = function(){
+        if (xhr.readyState == 4)
+        {
+            if (xhr.status == 200 && (typeof  xhr.responseText !== "undefined" || xhr.responseText.length > 1))
+            {
+                if (xhr.responseText.indexOf("Are You an Author") >= 0)
+                {
+                    chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
+
+                    ParseAuthorPage(0, xhr.responseText, ParentUrl);
+
+                    var NextPageUrl = ParseString(xhr.responseText, 'class="pagnLink"', 'href="', '"');
+
+                    if (typeof NextPageUrl === "undefined" || NextPageUrl.length < 1)
+                        return;
+
+                    if (NextPageUrl.indexOf('http') < 0)
+                    {
+                        NextPageUrl = NextPageUrl.replace("&amp;", "&");
+                        NextPageUrl = NextPageUrl.replace(" ", "%20");
+                        NextPageUrl = SiteParser.MainUrl + "/" + NextPageUrl;
+                    }
+
+                    LoadAuthorPage(NextPageUrl.trim(), ParentUrl);
+                }
+            }
+        }
+    };
+
+    xhr.send();
+}
+
 function scrapeSearchPage(Url) {
 
 	var Url = location.href;
-	var ParentUrl = Url;
+	ParentUrl = Url;
 
 	if (ParentUrl.indexOf("/s/") < 0) return;
 
-	var ParentUrl = Url.replace(/\&page=[0-9]*/i, "");
+	ParentUrl = Url.replace(/\&page=[0-9]*/i, "");
 
 	var xhr = new XMLHttpRequest();
 
 	chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
 
 	xhr.open("GET", ParentUrl);
-	var search = getParameterByName(Url, "field-keywords");
+	var search = GetParameterByName(Url, "field-keywords");
 
 	xhr.onreadystatechange = function() {
 		if(xhr.readyState == 4 && xhr.status == 200 && 
 				(typeof xhr.responseText !== "undefined" || xhr.responseText.length>1)) {
 					ParseSearchPage(0, xhr.responseText, ParentUrl, search);
 					for (var i = 2; i <= 3; i++) {
-						var NextPageUrl = ParentUrl + "&page="+i;
-						setTimeout(LoadSearchPage.bind(null, NextPageUrl.trim(), ParentUrl, i, search), 3000 *parseInt(i));
+                        LoadSearchResultsPage(i, search, 3000 * i)
 					}
 				}
 	};
 
 	xhr.send();
+}
 
+function scrapeBestSellersPage(Url){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", Url);
+    xhr.onreadystatechange = function(){
+
+        if (xhr.readyState == 4){
+
+            if (xhr.status == 200 && (typeof xhr.responseText !== "undefined" || xhr.responseText.length > 1))
+            {
+                if (xhr.responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + SiteParser.ParamUrlBestSellers) >= 0)
+                {
+                    if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
+                    {
+                        chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
+                    }
+                    ParseEngine(xhr.responseText, ParentUrl, false);
+                    for (var i = 2; i <= 2; i++)
+                    {
+                        LoadBestSellersPage(i, 3000*i);
+                    }
+                }
+            }
+        }
+    };
+
+    xhr.send();
 }
 
 function processWhenDone() {
-	var search = getParameterByName(location.href, "field-keywords");
+	var search = GetParameterByName(location.href, "field-keywords");
 	if(search.trim()=="" || $("#bcKwText").text() !== '"'+search+'"' || 
 		$("#bcKwText").css("visibility")!= "visible")
 		setTimeout("processWhenDone()", 500);
 	else {
 		var Url = location.href;
-		var ParentUrl = Url;
+		ParentUrl = Url;
 		if (ParentUrl.indexOf("/s/") >= 0)
 		{
 			var _Pos = Url.lastIndexOf('/');
@@ -417,105 +519,6 @@ function processWhenDone() {
 		scrapeSearchPage(Url);
 	}
 }
-
-var ParentUrl;
-var SiteParser;
-
-$(window).ready(function () {
-	var Url = location.href;
-	ParentUrl = Url;
-    SiteParser = GetSiteParser(Url);
-	if (ParentUrl.indexOf("/ref=") >= 0)
-	{
-		var _Pos = Url.lastIndexOf('/');
-		ParentUrl = Url.substr(0, _Pos);
-	}
-
-	if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0)
-		return;
-
-	$("#nav-searchbar").submit(function() 
-	{
-		chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: false});
-		chrome.runtime.sendMessage({type: "remove-settings", ParentUrl: ParentUrl});
-		setTimeout("processWhenDone()", 1500);
-	});
-
-    if (document.documentElement.innerHTML.indexOf('Are You an Author') >= 0)
-    {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", Url);
-
-
-        xhr.onreadystatechange = function(){
-            if (xhr.readyState == 4)
-            {
-                if (xhr.status == 200 && (typeof  xhr.responseText !== "undefined" || xhr.responseText.length > 1))
-                {
-                    if (xhr.responseText.indexOf("Are You an Author") >= 0)
-                    {
-                        chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
-
-                        ParseAuthorPage(0, xhr.responseText, ParentUrl);
-
-                        var NextPageUrl = ParseString(xhr.responseText, 'class="pagnLink"', 'href="', '"');
-
-                        if (typeof NextPageUrl === "undefined" || NextPageUrl.length < 1)
-                            return;
-
-                        if (NextPageUrl.indexOf('http') < 0)
-                        {
-                            NextPageUrl = NextPageUrl.replace("&amp;", "&");
-                            NextPageUrl = NextPageUrl.replace(" ", "%20");
-                            NextPageUrl = SiteParser.MainUrl + "/" + NextPageUrl;
-                        }
-
-                        LoadAuthorPage(NextPageUrl.trim(), ParentUrl);
-                    }
-                }
-            }
-        };
-
-        xhr.send();
-    }
-
-
-    else if (Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text")>0) {
-	    scrapeSearchPage(Url);
-    }
-
-
-    else if (Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") < 0)
-    {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", Url);
-        xhr.onreadystatechange = function(){
-
-            if (xhr.readyState == 4){
-
-                if (xhr.status == 200 && (typeof xhr.responseText !== "undefined" || xhr.responseText.length > 1))
-                {
-                    if (xhr.responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + SiteParser.ParamUrlBestSellers) >= 0)
-                    {
-                        if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
-                        {
-                            chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
-                        }
-                        ParseEngine(xhr.responseText, ParentUrl, false);
-                        for (var i = 2; i <= 2; i++)
-                        {
-                            var pageUrl = ParentUrl + "?pg=" + parseInt(i);
-                            setTimeout(LoadPage.bind(null, pageUrl, ParentUrl, false), 3000 * parseInt(i));
-                        }
-
-                    }
-                }
-            }
-        };
-
-        xhr.send();
-    }
-});
 
 function GetSalesRank(responseText)
 {
@@ -730,11 +733,22 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
     xhr.send();
 }
 
+function LoadBestSellersPage(i, delay){
+    delay = ValueOrDefault(delay, 0);
+    var pageUrl = ParentUrl + "?pg=" + i;
+    setTimeout(LoadPage.bind(null, pageUrl, ParentUrl, false), delay);
+}
+
+function LoadSearchResultsPage(i, search, delay){
+    delay = ValueOrDefault(delay, 0);
+    var NextPageUrl = ParentUrl + "&page="+i;
+    setTimeout(LoadSearchPage.bind(null, NextPageUrl.trim(), ParentUrl, i, search), 3000 * i);
+}
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         var page = request.page;
-        var pageUrl = ParentUrl + "?pg=" + page;
-        setTimeout(LoadPage.bind(null, pageUrl, ParentUrl, false), 0);
+        LoadBestSellersPage(page);
     });
 
 function GetSiteParser(url){
