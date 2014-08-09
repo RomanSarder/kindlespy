@@ -657,12 +657,15 @@ function LoadBestSellersPage(pageNumber, delay){
 function LoadSearchResultsPage(pageNumber, delay){
     delay = ValueOrDefault(delay, 0);
     var search = GetParameterByName(ParentUrl, "field-keywords");
-    var pageNumberToRequest = Math.ceil(pageNumber*20/16)-1;
-    var nextPageNumberToRequest = pageNumberToRequest + 1;
-    var NextPageUrl1 = ParentUrl + "&page="+pageNumberToRequest;
-    var NextPageUrl2 = ParentUrl + "&page="+nextPageNumberToRequest;
-    setTimeout(LoadSearchPage.bind(null, NextPageUrl1.trim(), ParentUrl, (pageNumber-1)*20, pageNumber*20, search), delay);
-    setTimeout(LoadSearchPage.bind(null, NextPageUrl2.trim(), ParentUrl, (nextPageNumberToRequest-1)*16, pageNumber*20, search), delay+1000);
+    var startIndex = (pageNumber-1) * 20;
+    var endIndex = startIndex + 19;
+    var startIndexPage = Math.floor(startIndex/SiteParser.SearchResultsNumber) + 1;
+    var endIndexPage = Math.floor(endIndex/SiteParser.SearchResultsNumber) + 1;
+    setTimeout(LoadSearchPage.bind(null, (ParentUrl + "&page="+startIndexPage).trim(), ParentUrl, startIndex, endIndex+1, search), delay);
+
+    if(startIndexPage != endIndexPage){
+        setTimeout(LoadSearchPage.bind(null, (ParentUrl + "&page="+endIndexPage).trim(), ParentUrl, startIndexPage*SiteParser.SearchResultsNumber, endIndex+1, search), delay + 1000);
+    }
 }
 
 chrome.runtime.onMessage.addListener(

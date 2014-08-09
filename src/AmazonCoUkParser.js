@@ -7,6 +7,7 @@ function AmazonCoUkParser(){
     this.ParamUrlBestSellers = "154606011";
     this.AmazonBestSellersPattern = "Amazon Bestsellers Rank";
     this.CurrencySign = "&pound;";
+    this.SearchResultsNumber = 48;
 }
 
 AmazonCoUkParser.MainUrl = "http://www.amazon.co.uk";
