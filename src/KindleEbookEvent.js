@@ -26,8 +26,7 @@ $(window).ready(function () {
         setTimeout("processWhenDone()", 1500);
     });
 
-    if (IsAuthorPage())
-    {
+    if (IsAuthorPage()){
         scrapeAuthorPage(Url);
     }
 
@@ -35,8 +34,7 @@ $(window).ready(function () {
         scrapeSearchPage(Url);
     }
 
-    else if (IsBestSellersPage(Url))
-    {
+    else if (IsBestSellersPage(Url)){
         scrapeBestSellersPage(Url);
     }
 });
@@ -160,20 +158,9 @@ function ParseEngine(responseText, parentUrl, IsFree)
 
 function LoadPage(url, parentUrl, IsFree)
 {
-
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-
-    xhr.onreadystatechange = function(){
-        if (xhr.readyState == 4){
-            if (xhr.status == 200 && (typeof  xhr.responseText !== "undefined" || xhr.responseText.length > 1))
-            {
-                setTimeout(ParseEngine.bind(null, xhr.responseText, parentUrl, IsFree), 1000);
-            }
-        }
-    }
-
-    xhr.send();
+    $.get(url, function(responseText){
+        setTimeout(ParseEngine.bind(null, responseText, parentUrl, IsFree), 1000);
+    });
 }
 
 function GetAuthorPageUrl(responseText)
@@ -304,21 +291,10 @@ function ParseAuthorPage(startIndex, responseText, parentUrl)
 
 function LoadAuthorPage(url, parentUrl)
 {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-
-    xhr.onreadystatechange = function(){
-        if (xhr.readyState == 4){
-            if (xhr.status == 200 && (typeof  xhr.responseText !== "undefined" || xhr.responseText.length > 1))
-            {
-                setTimeout(ParseAuthorPage.bind(null, 12, xhr.responseText, parentUrl), 1000);
-            }
-        }
-    }
-
-    xhr.send();
+    $.get(url, function(responseText){
+        setTimeout(ParseAuthorPage.bind(null, 12, responseText, parentUrl), 1000);
+    });
 }
-
 
 function ParseSearchPage(startIndex, responseText, parentUrl, search)
 {
@@ -394,55 +370,34 @@ function ParseSearchPage(startIndex, responseText, parentUrl, search)
 
 function LoadSearchPage(url, parentUrl, i, search)
 {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-
-    xhr.onreadystatechange = function(){
-        if (xhr.readyState == 4){
-            if (xhr.status == 200 && (typeof  xhr.responseText !== "undefined" || xhr.responseText.length > 1))
-            {
-                setTimeout(ParseSearchPage.bind(null, (i-1)*16, xhr.responseText, parentUrl, search), 1000);
-            }
-        }
-    }
-
-    xhr.send();
+    $.get(url, function(responseText){
+        setTimeout(ParseSearchPage.bind(null, (i-1)*16, responseText, parentUrl, search), 1000);
+    });
 }
 
 function scrapeAuthorPage(Url){
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", Url);
-
-    xhr.onreadystatechange = function(){
-        if (xhr.readyState == 4)
+    $.get(Url, function(responseText){
+        if (responseText.indexOf("Are You an Author") >= 0)
         {
-            if (xhr.status == 200 && (typeof  xhr.responseText !== "undefined" || xhr.responseText.length > 1))
+            chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
+
+            ParseAuthorPage(0, responseText, ParentUrl);
+
+            var NextPageUrl = ParseString(responseText, 'class="pagnLink"', 'href="', '"');
+
+            if (typeof NextPageUrl === "undefined" || NextPageUrl.length < 1)
+                return;
+
+            if (NextPageUrl.indexOf('http') < 0)
             {
-                if (xhr.responseText.indexOf("Are You an Author") >= 0)
-                {
-                    chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
-
-                    ParseAuthorPage(0, xhr.responseText, ParentUrl);
-
-                    var NextPageUrl = ParseString(xhr.responseText, 'class="pagnLink"', 'href="', '"');
-
-                    if (typeof NextPageUrl === "undefined" || NextPageUrl.length < 1)
-                        return;
-
-                    if (NextPageUrl.indexOf('http') < 0)
-                    {
-                        NextPageUrl = NextPageUrl.replace("&amp;", "&");
-                        NextPageUrl = NextPageUrl.replace(" ", "%20");
-                        NextPageUrl = SiteParser.MainUrl + "/" + NextPageUrl;
-                    }
-
-                    LoadAuthorPage(NextPageUrl.trim(), ParentUrl);
-                }
+                NextPageUrl = NextPageUrl.replace("&amp;", "&");
+                NextPageUrl = NextPageUrl.replace(" ", "%20");
+                NextPageUrl = SiteParser.MainUrl + "/" + NextPageUrl;
             }
-        }
-    };
 
-    xhr.send();
+            LoadAuthorPage(NextPageUrl.trim(), ParentUrl);
+        }
+    });
 }
 
 function scrapeSearchPage(Url) {
@@ -454,52 +409,34 @@ function scrapeSearchPage(Url) {
 
 	ParentUrl = Url.replace(/\&page=[0-9]*/i, "");
 
-	var xhr = new XMLHttpRequest();
-
 	chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
 
-	xhr.open("GET", ParentUrl);
 	var search = GetParameterByName(Url, "field-keywords");
 
-	xhr.onreadystatechange = function() {
-		if(xhr.readyState == 4 && xhr.status == 200 && 
-				(typeof xhr.responseText !== "undefined" || xhr.responseText.length>1)) {
-					ParseSearchPage(0, xhr.responseText, ParentUrl, search);
-					for (var i = 2; i <= 3; i++) {
-                        LoadSearchResultsPage(i, search, 3000 * i)
-					}
-				}
-	};
-
-	xhr.send();
+    $.get(ParentUrl, function(responseText){
+        ParseSearchPage(0, responseText, ParentUrl, search);
+        for (var i = 2; i <= 3; i++) {
+            LoadSearchResultsPage(i, search, 3000 * i)
+        }
+    });
 }
 
 function scrapeBestSellersPage(Url){
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", Url);
-    xhr.onreadystatechange = function(){
-
-        if (xhr.readyState == 4){
-
-            if (xhr.status == 200 && (typeof xhr.responseText !== "undefined" || xhr.responseText.length > 1))
+    $.get(Url, function(responseText){
+        if (responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + SiteParser.ParamUrlBestSellers) >= 0)
+        {
+            if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
             {
-                if (xhr.responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + SiteParser.ParamUrlBestSellers) >= 0)
-                {
-                    if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
-                    {
-                        chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
-                    }
-                    ParseEngine(xhr.responseText, ParentUrl, false);
-                    for (var i = 2; i <= 2; i++)
-                    {
-                        LoadBestSellersPage(i, 3000*i);
-                    }
-                }
+                chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
+            }
+
+            ParseEngine(responseText, ParentUrl, false);
+            for (var i = 2; i <= 2; i++)
+            {
+                LoadBestSellersPage(i, 3000*i);
             }
         }
-    };
-
-    xhr.send();
+    });
 }
 
 function processWhenDone() {
@@ -652,85 +589,65 @@ function GetPrintLength(responseText){
 }
 function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKind)
 {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
+    $.get(url, function(responseText){
+        var entryUrl = url;
+        var entryParentUrl = parenturl;
+        var entryTitle = GetTitle(responseText);
+        var entryPrice = price;
 
+        if (typeof entryPrice === "undefined" || entryPrice.length <= 1)
+            return;
 
-    xhr.onreadystatechange = function(){
+        var entrySalesRank = GetSalesRank(responseText);
+        var entryEstSale = GetEstSale(entrySalesRank);
+        var entrySalesRecv = GetSalesRecv(entryEstSale, entryPrice);
+        var entryPrintLength = GetPrintLength(responseText);
+        var entryAuthor = GetAuthor(responseText);
 
-        if (xhr.readyState == 4){
-            if (typeof xhr.responseText !== "undefined" || xhr.responseText.length > 1)
-            {
-                var entryUrl = url;
-                var entryParentUrl = parenturl;
-                var entryTitle = GetTitle(xhr.responseText);
-                var entryPrice = price;
-
-
-                if (typeof entryPrice === "undefined" || entryPrice.length <= 1)
-                    return;
-
-                var entrySalesRank = GetSalesRank(xhr.responseText);
-                var entryEstSale = GetEstSale(entrySalesRank);
-                var entrySalesRecv = GetSalesRecv(entryEstSale, entryPrice);
-				var entryPrintLength = GetPrintLength(xhr.responseText);
-                var entryAuthor = GetAuthor(xhr.responseText);
-		
-		if(typeof reviews === "undefined") {
-			var rl_reviews = $(xhr.responseText).find("#acr .acrCount a:first");
-			reviews = rl_reviews.length? parseInt($(rl_reviews).text()).toString():"0";
-
-		}
-
-                if (typeof entryTitle === "undefined" || entryTitle === "")
-                {
-                    entryTitle = GetAuthorTitle(xhr.responseText);
-                }
-
-
-                if (typeof entryTitle === "undefined")
-                    return;
-
-
-                if (typeof entryPrice === "undefined")
-                    entryPrice = "0";
-
-
-                if (typeof entryEstSale === "undefined")
-                    entryPrice = "0";
-
-
-                if (typeof entrySalesRecv == "undefined")
-                    entrySalesRecv = "0";
-
-
-                if (typeof reviews === "undefined")
-                    reviews = "0";
-
-
-                if (typeof  entrySalesRank === "undefined" || entrySalesRank.length < 1)
-                    entrySalesRank = "1";
-					
-				if (typeof entryPrintLength === "undefined" || entryPrintLength =='')
-					entryPrintLength = "n/a";
-
-                if (typeof entryAuthor === "undefined" || entryAuthor.length < 1)
-                    entryAuthor = "n/a";
-
-                chrome.runtime.sendMessage({type:"get-settings"}, function(response){
-                    if (response.settings.PullStatus) {
-                        chrome.runtime.sendMessage({type: "save-settings", No: num, URL: entryUrl, ParentURL: entryParentUrl,
-				NextUrl: nextUrl, Title: entryTitle, Price: entryPrice, EstSales: entryEstSale,
-				SalesRecv: entrySalesRecv, Reviews: reviews, SalesRank: entrySalesRank,
-				Category:category, CategoryKind: categoryKind,
-				PrintLength:entryPrintLength, Author:entryAuthor});
-		    }
-                });
-            }
+        if(typeof reviews === "undefined") {
+            var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+            reviews = rl_reviews.length? parseInt($(rl_reviews).text()).toString():"0";
         }
-    };
 
-    xhr.send();
+        if (typeof entryTitle === "undefined" || entryTitle === "")
+        {
+            entryTitle = GetAuthorTitle(responseText);
+        }
+
+        if (typeof entryTitle === "undefined")
+            return;
+
+        if (typeof entryPrice === "undefined")
+            entryPrice = "0";
+
+        if (typeof entryEstSale === "undefined")
+            entryPrice = "0";
+
+        if (typeof entrySalesRecv == "undefined")
+            entrySalesRecv = "0";
+
+        if (typeof reviews === "undefined")
+            reviews = "0";
+
+        if (typeof  entrySalesRank === "undefined" || entrySalesRank.length < 1)
+            entrySalesRank = "1";
+
+        if (typeof entryPrintLength === "undefined" || entryPrintLength =='')
+            entryPrintLength = "n/a";
+
+        if (typeof entryAuthor === "undefined" || entryAuthor.length < 1)
+            entryAuthor = "n/a";
+
+        chrome.runtime.sendMessage({type:"get-settings"}, function(response){
+            if (response.settings.PullStatus) {
+                chrome.runtime.sendMessage({type: "save-settings", No: num, URL: entryUrl, ParentURL: entryParentUrl,
+                    NextUrl: nextUrl, Title: entryTitle, Price: entryPrice, EstSales: entryEstSale,
+                    SalesRecv: entrySalesRecv, Reviews: reviews, SalesRank: entrySalesRank,
+                    Category:category, CategoryKind: categoryKind,
+                    PrintLength:entryPrintLength, Author:entryAuthor});
+            }
+        });
+    });
 }
 
 function LoadBestSellersPage(i, delay){
