@@ -44,11 +44,11 @@ function IsAuthorPage(){
 }
 
 function IsSearchPage(Url){
-    return Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text")>0;
+    return Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text") > 0;
 }
 
 function IsBestSellersPage(Url){
-    return Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") < 0;
+    return Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store/zgbs/digital-text") >= 0;
 }
 
 function ParseString(responseText, pattern, startchar, endchar)
@@ -116,7 +116,7 @@ function GetCategoryInfo(responseText)
     return ParseString(responseText, 'class="category"', '>', '<');
 }
 
-function ParseEngine(responseText, parentUrl, IsFree)
+function ParseBestSellersPage(responseText, parentUrl, IsFree)
 {
     var pattern = 'class="zg_itemImmersion"';
     var str = responseText;
@@ -156,10 +156,10 @@ function ParseEngine(responseText, parentUrl, IsFree)
     });
 }
 
-function LoadPage(url, parentUrl, IsFree)
+function LoadBestSellersUrl(url, parentUrl, IsFree)
 {
     $.get(url, function(responseText){
-        setTimeout(ParseEngine.bind(null, responseText, parentUrl, IsFree), 1000);
+        setTimeout(ParseBestSellersPage.bind(null, responseText, parentUrl, IsFree), 1000);
     });
 }
 
@@ -296,7 +296,7 @@ function LoadAuthorPage(url, parentUrl)
     });
 }
 
-function ParseSearchPage(startIndex, responseText, parentUrl, search)
+function ParseSearchPage(startIndex, endIndex, responseText, parentUrl, search)
 {
     var pattern = 'id="result_';
     var str = responseText;
@@ -315,11 +315,9 @@ function ParseSearchPage(startIndex, responseText, parentUrl, search)
     var bIsExist = [];
     var result;
 
-
     $(responseText).find(".results").each(function() {
-
 	    while( (result = $(this).find("#result_"+(startIndex+index))).length>0 ) {
-		    if(startIndex + index>=40) break;
+		    if(startIndex + index>=endIndex) break;
 		    No[index] = startIndex + index + 1;
 		    url[index] = $(result).find(".newaps a:first").attr("href");
 		    if(!url[index]) url[index] = "";
@@ -368,10 +366,10 @@ function ParseSearchPage(startIndex, responseText, parentUrl, search)
 }
 
 
-function LoadSearchPage(url, parentUrl, i, search)
+function LoadSearchPage(url, parentUrl, startIndex, endIndex, search)
 {
     $.get(url, function(responseText){
-        setTimeout(ParseSearchPage.bind(null, (i-1)*16, responseText, parentUrl, search), 1000);
+        setTimeout(ParseSearchPage.bind(null, startIndex, endIndex, responseText, parentUrl, search), 1000);
     });
 }
 
@@ -414,9 +412,9 @@ function scrapeSearchPage(Url) {
 	var search = GetParameterByName(Url, "field-keywords");
 
     $.get(ParentUrl, function(responseText){
-        ParseSearchPage(0, responseText, ParentUrl, search);
-        for (var i = 2; i <= 3; i++) {
-            LoadSearchResultsPage(i, search, 3000 * i)
+        //ParseSearchPage(0, 20, responseText, ParentUrl, search);
+        for (var i = 1; i <= 2; i++) {
+            LoadSearchResultsPage(i, 3000 * i)
         }
     });
 }
@@ -430,7 +428,7 @@ function scrapeBestSellersPage(Url){
                 chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
             }
 
-            ParseEngine(responseText, ParentUrl, false);
+            ParseBestSellersPage(responseText, ParentUrl, false);
             for (var i = 2; i <= 2; i++)
             {
                 LoadBestSellersPage(i, 3000*i);
@@ -650,22 +648,32 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
     });
 }
 
-function LoadBestSellersPage(i, delay){
+function LoadBestSellersPage(pageNumber, delay){
     delay = ValueOrDefault(delay, 0);
-    var pageUrl = ParentUrl + "?pg=" + i;
-    setTimeout(LoadPage.bind(null, pageUrl, ParentUrl, false), delay);
+    var pageUrl = ParentUrl + "?pg=" + pageNumber;
+    setTimeout(LoadBestSellersUrl.bind(null, pageUrl, ParentUrl, false), delay);
 }
 
-function LoadSearchResultsPage(i, search, delay){
+function LoadSearchResultsPage(pageNumber, delay){
     delay = ValueOrDefault(delay, 0);
-    var NextPageUrl = ParentUrl + "&page="+i;
-    setTimeout(LoadSearchPage.bind(null, NextPageUrl.trim(), ParentUrl, i, search), 3000 * i);
+    var search = GetParameterByName(ParentUrl, "field-keywords");
+    var pageNumberToRequest = Math.ceil(pageNumber*20/16)-1;
+    var nextPageNumberToRequest = pageNumberToRequest + 1;
+    var NextPageUrl1 = ParentUrl + "&page="+pageNumberToRequest;
+    var NextPageUrl2 = ParentUrl + "&page="+nextPageNumberToRequest;
+    setTimeout(LoadSearchPage.bind(null, NextPageUrl1.trim(), ParentUrl, (pageNumber-1)*20, pageNumber*20, search), delay);
+    setTimeout(LoadSearchPage.bind(null, NextPageUrl2.trim(), ParentUrl, (nextPageNumberToRequest-1)*16, pageNumber*20, search), delay+1000);
 }
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        var page = request.page;
-        LoadBestSellersPage(page);
+        var pageNumber = request.page;
+        if (IsBestSellersPage(ParentUrl)){
+            LoadBestSellersPage(pageNumber);
+        }
+        else if(IsSearchPage(ParentUrl)){
+            LoadSearchResultsPage(pageNumber);
+        }
     });
 
 function GetSiteParser(url){
