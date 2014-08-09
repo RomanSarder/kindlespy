@@ -48,7 +48,7 @@ function IsSearchPage(Url){
 }
 
 function IsBestSellersPage(Url){
-    return Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store/zgbs/digital-text") >= 0;
+    return Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store") >= 0 && Url.indexOf("digital-text") > 0;
 }
 
 function ParseString(responseText, pattern, startchar, endchar)
