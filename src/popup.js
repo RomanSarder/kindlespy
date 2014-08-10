@@ -16,8 +16,8 @@ columnGetterFunctions['title-book'] = function(a){return a.Title}
 columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.substr(1))}
 columnGetterFunctions['est-sales'] = function(a){return a.EstSales}
 columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv}
-columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(',', ''))}
-columnGetterFunctions['sales-rank'] = function(a){return parseInt(a.SalesRank)}
+columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(/,/g,''))}
+columnGetterFunctions['sales-rank'] = function(a){return parseInt(a.SalesRank.replace(/,/g,''))}
 
 var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
