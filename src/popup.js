@@ -677,7 +677,19 @@ function addCommas(nStr)
     }
     return x1 + x2;
 }
-
+function LoadData(obj){
+    if (typeof obj === undefined || obj.length < 1)
+    {
+        $('.header').html("");
+        $('.info').html("");
+        $('.table-head').html("");
+        $('.content').html("<div><img style=\"width:100%\" src=\"loading.gif\"//></div>");
+        $('.footer').html("<div style=\"float:left;width:25%;margin-top: 22px;\"><div style=\"margin: 0 auto;display: table;text-align: center;\"></div></div><div style=\"float:left;width:40%;margin-top: 13px;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-top: 5px;\"><span style=\"font-size:12px\"></span><div style=\"font-size:16px;font-weight:bold\" ></div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Reset</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/refresh.png\" id=\"refresh\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:25%;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-left: 0px;padding-top: 5px;\"><div id=\"ad\"/></div></div>");
+        setTimeout(UpdateTable.bind(null,obj), 6000);
+    }else{
+        UpdateTable(obj);
+    }
+}
 function UpdateTable(obj)
 {
     if (typeof obj === undefined || obj.length < 1)
@@ -685,7 +697,7 @@ function UpdateTable(obj)
         $('.header').html("");
         $('.info').html("");
         $('.table-head').html("");
-        $('.content').html("<div><div style=\"width:75%; margin-left:118px;margin-top:20px;line-height:25px;font-size:16px;\"><b>Oops, now this is embarrassing!</b><br><br>Please wait for 10 seconds, while I find the data you're looking for...<br><br><b>Please Note:</b> If this page does not refresh, you may be viewing a page that is not compatible ... KindleSpy can only gather data from Kindle Categories & Author Pages. To see the Kindle Bestsellers please...<br><br><br><b>>> </b><a href=\"#\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">Click HERE NOW</a></div></div>");
+        $('.content').html("<div><div style=\"width:72%; margin:0 auto;line-height:25px;font-size:18px;\"><b style=\"font-size:26px;margin-left: 150px;\">No Data Can Be Found!</b><br><br>KindleSpy can only pull data from Category pages, author pages & search results pages on the Kindle Store.<br><br>Results are only supported from Amazon US and UK. <br> <br>If you have continued problems, please see our troubleshooting section <a href=\"http://www.kdspy.com/members/kindlespy/troubleshooting/\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">here</a>.<br> <br> <b>>> </b>For the Kindle Bestsellers, click here for <a href=\"http://www.kdspy.com/u/amazonkindle\" target=\"_blank\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">US</a> or <a href=\"http://www.kdspy.com/u/amazonkindleuk\" target=\"_blank\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">UK</a> categories.  </div>  </div>");
         $('.footer').html("<div style=\"float:left;width:25%;margin-top: 22px;\"><div style=\"margin: 0 auto;display: table;text-align: center;\"></div></div><div style=\"float:left;width:40%;margin-top: 13px;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-top: 5px;\"><span style=\"font-size:12px\"></span><div style=\"font-size:16px;font-weight:bold\" id=\"totalReSalesRecv\"></div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Reset</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/refresh.png\" id=\"refresh\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:25%;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-left: 0px;padding-top: 5px;\"><div id=\"ad\"/></div></div>");
 
         LoadAdvertisementBanner();
@@ -986,13 +998,12 @@ function LoadInfos()
 
 
         obj.sort(compare);
-        UpdateTable(obj);
+        LoadData(obj);
+        LoadAdvertisementBanner();
     });
 
     if (!refresed)
         setTimeout(AutoAddFunc, 1000);
-
-    LoadAdvertisementBanner();
 }
 
 function LoadAdvertisementBanner()
