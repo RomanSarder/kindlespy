@@ -21,6 +21,8 @@ AmazonCoUkParser.prototype.GetKindleEditionRow = function(resultItem) {
     $(resultItem).find("li").each(function() {
         if($(this).text().indexOf("Kindle Edition")>0)
             retval= $(this);
+        else if($(this).text().indexOf("Kindle Purchase")>0)
+            retval= $(this);
     });
 
     return retval;
