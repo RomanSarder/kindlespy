@@ -6,8 +6,10 @@ function AmazonComParser(){
     this.MainUrl = AmazonComParser.MainUrl;
     this.ParamUrlBestSellers = "341689031";
     this.AmazonBestSellersPattern = "Amazon Best Sellers Rank";
+    this.AreYouAnAuthorPattern = "Are You an Author";
     this.CurrencySign = "$";
     this.SearchResultsNumber = 16;
+    this.BestSellersUrl = "Best-Sellers-Kindle-Store-eBooks/zgbs"
 }
 
 AmazonComParser.MainUrl = "http://www.amazon.com";
@@ -36,4 +38,12 @@ AmazonComParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionR
 
 AmazonComParser.prototype.GetReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".reviewsCount > a:first").text();
+}
+
+AmazonComParser.prototype.ParsePrice = function(price) {
+    return price.substr(1);
+}
+
+AmazonComParser.prototype.FormatPrice = function(price) {
+    return this.CurrencySign + price;
 }

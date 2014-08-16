@@ -13,7 +13,7 @@ columnGetterFunctions['pageno'] = function(a){
     return isNaN(printLength) ? 0 : printLength;
 }
 columnGetterFunctions['title-book'] = function(a){return a.Title}
-columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.substr(1))}
+columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace(/[^0-9\.]/g, ''))}
 columnGetterFunctions['est-sales'] = function(a){return a.EstSales}
 columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv}
 columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(/,/g,''))}
@@ -515,7 +515,7 @@ function InsertDatas(PageNumber)
                 if (price.indexOf("Free") >= 0)
                     averagePrice = 0;
                 else
-                    averagePrice += parseFloat(price.substr(1).replace(",", "").trim());
+                    averagePrice += parseFloat(price.replace(/[^0-9\.]/g, ''));
 
                 //if(typeof review !== "undefined")
                 averageReview += parseInt(review.replace(",", "").trim());
@@ -904,7 +904,7 @@ function frun()
 
     chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
 
-        if (response.URL.indexOf("http://www.amazon.co") < 0) //Go To Amazone Page
+        if (response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
         {
             //chrome.tabs.update(response.ID, {url: "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore"});
             chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
@@ -923,6 +923,9 @@ function frun()
             }else if(mainUrl.indexOf("www.amazon.co.uk")!=-1){
                 paramUrlBestSellers = "341689031";
                 currency = "&pound;";
+            }else if(mainUrl.indexOf("www.amazon.de")!=-1){
+                paramUrlBestSellers = "530886031";
+                currency = "&euro;";
             }
             chrome.runtime.sendMessage({type: "save-UrlParams", MainUrl: mainUrl, ParamUrlBestSellers:paramUrlBestSellers});
             LoadInfos();
@@ -1016,7 +1019,3 @@ function LoadAdvertisementBanner()
 chrome.runtime.sendMessage({type: "set-current-Tab"}, function(response) {
     setTimeout(frun, 100);
 });
-//ToDo with this smth
-function getCurrencyReplace(){
-    return(currency!="$")?"\u00A3":currency;
-}

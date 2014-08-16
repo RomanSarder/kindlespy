@@ -35,7 +35,9 @@
                 "http://www.amazon.com/*",
                 "https://www.amazon.com/*",
                 "http://www.amazon.co.uk/*",
-                "https://www.amazon.co.uk/*"
+                "https://www.amazon.co.uk/*",
+                "http://www.amazon.de/*",
+                "https://www.amazon.de/*"
             ],
             "run_at": "document_start",
             "js": [
@@ -44,6 +46,7 @@
                 "src/HelperFunctions.js",
                 "src/AmazonComParser.js",
                 "src/AmazonCoUkParser.js",
+                "src/AmazonDeParser.js",
                 "src/KindleEbookEvent.js"
             ]
         }

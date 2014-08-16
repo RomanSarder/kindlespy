@@ -40,7 +40,7 @@ $(window).ready(function () {
 });
 
 function IsAuthorPage(){
-    return document.documentElement.innerHTML.indexOf('Are You an Author') >= 0;
+    return document.documentElement.innerHTML.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0;
 }
 
 function IsSearchPage(Url){
@@ -152,7 +152,7 @@ function ParseBestSellersPage(responseText, parentUrl, IsFree)
             if (typeof url[i] === "undefined" || url[i].length < 1)
                 continue;
             if (response.settings.PullStatus)
-                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller"), 500*i); //continue to try other sizes after 1 sec
+                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller"), 500*i); //continue to try other sizes after 0.5 sec
         }
     });
 }
@@ -284,7 +284,7 @@ function ParseAuthorPage(startIndex, responseText, parentUrl)
 
             if (response.settings.PullStatus)
             {
-                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Author"), 500*i); //continue to try other sizes after 1 sec
+                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Author"), 500*i); //continue to try other sizes after 0.5 sec
             }
         }
     });
@@ -358,7 +358,7 @@ function ParseSearchPage(startIndex, endIndex, responseText, parentUrl, search)
 
             if (response.settings.PullStatus && parentUrl === purl)
             {
-                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Search"), 500*i); //continue to try other sizes after 1 sec
+                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Search"), 500*i); //continue to try other sizes after 0.5 sec
             }
         }
     });
@@ -376,7 +376,7 @@ function LoadSearchPage(url, parentUrl, startIndex, endIndex, search)
 
 function scrapeAuthorPage(Url){
     $.get(Url, function(responseText){
-        if (responseText.indexOf("Are You an Author") >= 0)
+        if (responseText.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0)
         {
             chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
 
@@ -413,7 +413,6 @@ function scrapeSearchPage(Url) {
 	var search = GetParameterByName(Url, "field-keywords");
 
     $.get(ParentUrl, function(responseText){
-        //ParseSearchPage(0, 20, responseText, ParentUrl, search);
         for (var i = 1; i <= 2; i++) {
             LoadSearchResultsPage(i, 3000 * i)
         }
@@ -422,7 +421,7 @@ function scrapeSearchPage(Url) {
 
 function scrapeBestSellersPage(Url){
     $.get(Url, function(responseText){
-        if (responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + SiteParser.ParamUrlBestSellers) >= 0)
+        if (responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(SiteParser.MainUrl + "/" + SiteParser.BestSellersUrl + "/digital-text/" + SiteParser.ParamUrlBestSellers) >= 0)
         {
             if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
             {
@@ -568,7 +567,7 @@ function GetEstSale(salesRank)
     return "0";
 }
 
-function GetSalesRecv(estsales, price)
+function GetPrice(price)
 {
     if (typeof price === "undefined")
         return 1;
@@ -576,16 +575,21 @@ function GetSalesRecv(estsales, price)
     if (price.indexOf("Free") >= 0)
         return 0;
 
+    return SiteParser.ParsePrice(price);
+}
+
+function GetSalesRecv(estsales, realPrice)
+{
     if (typeof estsales === "undefined")
         return 1 * price;
 
-    var realPrice = price.substr(1);
-
     return estsales * realPrice;
 }
+
 function GetPrintLength(responseText){
-	return ParseString(responseText, "id='pageCountAvailable'", '<span>', 'pages');
+	return parseInt($(responseText).find('#pageCountAvailable span').text()).toString();
 }
+
 function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKind)
 {
     $.get(url, function(responseText){
@@ -593,13 +597,14 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
         var entryParentUrl = parenturl;
         var entryTitle = GetTitle(responseText);
         var entryPrice = price;
+        var realPrice = SiteParser.ParsePrice(price);
 
         if (typeof entryPrice === "undefined" || entryPrice.length <= 1)
             return;
 
         var entrySalesRank = GetSalesRank(responseText);
         var entryEstSale = GetEstSale(entrySalesRank);
-        var entrySalesRecv = GetSalesRecv(entryEstSale, entryPrice);
+        var entrySalesRecv = GetSalesRecv(entryEstSale, realPrice);
         var entryPrintLength = GetPrintLength(responseText);
         var entryAuthor = GetAuthor(responseText);
 
@@ -631,7 +636,7 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
         if (typeof  entrySalesRank === "undefined" || entrySalesRank.length < 1)
             entrySalesRank = "1";
 
-        if (typeof entryPrintLength === "undefined" || entryPrintLength =='')
+        if (typeof entryPrintLength === "undefined" || entryPrintLength =='' || entryPrintLength =="NaN")
             entryPrintLength = "n/a";
 
         if (typeof entryAuthor === "undefined" || entryAuthor.length < 1)
@@ -640,7 +645,7 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
         chrome.runtime.sendMessage({type:"get-settings"}, function(response){
             if (response.settings.PullStatus) {
                 chrome.runtime.sendMessage({type: "save-settings", No: num, URL: entryUrl, ParentURL: entryParentUrl,
-                    NextUrl: nextUrl, Title: entryTitle, Price: entryPrice, EstSales: entryEstSale,
+                    NextUrl: nextUrl, Title: entryTitle, Price: SiteParser.FormatPrice(realPrice), EstSales: entryEstSale,
                     SalesRecv: entrySalesRecv, Reviews: reviews, SalesRank: entrySalesRank,
                     Category:category, CategoryKind: categoryKind,
                     PrintLength:entryPrintLength, Author:entryAuthor});
@@ -685,4 +690,6 @@ function GetSiteParser(url){
         return new AmazonComParser();
     if(url.indexOf(AmazonCoUkParser.MainUrl)!=-1)
         return new AmazonCoUkParser();
+    if(url.indexOf(AmazonDeParser.MainUrl)!=-1)
+        return new AmazonDeParser();
 }
