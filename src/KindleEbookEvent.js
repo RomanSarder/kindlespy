@@ -421,7 +421,9 @@ function scrapeSearchPage(Url) {
 
 function scrapeBestSellersPage(Url){
     $.get(Url, function(responseText){
-        if (responseText.indexOf("Kindle-Store-eBooks/") >= 0 || Url.indexOf(SiteParser.MainUrl + "/" + SiteParser.BestSellersUrl + "/digital-text/" + SiteParser.ParamUrlBestSellers) >= 0)
+        if (responseText.indexOf("Kindle-Store-eBooks/") >= 0
+            || (Url.indexOf(SiteParser.MainUrl + "/" + SiteParser.BestSellersUrl) >= 0
+            && Url.indexOf("/digital-text/") >=0 ))
         {
             if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
             {

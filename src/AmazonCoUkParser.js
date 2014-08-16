@@ -9,7 +9,7 @@ function AmazonCoUkParser(){
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.CurrencySign = "&pound;";
     this.SearchResultsNumber = 48;
-    this.BestSellersUrl = "Best-Sellers-Kindle-Store-eBooks/zgbs"
+    this.BestSellersUrl = "Best-Sellers-Kindle-Store"
 }
 
 AmazonCoUkParser.MainUrl = "http://www.amazon.co.uk";

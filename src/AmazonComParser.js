@@ -9,7 +9,7 @@ function AmazonComParser(){
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.CurrencySign = "$";
     this.SearchResultsNumber = 16;
-    this.BestSellersUrl = "Best-Sellers-Kindle-Store-eBooks/zgbs"
+    this.BestSellersUrl = "Best-Sellers-Kindle-Store"
 }
 
 AmazonComParser.MainUrl = "http://www.amazon.com";
