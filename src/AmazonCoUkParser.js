@@ -10,7 +10,41 @@ function AmazonCoUkParser(){
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.CurrencySign = "&pound;";
     this.SearchResultsNumber = 48;
-    this.BestSellersUrl = "Best-Sellers-Kindle-Store"
+    this.BestSellersUrl = "Best-Sellers-Kindle-Store";
+    this.EstSalesScale = [
+        {"min": 1, "max": 5, "EstSale": 60000},
+        {"min": 6, "max": 10, "EstSale": 52500},
+        {"min": 11, "max": 20, "EstSale": 45000},
+        {"min": 21, "max": 35, "EstSale": 37500},
+        {"min": 36, "max": 100, "EstSale": 27500},
+        {"min": 101, "max": 200, "EstSale": 15000},
+        {"min": 201, "max": 350, "EstSale": 6000},
+        {"min": 351, "max": 500, "EstSale": 3000},
+        {"min": 501, "max": 750, "EstSale": 2250},
+        {"min": 751, "max": 1500, "EstSale": 1650},
+        {"min": 1501, "max": 3000, "EstSale": 1275},
+        {"min": 3001, "max": 4000, "EstSale": 1050},
+        {"min": 4001, "max": 5000, "EstSale": 850},
+        {"min": 5001, "max": 6000, "EstSale": 750},
+        {"min": 6001, "max": 7000, "EstSale": 625},
+        {"min": 7001, "max": 8000, "EstSale": 500},
+        {"min": 8001, "max": 9000, "EstSale": 375},
+        {"min": 9001, "max": 10000, "EstSale": 300},
+        {"min": 10001, "max": 12000, "EstSale": 215},
+        {"min": 12001, "max": 15000, "EstSale": 175},
+        {"min": 15001, "max": 17500, "EstSale": 155},
+        {"min": 17501, "max": 20000, "EstSale": 143},
+        {"min": 20001, "max": 25000, "EstSale": 123},
+        {"min": 25001, "max": 30000, "EstSale": 100},
+        {"min": 30001, "max": 35000, "EstSale": 70},
+        {"min": 35001, "max": 50000, "EstSale": 55},
+        {"min": 50001, "max": 65000, "EstSale": 25},
+        {"min": 65001, "max": 80000, "EstSale": 13},
+        {"min": 80001, "max": 100000, "EstSale": 8},
+        {"min": 100001, "max": 200000, "EstSale": 2},
+        {"min": 200001, "max": 500000, "EstSale": 1},
+        {"min": 500001, "max": -1, "EstSale": 1}
+    ];
 }
 
 AmazonCoUkParser.MainUrl = "http://www.amazon.co.uk";

@@ -10,7 +10,41 @@ function AmazonComParser(){
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.CurrencySign = "$";
     this.SearchResultsNumber = 16;
-    this.BestSellersUrl = "Best-Sellers-Kindle-Store"
+    this.BestSellersUrl = "Best-Sellers-Kindle-Store";
+    this.EstSalesScale = [
+        {"min": 1, "max": 5, "EstSale": 120000},
+        {"min": 6, "max": 10, "EstSale": 105000},
+        {"min": 11, "max": 20, "EstSale": 90000},
+        {"min": 21, "max": 35, "EstSale": 75000},
+        {"min": 36, "max": 100, "EstSale": 55000},
+        {"min": 101, "max": 200, "EstSale": 30000},
+        {"min": 201, "max": 350, "EstSale": 12000},
+        {"min": 351, "max": 500, "EstSale": 6000},
+        {"min": 501, "max": 750, "EstSale": 4500},
+        {"min": 751, "max": 1500, "EstSale": 3300},
+        {"min": 1501, "max": 3000, "EstSale": 2550},
+        {"min": 3001, "max": 4000, "EstSale": 2100},
+        {"min": 4001, "max": 5000, "EstSale": 1700},
+        {"min": 5001, "max": 6000, "EstSale": 1500},
+        {"min": 6001, "max": 7000, "EstSale": 1250},
+        {"min": 7001, "max": 8000, "EstSale": 1000},
+        {"min": 8001, "max": 9000, "EstSale": 750},
+        {"min": 9001, "max": 10000, "EstSale": 600},
+        {"min": 10001, "max": 12000, "EstSale": 430},
+        {"min": 12001, "max": 15000, "EstSale": 350},
+        {"min": 15001, "max": 17500, "EstSale": 310},
+        {"min": 17501, "max": 20000, "EstSale": 285},
+        {"min": 20001, "max": 25000, "EstSale": 245},
+        {"min": 25001, "max": 30000, "EstSale": 200},
+        {"min": 30001, "max": 35000, "EstSale": 140},
+        {"min": 35001, "max": 50000, "EstSale": 110},
+        {"min": 50001, "max": 65000, "EstSale": 50},
+        {"min": 65001, "max": 80000, "EstSale": 25},
+        {"min": 80001, "max": 100000, "EstSale": 15},
+        {"min": 100001, "max": 200000, "EstSale": 4},
+        {"min": 200001, "max": 500000, "EstSale": 2},
+        {"min": 500001, "max": -1, "EstSale": 1}
+    ];
 }
 
 AmazonComParser.MainUrl = "http://www.amazon.com";
