@@ -24,3 +24,17 @@ function GetParameterByName(url, name) {
 function ValueOrDefault(param, defaultValue){
     return typeof param !== 'undefined' ? param : defaultValue;
 }
+
+/**
+ * Creates a concrete site parser object depending on URL
+ * @param url
+ * @returns SiteParser
+  */
+function GetSiteParser(url){
+    if(url.indexOf(AmazonComParser.MainUrl)!=-1)
+        return new AmazonComParser();
+    if(url.indexOf(AmazonCoUkParser.MainUrl)!=-1)
+        return new AmazonCoUkParser();
+    if(url.indexOf(AmazonDeParser.MainUrl)!=-1)
+        return new AmazonDeParser();
+}

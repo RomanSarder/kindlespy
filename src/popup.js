@@ -6,6 +6,7 @@ var CurrentPageUrl = "";
 var refresed = false;
 var bIsSellWin = true;
 var IsErrorWindow = false;
+var SiteParser;
 var columnGetterFunctions = new Array();
 columnGetterFunctions['no'] = function(a){return parseInt(a.No)}
 columnGetterFunctions['pageno'] = function(a){
@@ -23,8 +24,6 @@ var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
 
 var bDebug = false;
-
-var currency = "$";
 
 function AutoAddFunc()
 {
@@ -371,30 +370,23 @@ function WordsInfoUpdate()
     for (var i = 0; i < ShuffleArray.length; i++)
     {
         contentHtml += "<span class=\"occurcnt\"><span class=\"best" + ShuffleArray[i].Level + "\">" + "&nbsp;" + ShuffleArray[i].Word + "</span>(" + ShuffleArray[i].Len + ")&nbsp;</span>";
-
     }
 
     $('.content').html(contentHtml);
 
-    var footerHtml = "<div style=\"float: left;width: 62%;margin-top: 5px;padding-left: 20px;\"><div style=\"margin: 0 auto;text-align: left;padding-top: 5px;\"><span style=\"font-size:12px\">Top 5 Words Used in Best Seller Titles:</span></div><br>"
-
+    var wordsHTML = "";
     nCnt = 1;
     for (var i = clouds.length - 1; i >= 0; i--)
     {
         if (clouds[i].Word.length > 2)
         {
-            footerHtml += (nCnt + ". <b style='padding-right : 15px;'>" + clouds[i].Word + "</b>&nbsp;&nbsp;&nbsp;&nbsp;");
+            wordsHTML += (nCnt + ". <b style='padding-right : 15px;'>" + clouds[i].Word + "</b>&nbsp;&nbsp;&nbsp;&nbsp;");
             if (nCnt >= 5)
                 break;
 
             nCnt++;
-
         }
     }
-
-
-
-    footerHtml += "</div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin: 0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Export</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/download.png\" id=\"Export\" style=\"zoom: .8\"></div></div></div><div style=\"margin: 0 auto;display: table;text-align: center;padding-left: 0px;padding-top: 5px;\"><div id=\"ad\"/></div></div>";
 
     $('.table-head').html("");
     $('.content').css("overflow" , "auto");
@@ -408,7 +400,10 @@ function WordsInfoUpdate()
     $('.content').css("margin-left" , "21px");
     $('.content').css("line-height" , "55px");
 
-    $('.footer').html(footerHtml);
+    $('#Words').html(wordsHTML);
+    $('#WordCloudFooter').show();
+    $('#BestSellersRankingFooter').hide();
+    $('#NoDataFooter').hide();
 
     LoadAdvertisementBanner();
 
@@ -499,7 +494,7 @@ function InsertDatas(PageNumber)
                 "<td style='width:50px;'>" +obj[i].PrintLength + "</td>" +
                 "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
                 "<td style='width:60px;' align='right'>" + addCommas(obj[i].EstSales) +"</td>" +
-                "<td style='width:80px;'><div style='float:left'> "+ currency +" </div> <div style='float:right'>"+ addCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
+                "<td style='width:80px;'><div style='float:left'> "+ SiteParser.CurrencySign +" </div> <div style='float:right'>"+ addCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
 
                 "<td style='width:50px;' align='right'>"+ obj[i].Reviews +"</td>" +
                 "<td style='width:80px;padding-right : 10px;' align='right'>"+ obj[i].SalesRank +"</td>"+
@@ -569,10 +564,10 @@ function InsertDatas(PageNumber)
     $('#result2').html(addCommas(Math.floor(averageSalesRank / nTotalCnt)));
     //$('#result2').html("aaaaaaaaaaa");
 
-    $('#result3').html(currency + " " + addCommas(Math.floor(averageSalesRecv / nTotalCnt)));
-    $('#result4').html(currency + " " +  addCommas((averagePrice/nTotalCnt).toFixed(2)));
+    $('#result3').html(SiteParser.CurrencySign + " " + addCommas(Math.floor(averageSalesRecv / nTotalCnt)));
+    $('#result4').html(SiteParser.CurrencySign + " " +  addCommas((averagePrice/nTotalCnt).toFixed(2)));
     $('#result5').html(addCommas(Math.floor(averageReview / nTotalCnt)));
-    $('#totalReSalesRecv').html(currency + " " + addCommas(averageSalesRecv));/**/
+    $('#totalReSalesRecv').html(SiteParser.CurrencySign + " " + addCommas(averageSalesRecv));/**/
 
 
 }
@@ -605,7 +600,7 @@ function ExportSellResult()
             x[index + 1][2] = obj[index].Author;
             x[index + 1][3] = obj[index].Price;
             x[index + 1][4] = addCommas(obj[index].EstSales);
-            x[index + 1][5] = currency+ " " + addCommas(Math.round(obj[index].SalesRecv));
+            x[index + 1][5] = SiteParser.CurrencySign+ " " + addCommas(Math.round(obj[index].SalesRecv));
             x[index + 1][6] = obj[index].Reviews;
             x[index + 1][7] = obj[index].SalesRank;
 			x[index + 1][8] = obj[index].PrintLength;
@@ -684,7 +679,9 @@ function LoadData(obj){
         $('.info').html("");
         $('.table-head').html("");
         $('.content').html("<div><img style=\"width:100%\" src=\"loading.gif\"//></div>");
-        $('.footer').html("<div style=\"float:left;width:25%;margin-top: 22px;\"><div style=\"margin: 0 auto;display: table;text-align: center;\"></div></div><div style=\"float:left;width:40%;margin-top: 13px;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-top: 5px;\"><span style=\"font-size:12px\"></span><div style=\"font-size:16px;font-weight:bold\" ></div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Reset</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/refresh.png\" id=\"refresh\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:25%;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-left: 0px;padding-top: 5px;\"><div id=\"ad\"/></div></div>");
+        $('#WordCloudFooter').hide();
+        $('#BestSellersRankingFooter').hide();
+        $('#NoDataFooter').show();
         setTimeout(UpdateTable.bind(null,obj), 6000);
     }else{
         UpdateTable(obj);
@@ -698,7 +695,9 @@ function UpdateTable(obj)
         $('.info').html("");
         $('.table-head').html("");
         $('.content').html("<div><div style=\"width:72%; margin:0 auto;line-height:25px;font-size:18px;\"><b style=\"font-size:26px;margin-left: 150px;\">No Data Can Be Found!</b><br><br>KindleSpy can only pull data from Category pages, author pages & search results pages on the Kindle Store.<br><br>Results are only supported from Amazon US and UK. <br> <br>If you have continued problems, please see our troubleshooting section <a href=\"http://www.kdspy.com/members/kindlespy/troubleshooting/\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">here</a>.<br> <br> <b>>> </b>For the Kindle Bestsellers, click here for <a href=\"http://www.kdspy.com/u/amazonkindle\" target=\"_blank\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">US</a> or <a href=\"http://www.kdspy.com/u/amazonkindleuk\" target=\"_blank\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">UK</a> categories.  </div>  </div>");
-        $('.footer').html("<div style=\"float:left;width:25%;margin-top: 22px;\"><div style=\"margin: 0 auto;display: table;text-align: center;\"></div></div><div style=\"float:left;width:40%;margin-top: 13px;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-top: 5px;\"><span style=\"font-size:12px\"></span><div style=\"font-size:16px;font-weight:bold\" id=\"totalReSalesRecv\"></div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Reset</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/refresh.png\" id=\"refresh\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:25%;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-left: 0px;padding-top: 5px;\"><div id=\"ad\"/></div></div>");
+        $('#WordCloudFooter').hide();
+        $('#BestSellersRankingFooter').hide();
+        $('#NoDataFooter').show();
 
         LoadAdvertisementBanner();
 
@@ -731,8 +730,6 @@ function UpdateTable(obj)
 
 
         $("input[name='checkbox']").click(function() {
-            //alert("aaaaaaaaaaaaaa");
-            //$("input[name='checkbox']").css("checked", true);
             if($("input[name='checkbox']").prop('checked'))
             {
                 setTimeout(changeSwitchColor.bind(null, "#009900"), 300);
@@ -774,12 +771,13 @@ function UpdateTable(obj)
 	var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:205px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:20px;\">Page No(s)</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">Price</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Est. Sales</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Sales Rev.</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" >Sales Rank</label>"
     var InfoHtml = "<div class=\"info-item\"><span style=\"font-size:11px\">Results:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rank:</span><div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">2,233</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rev:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">$7,000.00</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Price:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">$7.95</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. No. Reviews:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">31</div></div>";
-    var footerHtml = "<div style=\"float:left;width:25%;margin-top: 22px;\"><div style=\"/*margin: 0 auto;*/display: table;text-align: center;\"><a href=\"#\" style=\"margin-left: 29px;\" id=\"PullResult\">Pull Results 1-20</a></div></div><div style=\"float:left;width:30%;margin-top: 10px;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-top: 5px;\"><span style=\"font-size:11px\">Total Sales Revenue:</span><div style=\"font-size:16px;font-weight:bold\" id=\"totalReSalesRecv\">$97,000.00</div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Reset</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/refresh.png\" id=\"refresh\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:10%;\"><div style=\"display:table;text-align:center;margin:0 auto;border-left : 0px solid black; border-right : 1px solid 999999; padding:0 18px;\"><div style=\"font-size:11px; margin-top: 10px\">Export</div><div style=\"font-size:16px;font-weight:bold\"><img src=\"../icons/download.png\" id=\"Export\" style=\"zoom: .8\"></div></div></div><div style=\"float:left;width:25%;\"><div style=\"margin: 0 auto;display: table;text-align: center;padding-left: 0px;padding-top: 5px;\"><div id=\"ad\"/></div></div>";
-    //if($(".content").hasClass("border"))$(".content").removeClass("border");
 	$('.header').html(HeaderHtml);
     $('.content').html(ContentHtml);
     $('.info').html(InfoHtml);
-    $('.footer').html(footerHtml);
+    $('#WordCloudFooter').hide();
+    $('#BestSellersRankingFooter').show();
+    $('#NoDataFooter').hide();
+
     LoadAdvertisementBanner();
 
     $('#data-body').css("overflow-y" , "hidden");
@@ -830,10 +828,8 @@ function UpdateTable(obj)
 	var linkTitleWord = document.getElementById('TitleWordCloud');
     // onClick's logic below:
     linkTitleWord.addEventListener('click', function() {
-        //alert("aaaaaaaa");
         WordsInfoUpdate();
         bIsSellWin = false;
-
     });
 
     var BestSellerLink = document.getElementById('BestSellerLink');
@@ -847,8 +843,6 @@ function UpdateTable(obj)
     var link2 = document.getElementById('refresh');
 
     link2.addEventListener('click', function() {
-        //refresed = true;
-        //frun();
         PageNum = 1;
         chrome.runtime.sendMessage({type: "save-PageNum", PageNum: PageNum});
         SetActivePage(PageNum);
@@ -904,7 +898,7 @@ function frun()
 
     chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
 
-        if (response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
+        if (false && response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
         {
             //chrome.tabs.update(response.ID, {url: "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore"});
             chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
@@ -915,19 +909,9 @@ function frun()
         else
         {   /////////////////////load//////////////////////////
             CurrentPageUrl = response.URL;
-            var mainUrl =  "http://" + CurrentPageUrl.split('/')[2];
-            var paramUrlBestSellers = null;
-            if (mainUrl.indexOf("www.amazon.com")!=-1){
-                paramUrlBestSellers = "154606011";
-                currency = "$";
-            }else if(mainUrl.indexOf("www.amazon.co.uk")!=-1){
-                paramUrlBestSellers = "341689031";
-                currency = "&pound;";
-            }else if(mainUrl.indexOf("www.amazon.de")!=-1){
-                paramUrlBestSellers = "530886031";
-                currency = "&euro;";
-            }
-            chrome.runtime.sendMessage({type: "save-UrlParams", MainUrl: mainUrl, ParamUrlBestSellers:paramUrlBestSellers});
+            SiteParser = GetSiteParser(CurrentPageUrl);
+            chrome.runtime.sendMessage({type: "save-UrlParams", MainUrl: SiteParser.MainUrl, ParamUrlBestSellers: SiteParser.ParamUrlBestSellers});
+            InitRegionSelector();
             LoadInfos();
         }
 
@@ -1007,6 +991,30 @@ function LoadInfos()
 
     if (!refresed)
         setTimeout(AutoAddFunc, 1000);
+}
+
+function InitRegionSelector(){
+    $("#regionSelector").val(SiteParser.Region);
+    $("#regionSelector").change(function() {
+        //if ($("#regionSelector").val() == SiteParser.Region) return;
+        //chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
+            var url;
+            switch ($("#regionSelector").val()){
+                case AmazonComParser.Region:
+                    url = "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore";
+                    break;
+                case AmazonCoUkParser.Region:
+                    url = "http://www.amazon.co.uk/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/341689031/ref=zg_bs_nav_kinc_1_kinc";
+                    break;
+                case AmazonDeParser.Region:
+                    url = "http://www.amazon.de/gp/bestsellers/digital-text/530886031/ref=zg_bs_nav_kinc_1_kinc";
+                    break;
+            }
+
+            chrome.tabs.create({url: url, active:true});
+            //chrome.tabs.update(response.ID, {url: url});
+       // })
+    });
 }
 
 function LoadAdvertisementBanner()

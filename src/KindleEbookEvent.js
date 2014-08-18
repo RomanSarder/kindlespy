@@ -687,11 +687,4 @@ chrome.runtime.onMessage.addListener(
         }
     });
 
-function GetSiteParser(url){
-    if(url.indexOf(AmazonComParser.MainUrl)!=-1)
-        return new AmazonComParser();
-    if(url.indexOf(AmazonCoUkParser.MainUrl)!=-1)
-        return new AmazonCoUkParser();
-    if(url.indexOf(AmazonDeParser.MainUrl)!=-1)
-        return new AmazonDeParser();
-}
+

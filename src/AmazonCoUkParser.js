@@ -4,6 +4,7 @@
 
 function AmazonCoUkParser(){
     this.MainUrl = AmazonCoUkParser.MainUrl;
+    this.Region = AmazonCoUkParser.Region;
     this.ParamUrlBestSellers = "154606011";
     this.AmazonBestSellersPattern = "Amazon Bestsellers Rank";
     this.AreYouAnAuthorPattern = "Are You an Author";
@@ -13,6 +14,7 @@ function AmazonCoUkParser(){
 }
 
 AmazonCoUkParser.MainUrl = "http://www.amazon.co.uk";
+AmazonCoUkParser.Region = "UK";
 
 AmazonCoUkParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');

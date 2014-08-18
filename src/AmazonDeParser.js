@@ -4,6 +4,7 @@
 
 function AmazonDeParser(){
     this.MainUrl = AmazonDeParser.MainUrl;
+    this.Region = AmazonDeParser.Region;
     this.ParamUrlBestSellers = "530886031";
     this.AmazonBestSellersPattern = "Amazon Bestseller-Rang";
     this.AreYouAnAuthorPattern = "Sind Sie ein Autor";
@@ -13,6 +14,7 @@ function AmazonDeParser(){
 }
 
 AmazonDeParser.MainUrl = "http://www.amazon.de";
+AmazonDeParser.Region = "DE";
 
 AmazonDeParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');

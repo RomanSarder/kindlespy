@@ -4,6 +4,7 @@
 
 function AmazonComParser(){
     this.MainUrl = AmazonComParser.MainUrl;
+    this.Region = AmazonComParser.Region;
     this.ParamUrlBestSellers = "341689031";
     this.AmazonBestSellersPattern = "Amazon Best Sellers Rank";
     this.AreYouAnAuthorPattern = "Are You an Author";
@@ -13,6 +14,7 @@ function AmazonComParser(){
 }
 
 AmazonComParser.MainUrl = "http://www.amazon.com";
+AmazonComParser.Region = "USA";
 
 AmazonComParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", '>', '<');
