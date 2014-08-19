@@ -542,9 +542,9 @@ function ExportSellResult()
             x[index + 1][0] = (index + 1).toString();
             x[index + 1][1] = obj[index].Title;
             x[index + 1][2] = obj[index].Author;
-            x[index + 1][3] = obj[index].Price;
+            x[index + 1][3] = obj[index].Price.replace(SiteParser.CurrencySign, SiteParser.CurrencySignForExport);
             x[index + 1][4] = addCommas(obj[index].EstSales);
-            x[index + 1][5] = SiteParser.CurrencySign+ " " + addCommas(Math.round(obj[index].SalesRecv));
+            x[index + 1][5] = SiteParser.CurrencySignForExport + " " + addCommas(Math.round(obj[index].SalesRecv));
             x[index + 1][6] = obj[index].Reviews;
             x[index + 1][7] = obj[index].SalesRank;
 			x[index + 1][8] = obj[index].PrintLength;
@@ -552,7 +552,7 @@ function ExportSellResult()
         }
     }
 
-    var csvContent = "";
+    var csvContent = "\uFEFF";
     x.forEach(function(infoArray, index){
         if (index <= obj.length)
         {

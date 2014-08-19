@@ -9,6 +9,7 @@ function AmazonComParser(){
     this.AmazonBestSellersPattern = "Amazon Best Sellers Rank";
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.CurrencySign = "$";
+    this.CurrencySignForExport = "$";
     this.ThousandSeparator = ",";
     this.SearchResultsNumber = 16;
     this.BestSellersUrl = "Best-Sellers-Kindle-Store";
