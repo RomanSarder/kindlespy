@@ -9,6 +9,7 @@ function AmazonDeParser(){
     this.AmazonBestSellersPattern = "Amazon Bestseller-Rang";
     this.AreYouAnAuthorPattern = "Sind Sie ein Autor";
     this.CurrencySign = "&euro;";
+    this.ThousandSeparator = ".";
     this.SearchResultsNumber = 48;
     this.BestSellersUrl = "gp/bestsellers";
     this.EstSalesScale = [

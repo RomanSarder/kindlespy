@@ -523,7 +523,7 @@ function GetEstSale(salesRank)
     if (typeof salesRank === "undefined")
         return 1;
 
-    var sale = salesRank.replace(",", "");
+    var sale = salesRank.replace(SiteParser.ThousandSeparator, "");
 
     for (var i = 0; i < data.length; i++)
     {

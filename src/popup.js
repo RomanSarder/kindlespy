@@ -463,14 +463,14 @@ function InsertDatas(PageNumber)
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            averageSalesRank += parseInt(obj[i].SalesRank.replace(",", "").trim());
+            averageSalesRank += parseInt(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim());
             averageSalesRecv += parseInt(obj[i].SalesRecv);
             if (price.indexOf("Free") >= 0)
                 averagePrice = 0;
             else
                 averagePrice += parseFloat(price.replace(/[^0-9\.]/g, ''));
 
-            averageReview += parseInt(review.replace(",", "").trim());
+            averageReview += parseInt(review.replace(SiteParser.ThousandSeparator, "").trim());
             nTotalCnt ++;
 
             if (category == "")

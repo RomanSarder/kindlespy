@@ -9,6 +9,7 @@ function AmazonCoUkParser(){
     this.AmazonBestSellersPattern = "Amazon Bestsellers Rank";
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.CurrencySign = "&pound;";
+    this.ThousandSeparator = ",";
     this.SearchResultsNumber = 48;
     this.BestSellersUrl = "Best-Sellers-Kindle-Store";
     this.EstSalesScale = [
