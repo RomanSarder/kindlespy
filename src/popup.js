@@ -898,7 +898,7 @@ function frun()
 
     chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
 
-        if (false && response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
+        if (response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
         {
             //chrome.tabs.update(response.ID, {url: "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore"});
             chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
