@@ -73,12 +73,7 @@ function AutoAddFunc()
                     }
                 }
             }
-            else
-            {
-            }
         }
-
-
 
         obj.sort(compare);
 
@@ -95,7 +90,6 @@ function AutoAddFunc()
 	            else if (obj.length > 0)
 					InsertDatas(0);
 			}
-
         }
     });
 
@@ -154,15 +148,10 @@ function ExportWordCloudResult()
 
     var nArrayIndex = 1;
     for(var index = clouds.length-1; index >= 0 ; index --) {
-    //for(var index = 0; index < clouds.length ; index ++) {
-
-        {
-            x[nArrayIndex][0] = clouds[index].Word;
-            x[nArrayIndex][1] = clouds[index].Len.toString();
-            nArrayIndex++;
-        }
+        x[nArrayIndex][0] = clouds[index].Word;
+        x[nArrayIndex][1] = clouds[index].Len.toString();
+        nArrayIndex++;
     }
-
 
     var csvContent = "data:text/csv;charset=utf-8,";
     x.forEach(function(infoArray, index){
@@ -219,7 +208,6 @@ function WordsInfoUpdate()
         InnerTexts += xPathRes.snapshotItem (i).innerText + " ";
     }
 
-
     InnerTexts = InnerTexts.toLowerCase();
 
     InnerTexts = InnerTexts.replace(/ the /g, ' ');
@@ -255,8 +243,6 @@ function WordsInfoUpdate()
     InnerTexts = InnerTexts.replace(/\//g, ' ');
     InnerTexts = InnerTexts.replace(/!/g, ' ');
 
-
-
     var words = InnerTexts.split(" ");
 
     while(clouds.length > 0) {
@@ -265,13 +251,10 @@ function WordsInfoUpdate()
 
     for (var i = 0; i < words.length; i++)
     {
-
         if ((typeof words[i] === "undefined") || (words[i].length < 1))
             continue;
 
-
         var found = false;
-
         for(var j = 0; j < clouds.length; j++) {
             if (clouds[j].Word == words[i]) {
                 found = true;
@@ -305,7 +288,6 @@ function WordsInfoUpdate()
     var nlevelIndex = 0;
     for (var i = clouds.length - 1; i >= 0; i--)
     {
-
         var found = false;
         for(var j = 0; j < clouds.length; j++) {
             if (clouds[j].Len == level[i]) {
@@ -321,18 +303,15 @@ function WordsInfoUpdate()
                 level[nlevelIndex] = clouds[i].Len;
                 nlevelIndex++;
             }
-
         }
 
         if (nlevelIndex >= 6)
             break;
     }
 
-
     var ColudLevel = 1;
     var contentHtml = "";
     nCnt = 0;
-
 
     var ShuffleArray = [];
 
@@ -354,9 +333,7 @@ function WordsInfoUpdate()
                 ShuffleArray.push({Level:6, Word:clouds[i].Word, Len:clouds[i].Len});
             else
                 ShuffleArray.push({Level:ColudLevel, Word:clouds[i].Word, Len:clouds[i].Len});
-
         }
-
 
         if (nCnt >= 50)
             break;
@@ -365,7 +342,6 @@ function WordsInfoUpdate()
     }
 
     ShuffleArray = shuffle(ShuffleArray);
-
 
     for (var i = 0; i < ShuffleArray.length; i++)
     {
@@ -422,59 +398,46 @@ function WordsInfoUpdate()
         }
     });
 
-
-
     $("input[name='checkbox']").click(function() {
         if($("input[name='checkbox']").prop('checked'))
         {
             setTimeout(changeSwitchColor.bind(null, "#009900"), 300);
             chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: true}, function(response){
             });
-
         }
         else
         {
             setTimeout(changeSwitchColor.bind(null, "#ff0000"), 300);
             chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: false}, function(response){
             });
-
         }
     });
 
     var link4 = document.getElementById('Export');
-
     link4.addEventListener('click', function() {
         ExportWordCloudResult();
     });
 }
 
-
 function InsertDatas(PageNumber)
 {
-
     var category = "";
     var categoryKind = "";
     var averageSalesRank = 0;
     var averageSalesRecv = 0;
     var averagePrice = 0;
     var averageReview = 0;
-
     var html = "";
-
     var nTotalCnt = 0;
-
     var cellCnt = 0;
-
 
     for(var i = obj.length - 1; i >= 0 ; i --)
     {
         if (typeof obj[i].SalesRank === "undefined" || obj[i].SalesRank.length < 1)
         {
-
             obj.splice(i, 1);
             continue;
         }
-
 
         if (typeof obj[i].Title === "undefined" || obj[i].Title.length < 1)
         {
@@ -483,9 +446,7 @@ function InsertDatas(PageNumber)
         }
     }
 
-
     for(var i = 0; i < obj.length; i ++) {
-
         if (Math.floor(i / 20) <= PageNumber)
         {
             html += "<tr>" +
@@ -495,28 +456,22 @@ function InsertDatas(PageNumber)
                 "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
                 "<td style='width:60px;' align='right'>" + addCommas(obj[i].EstSales) +"</td>" +
                 "<td style='width:80px;'><div style='float:left'> "+ SiteParser.CurrencySign +" </div> <div style='float:right'>"+ addCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
-
                 "<td style='width:50px;' align='right'>"+ obj[i].Reviews +"</td>" +
                 "<td style='width:80px;padding-right : 10px;' align='right'>"+ obj[i].SalesRank +"</td>"+
                 "</tr>";
 
-
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            {
-                averageSalesRank += parseInt(obj[i].SalesRank.replace(",", "").trim());
-                averageSalesRecv += parseInt(obj[i].SalesRecv);
-                if (price.indexOf("Free") >= 0)
-                    averagePrice = 0;
-                else
-                    averagePrice += parseFloat(price.replace(/[^0-9\.]/g, ''));
+            averageSalesRank += parseInt(obj[i].SalesRank.replace(",", "").trim());
+            averageSalesRecv += parseInt(obj[i].SalesRecv);
+            if (price.indexOf("Free") >= 0)
+                averagePrice = 0;
+            else
+                averagePrice += parseFloat(price.replace(/[^0-9\.]/g, ''));
 
-                //if(typeof review !== "undefined")
-                averageReview += parseInt(review.replace(",", "").trim());
-
-                nTotalCnt ++;
-            }
+            averageReview += parseInt(review.replace(",", "").trim());
+            nTotalCnt ++;
 
             if (category == "")
             {
@@ -526,7 +481,6 @@ function InsertDatas(PageNumber)
             }
         }
     }
-
 
     if (bIsSellWin && PageNumber * 20 >= 20)
     {
@@ -547,11 +501,7 @@ function InsertDatas(PageNumber)
         $('#PullResult').html("Pull Results " + (min + 20) + "-" + (max + 20));
     }
 
-
-
     $("table[name='data']").find("tbody").html(html);
-
-    //$(".data").tablePagination();
 
     if (categoryKind.indexOf("Seller") >= 0)
         $("#CategoryKind").html("Best Sellers in");
@@ -562,20 +512,15 @@ function InsertDatas(PageNumber)
 
     $("#title").html(category + ":");
     $('#result2').html(addCommas(Math.floor(averageSalesRank / nTotalCnt)));
-    //$('#result2').html("aaaaaaaaaaa");
-
     $('#result3').html(SiteParser.CurrencySign + " " + addCommas(Math.floor(averageSalesRecv / nTotalCnt)));
     $('#result4').html(SiteParser.CurrencySign + " " +  addCommas((averagePrice/nTotalCnt).toFixed(2)));
     $('#result5').html(addCommas(Math.floor(averageReview / nTotalCnt)));
     $('#totalReSalesRecv').html(SiteParser.CurrencySign + " " + addCommas(averageSalesRecv));/**/
-
-
 }
 
 function ExportSellResult()
 {
     var x = new Array(PageNum * 20 + 1);
-
     for (var i = 0; i < PageNum * 20 + 1; i++) {
         x[i] = new Array(7);
     }
@@ -592,7 +537,6 @@ function ExportSellResult()
 	x[0][9] = "Book URL";
 
     for(var index = 0; index < obj.length; index ++) {
-
         if (Math.floor(index / 20) <= (PageNum - 1))
         {
             x[index + 1][0] = (index + 1).toString();
@@ -604,12 +548,10 @@ function ExportSellResult()
             x[index + 1][6] = obj[index].Reviews;
             x[index + 1][7] = obj[index].SalesRank;
 			x[index + 1][8] = obj[index].PrintLength;
-			//x[index + 1][8] =  "=HYPERLINK(" + obj[index].Url + ")";
 			x[index + 1][9] = obj[index].Url;
         }
     }
 
-    //var csvContent = "data:text/csv;charset=utf-8,";
     var csvContent = "";
     x.forEach(function(infoArray, index){
         if (index <= obj.length)
@@ -645,10 +587,6 @@ function ExportSellResult()
 
     var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
     var url = URL.createObjectURL(blob);
-
-    //var encodedUri = encodeURI(csvContent);
-    /*window.open(encodedUri);*/
-
     var today = new Date();
     var dd = today.getDate();
     var mm = today.getMonth()+1;
@@ -657,7 +595,6 @@ function ExportSellResult()
     link.setAttribute("href", url);
     link.setAttribute("download", "bs-"+Category+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
     link.click();
-
 }
 
 function addCommas(nStr)
@@ -672,6 +609,7 @@ function addCommas(nStr)
     }
     return x1 + x2;
 }
+
 function LoadData(obj){
     if (typeof obj === undefined || obj.length < 1)
     {
@@ -707,7 +645,6 @@ function UpdateTable(obj)
         $('.content').css("height" , "340px");
         $('.content').css("display" , "block");
         $('.content').css("max-height" , "340px");
-        //$('.content').css("min-height" , "340px");
         $('.content').css("margin-left" , "0px");
         $('.content').css("margin-top" , "0px");
         $('.content').css("margin:" , "0 auto");
@@ -728,7 +665,6 @@ function UpdateTable(obj)
             }
         });
 
-
         $("input[name='checkbox']").click(function() {
             if($("input[name='checkbox']").prop('checked'))
             {
@@ -744,7 +680,6 @@ function UpdateTable(obj)
             }
         });
 
-
         var link2 = document.getElementById('ClickHere');
         link2.addEventListener('click', function() {
             chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
@@ -755,7 +690,6 @@ function UpdateTable(obj)
         });
 
 		var link5 = document.getElementById('refresh');
-
 		link5.addEventListener('click', function() {
 			frun();
 		});
@@ -766,7 +700,6 @@ function UpdateTable(obj)
 
     IsErrorWindow = false;
 
-    //var ContentHtml = "<table class=\"data\" name=\"data\"><thead><th style=\"text-align:right;padding-right: 4px;\">#</th><th>Kindle Book Title</th><th>Price</th><th>Est.Sales</th><th>Sales Rev.</th><th>Reviews</th><th>Sales Rank</th><th style=\"width:10px\">&nbsp;</th></thead><tbody></tbody></table>";
 	var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a></div>";
 	var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:205px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:20px;\">Page No(s)</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">Price</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Est. Sales</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Sales Rev.</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" >Sales Rank</label>"
@@ -809,7 +742,6 @@ function UpdateTable(obj)
         }
     });
 
-
     $("input[name='checkbox']").click(function() {
         if($("input[name='checkbox']").prop('checked'))
         {
@@ -826,14 +758,12 @@ function UpdateTable(obj)
     });
 
 	var linkTitleWord = document.getElementById('TitleWordCloud');
-    // onClick's logic below:
     linkTitleWord.addEventListener('click', function() {
         WordsInfoUpdate();
         bIsSellWin = false;
     });
 
     var BestSellerLink = document.getElementById('BestSellerLink');
-    // onClick's logic below:
     BestSellerLink.addEventListener('click', function() {
         $('#data-body').css("overflow-y" , "auto");
         bIsSellWin = true;
@@ -850,38 +780,34 @@ function UpdateTable(obj)
     });
 
     var link3 = document.getElementById('PullResult');
-
     link3.addEventListener('click', function(){
         if(PageNum>1){
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                 chrome.tabs.sendMessage(tabs[0].id, {page: PageNum}, function(response) {
                 });
             });
-
         }
 
         PageNum++;
         chrome.runtime.sendMessage({type: "save-PageNum", PageNum: PageNum});
-
         SetActivePage(PageNum);
     });
 
     var link4 = document.getElementById('Export');
-
     link4.addEventListener('click', function() {
         ExportSellResult();
     });
-   $('.sort-column').each(function( index ){
-       $(this).click(function() {
-           newSortColumn = $(this).attr('id');
-           currentSortDirection *= -1;
+    $('.sort-column').each(function( index ){
+        $(this).click(function() {
+            var newSortColumn = $(this).attr('id');
+            currentSortDirection *= -1;
 
-           if(currentSortColumn != newSortColumn)
-               currentSortDirection = 1;
+            if(currentSortColumn != newSortColumn)
+                currentSortDirection = 1;
 
-           currentSortColumn = newSortColumn;
-       });
-   })
+            currentSortColumn = newSortColumn;
+        });
+    })
 
     $('#TitleWordCloud').text("Titles: Word Cloud (20)");
     InsertDatas(0);
@@ -897,15 +823,12 @@ function frun()
 {
 
     chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
-
         if (response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
         {
-            //chrome.tabs.update(response.ID, {url: "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore"});
             chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
             window.close();
             return;
         }
-
         else
         {   /////////////////////load//////////////////////////
             CurrentPageUrl = response.URL;
@@ -914,7 +837,6 @@ function frun()
             InitRegionSelector();
             LoadInfos();
         }
-
     });
 }
 
@@ -950,13 +872,11 @@ function LoadInfos()
         settings = response.settings;
 
         var settingLen = settings.Book.length;
-
         while(obj.length > 0) {
             obj.pop();
         }
 
         PageNum = settings.PageNum;
-
         for (var i = 0; i < settingLen; i++)
         {
             if (settings.Book[i].ParentUrl === currentUrl)
@@ -978,11 +898,7 @@ function LoadInfos()
                     }
                 }
             }
-            else
-            {
-            }
         }
-
 
         obj.sort(compare);
         LoadData(obj);
@@ -996,24 +912,20 @@ function LoadInfos()
 function InitRegionSelector(){
     $("#regionSelector").val(SiteParser.Region);
     $("#regionSelector").change(function() {
-        //if ($("#regionSelector").val() == SiteParser.Region) return;
-        //chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
-            var url;
-            switch ($("#regionSelector").val()){
-                case AmazonComParser.Region:
-                    url = "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore";
-                    break;
-                case AmazonCoUkParser.Region:
-                    url = "http://www.amazon.co.uk/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/341689031/ref=zg_bs_nav_kinc_1_kinc";
-                    break;
-                case AmazonDeParser.Region:
-                    url = "http://www.amazon.de/gp/bestsellers/digital-text/530886031/ref=zg_bs_nav_kinc_1_kinc";
-                    break;
-            }
+        var url;
+        switch ($("#regionSelector").val()){
+            case AmazonComParser.Region:
+                url = "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore";
+                break;
+            case AmazonCoUkParser.Region:
+                url = "http://www.amazon.co.uk/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/341689031/ref=zg_bs_nav_kinc_1_kinc";
+                break;
+            case AmazonDeParser.Region:
+                url = "http://www.amazon.de/gp/bestsellers/digital-text/530886031/ref=zg_bs_nav_kinc_1_kinc";
+                break;
+        }
 
-            chrome.tabs.create({url: url, active:true});
-            //chrome.tabs.update(response.ID, {url: url});
-       // })
+        chrome.tabs.create({url: url, active:true});
     });
 }
 
