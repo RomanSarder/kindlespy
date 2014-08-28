@@ -71,7 +71,9 @@ AmazonComParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow
 }
 
 AmazonComParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
-    return kindleEditionRow.find(".toeOurPrice > a:first");
+    var priceTag = kindleEditionRow.find(".toeOurPrice > a:first");
+    if (priceTag.length > 0) return priceTag;
+    return kindleEditionRow.find(".toeOurPriceWithRent > a:first");
 }
 
 AmazonComParser.prototype.GetReviewsCountFromResult = function(resultItem) {
