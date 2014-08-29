@@ -610,7 +610,59 @@ function addCommas(nStr)
     return x1 + x2;
 }
 
-function LoadData(obj){
+function SetupClickListeners(){
+    var linkTitleWord = document.getElementById('TitleWordCloud');
+    linkTitleWord.addEventListener('click', function() {
+        WordsInfoUpdate();
+        bIsSellWin = false;
+    });
+
+    var BestSellerLink = document.getElementById('BestSellerLink');
+    BestSellerLink.addEventListener('click', function() {
+        $('#data-body').css("overflow-y" , "auto");
+        bIsSellWin = true;
+        frun();
+    });
+
+    var link2 = document.getElementById('refresh');
+
+    link2.addEventListener('click', function() {
+        PageNum = 1;
+        chrome.runtime.sendMessage({type: "save-PageNum", PageNum: PageNum});
+        SetActivePage(PageNum);
+        location.reload();
+    });
+
+    var link4 = document.getElementById('Export');
+    link4.addEventListener('click', function() {
+        ExportSellResult();
+    });
+}
+
+var isStaticLinkInitialized = false;
+function SetupStaticClickListeners() {
+    if (isStaticLinkInitialized) return;
+
+    var link3 = document.getElementById('PullResult');
+    link3.addEventListener('click', function () {
+        if (PageNum > 1) {
+            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, { page: PageNum }, function (response) {
+                });
+            });
+        }
+
+        PageNum++;
+        chrome.runtime.sendMessage({ type: "save-PageNum", PageNum: PageNum });
+        SetActivePage(PageNum);
+    });
+
+    isStaticLinkInitialized = true;
+}
+
+function LoadData(obj) {
+    SetupStaticClickListeners();
+
     if (typeof obj === undefined || obj.length < 1)
     {
         $('.header').html("");
@@ -757,46 +809,8 @@ function UpdateTable(obj)
         }
     });
 
-	var linkTitleWord = document.getElementById('TitleWordCloud');
-    linkTitleWord.addEventListener('click', function() {
-        WordsInfoUpdate();
-        bIsSellWin = false;
-    });
+    SetupClickListeners();
 
-    var BestSellerLink = document.getElementById('BestSellerLink');
-    BestSellerLink.addEventListener('click', function() {
-        $('#data-body').css("overflow-y" , "auto");
-        bIsSellWin = true;
-        frun();
-    });
-
-    var link2 = document.getElementById('refresh');
-
-    link2.addEventListener('click', function() {
-        PageNum = 1;
-        chrome.runtime.sendMessage({type: "save-PageNum", PageNum: PageNum});
-        SetActivePage(PageNum);
-        location.reload();
-    });
-
-    var link3 = document.getElementById('PullResult');
-    link3.addEventListener('click', function(){
-        if(PageNum>1){
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {page: PageNum}, function(response) {
-                });
-            });
-        }
-
-        PageNum++;
-        chrome.runtime.sendMessage({type: "save-PageNum", PageNum: PageNum});
-        SetActivePage(PageNum);
-    });
-
-    var link4 = document.getElementById('Export');
-    link4.addEventListener('click', function() {
-        ExportSellResult();
-    });
     $('.sort-column').each(function( index ){
         $(this).click(function() {
             var newSortColumn = $(this).attr('id');
