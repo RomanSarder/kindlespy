@@ -60,7 +60,7 @@ function AutoAddFunc()
                 {
                     if (settings.Book[i].Price.indexOf("Free") >= 0)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author };
+                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication };
                         obj.push(settingTmp);
                     }
                 }
@@ -68,7 +68,7 @@ function AutoAddFunc()
                 {
                     if (settings.Book[i].Price.indexOf("Free") < 0)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author};
+                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication };
                         obj.push(settingTmp);
                     }
                 }
@@ -522,19 +522,20 @@ function ExportSellResult()
 {
     var x = new Array(PageNum * 20 + 1);
     for (var i = 0; i < PageNum * 20 + 1; i++) {
-        x[i] = new Array(7);
+        x[i] = new Array(11);
     }
 
     x[0][0] = "#";
     x[0][1] = "Kindle Book Title";
     x[0][2] = "Author";
-    x[0][3] = "Price";
-    x[0][4] = "Est. Sales";
-    x[0][5] = "Sales Rev.";
-    x[0][6] = "Reviews";
-    x[0][7] = "Sales Rank";
-	x[0][8] = "Page No(s)";
-	x[0][9] = "Book URL";
+    x[0][3] = "Date of publication";
+    x[0][4] = "Price";
+    x[0][5] = "Est. Sales";
+    x[0][6] = "Sales Rev.";
+    x[0][7] = "Reviews";
+    x[0][8] = "Sales Rank";
+	x[0][9] = "Page No(s)";
+	x[0][10] = "Book URL";
 
     for(var index = 0; index < obj.length; index ++) {
         if (Math.floor(index / 20) <= (PageNum - 1))
@@ -542,13 +543,14 @@ function ExportSellResult()
             x[index + 1][0] = (index + 1).toString();
             x[index + 1][1] = obj[index].Title;
             x[index + 1][2] = obj[index].Author;
-            x[index + 1][3] = obj[index].Price.replace(SiteParser.CurrencySign, SiteParser.CurrencySignForExport);
-            x[index + 1][4] = addCommas(obj[index].EstSales);
-            x[index + 1][5] = SiteParser.CurrencySignForExport + " " + addCommas(Math.round(obj[index].SalesRecv));
-            x[index + 1][6] = obj[index].Reviews;
-            x[index + 1][7] = obj[index].SalesRank;
-			x[index + 1][8] = obj[index].PrintLength;
-			x[index + 1][9] = obj[index].Url;
+            x[index + 1][3] = obj[index].DateOfPublication;
+            x[index + 1][4] = obj[index].Price.replace(SiteParser.CurrencySign, SiteParser.CurrencySignForExport);
+            x[index + 1][5] = addCommas(obj[index].EstSales);
+            x[index + 1][6] = SiteParser.CurrencySignForExport + " " + addCommas(Math.round(obj[index].SalesRecv));
+            x[index + 1][7] = obj[index].Reviews;
+            x[index + 1][8] = obj[index].SalesRank;
+			x[index + 1][9] = obj[index].PrintLength;
+			x[index + 1][10] = obj[index].Url;
         }
     }
 
@@ -576,7 +578,7 @@ function ExportSellResult()
                     fieldValue = fieldValue.replace("\n", "");
                 }
 
-				if(i == 9 && index > 0)
+				if(i == 10 && index > 0)
 					fieldValue =  "=HYPERLINK(\"" + fieldValue + "\")";
                 dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
             }
@@ -899,7 +901,7 @@ function LoadInfos()
                 {
                     if (settings.Book[i].Price.indexOf("Free") >= 0)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author};
+                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication};
                         obj.push(settingTmp);
                     }
                 }
@@ -907,7 +909,7 @@ function LoadInfos()
                 {
                     if (settings.Book[i].Price.indexOf("Free") < 0)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author};
+                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication};
                         obj.push(settingTmp);
                     }
                 }

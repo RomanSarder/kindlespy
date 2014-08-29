@@ -516,6 +516,24 @@ function GetAuthor(responseText)
     return author;
 }
 
+function GetDateOfPublication(responseText)
+{
+    var pubdate = $(responseText).find('#pubdate').val();
+    var dateOfPublication = JSON.parse($.ajax({
+        url: "/gp/product/features/ebook-synopsis/formatDate.html",
+        data: { datetime: pubdate },
+        dataType: "json",
+        async: false
+    }).responseText).value.toString();
+
+    if(dateOfPublication != null) return dateOfPublication;
+
+    var publisherElement = $(responseText).find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
+    dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
+
+    return dateOfPublication;
+}
+
 function GetEstSale(salesRank)
 {
     data = SiteParser.EstSalesScale;
@@ -576,6 +594,7 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
         var entrySalesRecv = GetSalesRecv(entryEstSale, realPrice);
         var entryPrintLength = GetPrintLength(responseText);
         var entryAuthor = GetAuthor(responseText);
+        var entryDateOfPublication = GetDateOfPublication(responseText);
 
         if(typeof reviews === "undefined") {
             var rl_reviews = $(responseText).find("#acr .acrCount a:first");
@@ -617,7 +636,7 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
                     NextUrl: nextUrl, Title: entryTitle, Price: SiteParser.FormatPrice(realPrice), EstSales: entryEstSale,
                     SalesRecv: entrySalesRecv, Reviews: reviews, SalesRank: entrySalesRank,
                     Category:category, CategoryKind: categoryKind,
-                    PrintLength:entryPrintLength, Author:entryAuthor});
+                    PrintLength:entryPrintLength, Author:entryAuthor, DateOfPublication:entryDateOfPublication});
             }
         });
     });

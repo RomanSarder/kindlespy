@@ -13,6 +13,7 @@ function AmazonComParser(){
     this.ThousandSeparator = ",";
     this.SearchResultsNumber = 16;
     this.BestSellersUrl = "Best-Sellers-Kindle-Store";
+    this.Publisher = "Publisher";
     this.EstSalesScale = [
         {"min": 1, "max": 5, "EstSale": 120000},
         {"min": 6, "max": 10, "EstSale": 105000},
