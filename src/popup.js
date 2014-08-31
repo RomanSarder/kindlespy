@@ -412,11 +412,6 @@ function WordsInfoUpdate()
             });
         }
     });
-
-    var link4 = document.getElementById('Export');
-    link4.addEventListener('click', function() {
-        ExportWordCloudResult();
-    });
 }
 
 function InsertDatas(PageNumber)
@@ -634,11 +629,6 @@ function SetupClickListeners(){
         SetActivePage(PageNum);
         location.reload();
     });
-
-    var link4 = document.getElementById('Export');
-    link4.addEventListener('click', function() {
-        ExportSellResult();
-    });
 }
 
 var isStaticLinkInitialized = false;
@@ -659,6 +649,12 @@ function SetupStaticClickListeners() {
         SetActivePage(PageNum);
     });
 
+    var link4 = document.getElementById('Export');
+    link4.addEventListener('click', function() {
+		if (bIsSellWin) ExportSellResult();
+		else ExportWordCloudResult();
+    });
+	
     isStaticLinkInitialized = true;
 }
 
