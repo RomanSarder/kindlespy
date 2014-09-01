@@ -524,9 +524,9 @@ function GetDateOfPublication(responseText)
         data: { datetime: pubdate },
         dataType: "json",
         async: false
-    }).responseText).value.toString();
+    }).responseText).value;
 
-    if(dateOfPublication != null) return dateOfPublication;
+    if(dateOfPublication != null) return dateOfPublication.toString();
 
     var publisherElement = $(responseText).find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
     dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
