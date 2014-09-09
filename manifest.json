@@ -1,6 +1,6 @@
 {
     "name": "KindleSpy",
-    "manifest_version": 1,
+    "manifest_version": 2,
     "description": "KindleSpy analyses Amazon Kindle categories & author pages allowing you to find luctrative niche markets with ease.",
     "version": "2.0",
     "icons": {
@@ -51,6 +51,5 @@
             ]
         }
     ],
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "manifest_version": 2
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }
