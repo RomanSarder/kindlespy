@@ -12,6 +12,7 @@ function AmazonDeParser(){
     this.CurrencySignForExport = "\u20AC";
     this.ThousandSeparator = ".";
     this.SearchResultsNumber = 48;
+    this.AuthorResultsNumber = 16;
     this.BestSellersUrl = "gp/bestsellers";
     this.Publisher = "Verlag";
     this.EstSalesScale = [

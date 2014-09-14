@@ -2,7 +2,6 @@
  * Created by Jang on 4/28/14.
  */
 
-var bDebug = false;
 var ParentUrl;
 var SiteParser;
 
@@ -227,7 +226,7 @@ function GetAuthorCategory(responseText)
     return ParseString(responseText, 'EntityName', '<b>', '</b>');
 }
 
-function ParseAuthorPage(startIndex, responseText, parentUrl)
+function ParseAuthorPage(startIndex, endIndex, responseText, parentUrl)
 {
     var pattern = 'id="result_';
     var str = responseText;
@@ -246,20 +245,27 @@ function ParseAuthorPage(startIndex, responseText, parentUrl)
     var bIsExist = [];
 
     $(responseText).find(".results").children().each(function() {
-	    var krow = SiteParser.GetKindleEditionRow($(this));
-	    if(typeof krow == "undefined") return;
-	    No[index] = parseInt(index) + 1 + parseInt(startIndex);
-        url[index] = SiteParser.GetUrlFromKindleEditionRow(krow);
-	    review[index] = SiteParser.GetReviewsCountFromResult($(this));
-	    if(!review[index]) review[index] = 0;
-	    var kprice = SiteParser.GetPriceFromKindleEditionRow(krow);
-	    if(kprice.length<1) {
-		    kprice = $(krow).find(".toePrice a#buyPrice:first");
-	    }
-	    price[index] = $(kprice).text().trim();
-	    url[index] = url[index].replace("&amp;", "&");
-	    url[index] = url[index].replace(" ", "%20");
-	    index++;
+        if(this.id == "result_"+(startIndex+index)) {
+            if(startIndex + index>=endIndex) return;
+            var krow = SiteParser.GetKindleEditionRow($(this));
+            No[index] = parseInt(index) + 1 + parseInt(startIndex);
+            if(typeof krow == "undefined"){
+                index++;
+                return;
+            }
+
+            url[index] = SiteParser.GetUrlFromKindleEditionRow(krow);
+            review[index] = SiteParser.GetReviewsCountFromResult($(this));
+            if(!review[index]) review[index] = 0;
+		    var kprice = SiteParser.GetPriceFromKindleEditionRow(krow);
+		    if(kprice.length<1) {
+			    kprice = $(krow).find(".toePrice a#buyPrice:first");
+	    	}
+	    	price[index] = $(kprice).text().trim();
+            url[index] = url[index].replace("&amp;", "&");
+            url[index] = url[index].replace(" ", "%20");
+            index++;
+        }
     });
     index=0;
 
@@ -290,10 +296,10 @@ function ParseAuthorPage(startIndex, responseText, parentUrl)
     });
 }
 
-function LoadAuthorPage(url, parentUrl)
+function LoadAuthorPage(url, parentUrl, startIndex, endIndex)
 {
     $.get(url, function(responseText){
-        setTimeout(ParseAuthorPage.bind(null, 12, responseText, parentUrl), 1000);
+        setTimeout(ParseAuthorPage.bind(null, startIndex, endIndex, responseText, parentUrl), 1000);
     });
 }
 
@@ -380,21 +386,8 @@ function scrapeAuthorPage(Url){
         {
             chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
 
-            ParseAuthorPage(0, responseText, ParentUrl);
-
-            var NextPageUrl = ParseString(responseText, 'class="pagnLink"', 'href="', '"');
-
-            if (typeof NextPageUrl === "undefined" || NextPageUrl.length < 1)
-                return;
-
-            if (NextPageUrl.indexOf('http') < 0)
-            {
-                NextPageUrl = NextPageUrl.replace("&amp;", "&");
-                NextPageUrl = NextPageUrl.replace(" ", "%20");
-                NextPageUrl = SiteParser.MainUrl + "/" + NextPageUrl;
-            }
-
-            LoadAuthorPage(NextPageUrl.trim(), ParentUrl);
+            LoadAuthorResultPage(1);
+            LoadAuthorResultPage(2, 1000);
         }
     });
 }
@@ -661,11 +654,25 @@ function LoadSearchResultsPage(pageNumber, delay){
         setTimeout(LoadSearchPage.bind(null, (ParentUrl + "&page="+endIndexPage).trim(), ParentUrl, startIndexPage*SiteParser.SearchResultsNumber, endIndex+1, search), delay + 1000);
     }
 }
+function LoadAuthorResultPage(pageNumber, delay){
+    delay = ValueOrDefault(delay, 0);
+    var itemsPerPage = SiteParser.AuthorResultsNumber;
+    var startIndex = (pageNumber-1) * 20;
+    var endIndex = startIndex + 19;
+    var startIndexPage = Math.floor(startIndex/itemsPerPage) + 1;
+    var endIndexPage = Math.floor(endIndex/itemsPerPage) + 1;
 
+    for(var i=startIndexPage;i<=endIndexPage;i++){
+        setTimeout(LoadAuthorPage.bind(null, (ParentUrl + "?page="+i).trim(), ParentUrl, Math.max(startIndex, (i-1)*itemsPerPage), endIndex+1), delay + i*100);
+    }
+}
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         var pageNumber = request.page;
-        if (IsBestSellersPage(ParentUrl)){
+        if(IsAuthorPage()){
+            LoadAuthorResultPage(pageNumber);
+        }
+        else if (IsBestSellersPage(ParentUrl)){
             LoadBestSellersPage(pageNumber);
         }
         else if(IsSearchPage(ParentUrl)){

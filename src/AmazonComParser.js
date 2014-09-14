@@ -12,6 +12,7 @@ function AmazonComParser(){
     this.CurrencySignForExport = "$";
     this.ThousandSeparator = ",";
     this.SearchResultsNumber = 16;
+    this.AuthorResultsNumber = 12;
     this.BestSellersUrl = "Best-Sellers-Kindle-Store";
     this.Publisher = "Publisher";
     this.EstSalesScale = [

@@ -12,6 +12,7 @@ function AmazonCoUkParser(){
     this.CurrencySignForExport = "\u00A3";
     this.ThousandSeparator = ",";
     this.SearchResultsNumber = 48;
+    this.AuthorResultsNumber = 16;
     this.BestSellersUrl = "Best-Sellers-Kindle-Store";
     this.Publisher = "Publisher";
     this.EstSalesScale = [
