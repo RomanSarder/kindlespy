@@ -226,31 +226,24 @@ function GetAuthorCategory(responseText)
     return ParseString(responseText, 'EntityName', '<b>', '</b>');
 }
 
-function ParseAuthorPage(startIndex, endIndex, responseText, parentUrl)
+function ParseAuthorPage(startIndex, maxResults, responseText, parentUrl)
 {
-    var pattern = 'id="result_';
-    var str = responseText;
-    var pos = str.indexOf(pattern);
-
     var No = [];
     var url = [];
     var price = [];
     var review = [];
     var category;
 
-    var strResult;
-    var nParagraph = 0;
-
+    var counter = 0;
     var index = 0;
-    var bIsExist = [];
 
     $(responseText).find(".results").children().each(function() {
-        if(this.id == "result_"+(startIndex+index)) {
-            if(startIndex + index>=endIndex) return;
+        if(this.id == "result_"+(startIndex+counter)) {
+            if(counter>=maxResults) return;
             var krow = SiteParser.GetKindleEditionRow($(this));
             No[index] = parseInt(index) + 1 + parseInt(startIndex);
             if(typeof krow == "undefined"){
-                index++;
+                counter++;
                 return;
             }
 
@@ -264,14 +257,15 @@ function ParseAuthorPage(startIndex, endIndex, responseText, parentUrl)
 	    	price[index] = $(kprice).text().trim();
             url[index] = url[index].replace("&amp;", "&");
             url[index] = url[index].replace(" ", "%20");
+            counter++;
             index++;
         }
     });
-    index=0;
+    if(counter == 0) return undefined;
 
     category = GetAuthorCategory(responseText).trim();
 
-    if (typeof category === undefined || category.length < 1)
+    if (typeof category === "undefined" || category.length < 1)
     {
         category = ParseString(responseText, 'entityHeader', '>', '<');
         var tmpSplit =category.split("by");
@@ -294,12 +288,14 @@ function ParseAuthorPage(startIndex, endIndex, responseText, parentUrl)
             }
         }
     });
+
+    return index;
 }
 
-function LoadAuthorPage(url, parentUrl, startIndex, endIndex)
+function LoadAuthorPage(url, parentUrl, startIndex, maxResults)
 {
     $.get(url, function(responseText){
-        setTimeout(ParseAuthorPage.bind(null, startIndex, endIndex, responseText, parentUrl), 1000);
+        return ParseAuthorPage.bind(null, startIndex, maxResults, responseText, parentUrl);
     });
 }
 
@@ -654,17 +650,24 @@ function LoadSearchResultsPage(pageNumber, delay){
         setTimeout(LoadSearchPage.bind(null, (ParentUrl + "&page="+endIndexPage).trim(), ParentUrl, startIndexPage*SiteParser.SearchResultsNumber, endIndex+1, search), delay + 1000);
     }
 }
+
+var AuthorPager;
 function LoadAuthorResultPage(pageNumber, delay){
     delay = ValueOrDefault(delay, 0);
     var itemsPerPage = SiteParser.AuthorResultsNumber;
-    var startIndex = (pageNumber-1) * 20;
-    var endIndex = startIndex + 19;
-    var startIndexPage = Math.floor(startIndex/itemsPerPage) + 1;
-    var endIndexPage = Math.floor(endIndex/itemsPerPage) + 1;
 
-    for(var i=startIndexPage;i<=endIndexPage;i++){
-        setTimeout(LoadAuthorPage.bind(null, (ParentUrl + "?page="+i).trim(), ParentUrl, Math.max(startIndex, (i-1)*itemsPerPage), endIndex+1), delay + i*100);
-    }
+    if(AuthorPager === undefined) {
+        AuthorPager = new Pager(itemsPerPage, function (pageIndex, startIndex, maxResults) {
+            var responseText = $.ajax({
+                url: (ParentUrl + "?page=" + pageIndex).trim(),
+                async: false
+            }).responseText;
+
+            return ParseAuthorPage(startIndex, maxResults, responseText, ParentUrl);
+        });
+    };
+
+    setTimeout(AuthorPager.LoadNextPage.bind(AuthorPager), delay);
 }
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {

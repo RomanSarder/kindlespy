@@ -44,6 +44,7 @@
                 "libs/jquery-2.0.3.min.js",
                 "libs/xpathjs.min.js",
                 "src/HelperFunctions.js",
+                "src/Pager.js",
                 "src/AmazonComParser.js",
                 "src/AmazonCoUkParser.js",
                 "src/AmazonDeParser.js",
