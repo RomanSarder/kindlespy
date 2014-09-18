@@ -249,7 +249,7 @@ function ParseAuthorPage(startIndex, maxResults, responseText, parentUrl)
 
             url[index] = SiteParser.GetUrlFromKindleEditionRow(krow);
             review[index] = SiteParser.GetReviewsCountFromResult($(this));
-            if(!review[index]) review[index] = 0;
+            if(!review[index]) review[index] = "0";
 		    var kprice = SiteParser.GetPriceFromKindleEditionRow(krow);
 		    if(kprice.length<1) {
 			    kprice = $(krow).find(".toePrice a#buyPrice:first");
