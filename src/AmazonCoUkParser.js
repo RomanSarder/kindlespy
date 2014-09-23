@@ -11,7 +11,7 @@ function AmazonCoUkParser(){
     this.CurrencySign = "&pound;";
     this.CurrencySignForExport = "\u00A3";
     this.ThousandSeparator = ",";
-    this.SearchResultsNumber = 16;//48
+    this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
     this.BestSellersUrl = "Best-Sellers-Kindle-Store";
     this.Publisher = "Publisher";
