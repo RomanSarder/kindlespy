@@ -640,7 +640,7 @@ function LoadSearchResultsPage(callback){
         });
     };
 
-    setTimeout("SearchResultsPager.LoadNextPage(callback)", 1000);
+    setTimeout(SearchResultsPager.LoadNextPage.bind(SearchResultsPager, callback), 1000);
 }
 
 var AuthorPager;
