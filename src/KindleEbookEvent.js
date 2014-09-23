@@ -292,35 +292,21 @@ function ParseAuthorPage(startIndex, maxResults, responseText, parentUrl)
     return index;
 }
 
-function LoadAuthorPage(url, parentUrl, startIndex, maxResults)
+function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search)
 {
-    $.get(url, function(responseText){
-        return ParseAuthorPage.bind(null, startIndex, maxResults, responseText, parentUrl);
-    });
-}
-
-function ParseSearchPage(startIndex, endIndex, responseText, parentUrl, search)
-{
-    var pattern = 'id="result_';
-    var str = responseText;
-    var pos = str.indexOf(pattern);
-
     var No = [];
     var url = [];
     var price = [];
     var review = [];
     var category=search;
 
-    var strResult;
-    var nParagraph = 0;
-
     var index = 0;
-    var bIsExist = [];
+    var counter = 0;
     var result;
 
     $(responseText).find(".results").each(function() {
 	    while( (result = $(this).find("#result_"+(startIndex+index))).length>0 ) {
-		    if(startIndex + index>=endIndex) break;
+            if(counter>=maxResults) break;
 		    No[index] = startIndex + index + 1;
 		    url[index] = $(result).find(".newaps a:first").attr("href");
 		    if(!url[index]) url[index] = "";
@@ -343,11 +329,10 @@ function ParseSearchPage(startIndex, endIndex, responseText, parentUrl, search)
 		    url[index] = url[index].replace("&amp;", "&");
 		    url[index] = url[index].replace(" ", "%20");
 		    index++;
+            counter++;
 	    }
     });
-
-    if(index<1) return;
-
+    if(counter == 0) return undefined;
 
     if (typeof category === undefined /*|| category.length < 1*/)
     {
@@ -356,7 +341,6 @@ function ParseSearchPage(startIndex, endIndex, responseText, parentUrl, search)
         if (tmpSplit.length > 1)
             category = tmpSplit[1];
     }
-
 
     chrome.runtime.sendMessage({type:"get-settings"}, function(response){
         for (var i = 0; i < url.length; i++)
@@ -368,24 +352,16 @@ function ParseSearchPage(startIndex, endIndex, responseText, parentUrl, search)
                 continue;
 
 	    var purl = location.href;
-    	    purl = purl.replace(/\&page=[0-9]+/, "");	    
+    	    purl = purl.replace(/\&page=[0-9]+/, "");
 
             if (response.settings.PullStatus && parentUrl === purl)
             {
-                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Search"), 500*i); //continue to try other sizes after 0.5 sec
+                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Search"), 1000*i); //continue to try other sizes after 0.5 sec
             }
         }
     });
 
-    return;
-}
-
-
-function LoadSearchPage(url, parentUrl, startIndex, endIndex, search)
-{
-    $.get(url, function(responseText){
-        setTimeout(ParseSearchPage.bind(null, startIndex, endIndex, responseText, parentUrl, search), 1000);
-    });
+    return index;
 }
 
 function scrapeAuthorPage(Url){
@@ -412,12 +388,8 @@ function scrapeSearchPage(Url) {
 
 	chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
 
-	var search = GetParameterByName(Url, "field-keywords");
-
-    $.get(ParentUrl, function(responseText){
-        for (var i = 1; i <= 2; i++) {
-            LoadSearchResultsPage(i, 3000 * i)
-        }
+    LoadSearchResultsPage(function(){
+        LoadSearchResultsPage();
     });
 }
 
@@ -521,6 +493,13 @@ function GetAuthor(responseText)
 function GetDateOfPublication(responseText, callback)
 {
     var pubdate = $(responseText).find('#pubdate').val();
+    if(pubdate === undefined){
+        var publisherElement = $(responseText).find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
+        var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
+
+        callback(dateOfPublication);
+        return;
+    }
 
     $.ajax({
         url: "/gp/product/features/ebook-synopsis/formatDate.html",
@@ -529,11 +508,6 @@ function GetDateOfPublication(responseText, callback)
         success: function (responseJson) {
             var dateOfPublication = responseJson.value;
             if(dateOfPublication != null) callback(dateOfPublication.toString());
-
-            var publisherElement = $(responseText).find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
-            dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
-
-            callback(dateOfPublication);
         }
     });
 }
@@ -652,18 +626,21 @@ function LoadBestSellersPage(pageNumber, delay){
     setTimeout(LoadBestSellersUrl.bind(null, pageUrl, ParentUrl, false), delay);
 }
 
-function LoadSearchResultsPage(pageNumber, delay){
-    delay = ValueOrDefault(delay, 0);
+var SearchResultsPager;
+function LoadSearchResultsPage(callback){
+    var itemsPerPage = SiteParser.SearchResultsNumber;
     var search = GetParameterByName(ParentUrl, "field-keywords");
-    var startIndex = (pageNumber-1) * 20;
-    var endIndex = startIndex + 19;
-    var startIndexPage = Math.floor(startIndex/SiteParser.SearchResultsNumber) + 1;
-    var endIndexPage = Math.floor(endIndex/SiteParser.SearchResultsNumber) + 1;
-    setTimeout(LoadSearchPage.bind(null, (ParentUrl + "&page="+startIndexPage).trim(), ParentUrl, startIndex, endIndex+1, search), delay);
 
-    if(startIndexPage != endIndexPage){
-        setTimeout(LoadSearchPage.bind(null, (ParentUrl + "&page="+endIndexPage).trim(), ParentUrl, startIndexPage*SiteParser.SearchResultsNumber, endIndex+1, search), delay + 1000);
-    }
+    if(SearchResultsPager === undefined) {
+        SearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, ParentUrl){
+            return ParseSearchPage(startFromIndex, maxResults, responseText, ParentUrl, search);
+            //return ParseAuthorPage(startFromIndex, maxResults, responseText, ParentUrl);
+        }, function(url, page){
+            return url + '&page=' + page;
+        });
+    };
+
+    setTimeout("SearchResultsPager.LoadNextPage(callback)", 1000);
 }
 
 var AuthorPager;
@@ -671,7 +648,11 @@ function LoadAuthorResultPage(callback){
     var itemsPerPage = SiteParser.AuthorResultsNumber;
 
     if(AuthorPager === undefined) {
-        AuthorPager = new Pager(itemsPerPage);
+        AuthorPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, ParentUrl){
+            return ParseAuthorPage(startFromIndex, maxResults, responseText, ParentUrl);
+        }, function(url, page){
+            return url + '?page=' + page;
+        });
     };
 
     AuthorPager.LoadNextPage(callback);
@@ -686,7 +667,7 @@ chrome.runtime.onMessage.addListener(
             LoadBestSellersPage(pageNumber);
         }
         else if(IsSearchPage(ParentUrl)){
-            LoadSearchResultsPage(pageNumber);
+            LoadSearchResultsPage();
         }
     });
 

@@ -2,18 +2,20 @@
  * Created by Andrey on 15.09.2014.
  */
 
-function Pager(itemsPerPage){
+function Pager(itemsPerPage, pullItemsFunction, getPageUrlFunction){
     this.itemsInResult = 20;
     this.itemsPerPage = itemsPerPage;
     this.lastPage = 1;
     this.alreadyPulled = 0;
     this.pagesLoaded = 0;
     this.isInProgress = false;
+    this.pullItemsFunction = pullItemsFunction || function(startFromIndex, maxResults, responseText, ParentUrl){};
+    this.getPageUrlFunction = getPageUrlFunction || function(url, page){};
 }
 
 Pager.prototype.LoadNextPage = function(callback){
     if (this.alreadyPulled === undefined) return;
-    if (this.isInProgress) setTimeout(this.LoadNextPage.bind(this, callback), 500);
+    if (this.isInProgress) setTimeout(this.LoadNextPage.bind(this, callback), 1000);
 
     this.isInProgress = true;
 
@@ -21,25 +23,25 @@ Pager.prototype.LoadNextPage = function(callback){
     var totalItemsLoaded = 0;
     var pulledItems;
     var i=this.lastPage;
-    setTimeout(PullOnePage.bind(this), 100);
+    setTimeout(PullOnePage.bind(this), 1000);
 
     function PullOnePage() {
-        $.get((ParentUrl + "?page=" + i).trim(), function (responseText) {
-                    var startFromIndex = (i - 1) * pager.itemsPerPage + pager.alreadyPulled;
-                    var maxResults = pager.itemsInResult - totalItemsLoaded;
-                    pulledItems = ParseAuthorPage(startFromIndex, maxResults, responseText, ParentUrl);
+        $.get(pager.getPageUrlFunction(ParentUrl, i).trim(), function (responseText) {
+            var startFromIndex = (i - 1) * pager.itemsPerPage + pager.alreadyPulled;
+            var maxResults = pager.itemsInResult - totalItemsLoaded;
+            pulledItems = pager.pullItemsFunction(startFromIndex, maxResults, responseText, ParentUrl);
 
-                    if (pulledItems === undefined) {
-                        pager.isInProgress = false;
-                        return;
-                    }
-                    totalItemsLoaded += pulledItems;
-                    pager.alreadyPulled = 0;
-                    i++;
-                    if(totalItemsLoaded<pager.itemsInResult) {
-                        PullOnePage.call(pager);
-                    } else {
-                        pager.pagesLoaded++;
+            if (pulledItems === undefined) {
+                pager.isInProgress = false;
+                return;
+            }
+            totalItemsLoaded += pulledItems;
+            pager.alreadyPulled = 0;
+            i++;
+            if(totalItemsLoaded<pager.itemsInResult) {
+                setTimeout(PullOnePage.bind(pager), 1000);
+            } else {
+                pager.pagesLoaded++;
                 pager.lastPage = i-1;
                 pager.alreadyPulled = pulledItems;
                 pager.isInProgress = false;
