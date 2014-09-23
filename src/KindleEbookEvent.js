@@ -324,8 +324,20 @@ function ParseSearchPage(startIndex, endIndex, responseText, parentUrl, search)
 		    No[index] = startIndex + index + 1;
 		    url[index] = $(result).find(".newaps a:first").attr("href");
 		    if(!url[index]) url[index] = "";
-		    var kprice = $(result).find(".red.bld");
-		    price[index] = $(kprice).length>0? $(kprice).first().text().trim():SiteParser.CurrencySign + "0.00";
+            var kprice = $(result).find(".red.bld");
+
+            price[index] = SiteParser.CurrencySign + "0.00";
+            if($(kprice).next('span.sprKindleUnlimited').length>0 || ( $(kprice).length>0)){
+                $.each(kprice, function( ind, elprice ) {
+                    if($(elprice).next('span.sprKindleUnlimited').length>0) return;
+                    var kindleprice = $(elprice).text().trim();
+                    if(kindleprice!=undefined || kindleprice != null || kindleprice!=''){
+                        price[index] = kindleprice;
+                        return false;
+                    }
+                });
+            }
+
 		    review[index] = undefined; 
 
 		    url[index] = url[index].replace("&amp;", "&");
