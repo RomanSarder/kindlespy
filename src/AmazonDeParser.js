@@ -89,3 +89,6 @@ AmazonDeParser.prototype.ParsePrice = function(price) {
 AmazonDeParser.prototype.FormatPrice = function(price) {
     return this.CurrencySign + price;
 }
+AmazonDeParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
+    callback($(responseText).find('#main-image').attr('rel'));
+}

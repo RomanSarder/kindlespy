@@ -555,6 +555,25 @@ function GetPrintLength(responseText){
 	return parseInt($(responseText).find('#pageCountAvailable span').text()).toString();
 }
 
+function GetGoogleImageSearchUrl(responseText, url, callback){
+    var googleUrl = "https://www.google.com/";
+    if (typeof responseText === "undefined" || responseText.length <= 1){
+        callback(googleUrl);
+        return;
+    }
+    SiteParser.GetGoogleImageSearchUrlRel(responseText, url, function(rel){
+        if (rel == 'undefined' || rel.length<1) callback(googleUrl);
+        callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
+    });
+}
+function GetGoogleSearchUrlByTitleAndAuthor(title, author){
+    var baseUrl = "http://google.com/";
+    if((title=='undefined' || title.length<1) || (author=='undefined' || author.length<1)) return baseUrl;
+    title = title.replace(/ /g, "+");
+    author = author.replace(/ /g, "+");
+    return baseUrl + "?q=" + title + "+" + author + "&oq=" + title + "+" + author + "#safe=off&q="+ title + "+" + author;
+}
+
 function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKind)
 {
     $.get(url, function(responseText){
@@ -572,51 +591,56 @@ function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKi
         var entrySalesRecv = GetSalesRecv(entryEstSale, realPrice);
         var entryPrintLength = GetPrintLength(responseText);
         var entryAuthor = GetAuthor(responseText);
-        GetDateOfPublication(responseText, function(entryDateOfPublication){
-            if(typeof reviews === "undefined") {
-                var rl_reviews = $(responseText).find("#acr .acrCount a:first");
-                reviews = rl_reviews.length? parseInt($(rl_reviews).text()).toString():"0";
-            }
-
-            if (typeof entryTitle === "undefined" || entryTitle === "")
-            {
-                entryTitle = GetAuthorTitle(responseText);
-            }
-
-            if (typeof entryTitle === "undefined")
-                return;
-
-            if (typeof entryPrice === "undefined")
-                entryPrice = "0";
-
-            if (typeof entryEstSale === "undefined")
-                entryPrice = "0";
-
-            if (typeof entrySalesRecv == "undefined")
-                entrySalesRecv = "0";
-
-            if (typeof reviews === "undefined")
-                reviews = "0";
-
-            if (typeof  entrySalesRank === "undefined" || entrySalesRank.length < 1)
-                entrySalesRank = "1";
-
-            if (typeof entryPrintLength === "undefined" || entryPrintLength =='' || entryPrintLength =="NaN")
-                entryPrintLength = "n/a";
-
-            if (typeof entryAuthor === "undefined" || entryAuthor.length < 1)
-                entryAuthor = "n/a";
-
-            chrome.runtime.sendMessage({type:"get-settings"}, function(response){
-                if (response.settings.PullStatus) {
-                    chrome.runtime.sendMessage({type: "save-settings", No: num, URL: entryUrl, ParentURL: entryParentUrl,
-                        NextUrl: nextUrl, Title: entryTitle, Price: SiteParser.FormatPrice(realPrice), EstSales: entryEstSale,
-                        SalesRecv: entrySalesRecv, Reviews: reviews, SalesRank: entrySalesRank,
-                        Category:category, CategoryKind: categoryKind,
-                        PrintLength:entryPrintLength, Author:entryAuthor, DateOfPublication:entryDateOfPublication});
+        var entryGoogleSearchUrl = GetGoogleSearchUrlByTitleAndAuthor(entryTitle, entryAuthor);
+        GetGoogleImageSearchUrl(responseText, url, function(entryGoogleImageSearchUrl){
+            GetDateOfPublication(responseText, function(entryDateOfPublication){
+                if(typeof reviews === "undefined") {
+                    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+                    reviews = rl_reviews.length? parseInt($(rl_reviews).text()).toString():"0";
                 }
+
+                if (typeof entryTitle === "undefined" || entryTitle === "")
+                {
+                    entryTitle = GetAuthorTitle(responseText);
+                }
+
+                if (typeof entryTitle === "undefined")
+                    return;
+
+                if (typeof entryPrice === "undefined")
+                    entryPrice = "0";
+
+                if (typeof entryEstSale === "undefined")
+                    entryPrice = "0";
+
+                if (typeof entrySalesRecv == "undefined")
+                    entrySalesRecv = "0";
+
+                if (typeof reviews === "undefined")
+                    reviews = "0";
+
+                if (typeof  entrySalesRank === "undefined" || entrySalesRank.length < 1)
+                    entrySalesRank = "1";
+
+                if (typeof entryPrintLength === "undefined" || entryPrintLength =='' || entryPrintLength =="NaN")
+                    entryPrintLength = "n/a";
+
+                if (typeof entryAuthor === "undefined" || entryAuthor.length < 1)
+                    entryAuthor = "n/a";
+
+                chrome.runtime.sendMessage({type:"get-settings"}, function(response){
+                    if (response.settings.PullStatus) {
+                        chrome.runtime.sendMessage({type: "save-settings", No: num, URL: entryUrl, ParentURL: entryParentUrl,
+                            NextUrl: nextUrl, Title: entryTitle, Price: SiteParser.FormatPrice(realPrice), EstSales: entryEstSale,
+                            SalesRecv: entrySalesRecv, Reviews: reviews, SalesRank: entrySalesRank,
+                            Category:category, CategoryKind: categoryKind,
+                            PrintLength:entryPrintLength, Author:entryAuthor, DateOfPublication:entryDateOfPublication,
+                            GoogleSearchUrl:entryGoogleSearchUrl, GoogleImageSearchUrl:entryGoogleImageSearchUrl});
+                    }
+                });
             });
         });
+
     });
 }
 

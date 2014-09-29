@@ -89,3 +89,15 @@ AmazonCoUkParser.prototype.ParsePrice = function(price) {
 AmazonCoUkParser.prototype.FormatPrice = function(price) {
     return this.CurrencySign + price;
 }
+AmazonCoUkParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
+    var path = url.split("/");
+    if(path.length > 5)
+         this.GetResponseTextFromAmazonComParser(path[5], function(responseText){
+             callback((responseText!==null)?$(responseText).find('#main-image').attr('rel'):"");
+        });
+    callback("");
+}
+AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCode, callback) {
+    var urlAmazonCom = "http://www.amazon.com/product/dp/" + bookCode;
+    $.get(urlAmazonCom, callback);
+}
