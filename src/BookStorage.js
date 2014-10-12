@@ -103,7 +103,11 @@ BookStorage.prototype.DisableTracking = function(bookUrl) {
  */
 BookStorage.prototype.GetBook = function(bookUrl, callback) {
     this._storage.get('trackingData', function(items) {
-        if(items !== undefined && items.trackingData !== undefined) callback(items.trackingData[bookUrl]);
+        if(items !== undefined && items.trackingData !== undefined) {
+            callback(items.trackingData[bookUrl]);
+            return;
+        }
+
         callback(undefined);
     });
 };
