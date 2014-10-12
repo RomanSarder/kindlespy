@@ -105,3 +105,7 @@ AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCod
     var urlAmazonCom = "http://www.amazon.com/product/dp/" + bookCode;
     $.get(urlAmazonCom, callback);
 };
+
+AmazonCoUkParser.prototype.GetImageUrlSrc = function(responseText) {
+    return $(responseText).find('#prodImage').attr('src');
+};

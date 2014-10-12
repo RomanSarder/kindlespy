@@ -385,60 +385,6 @@ function processWhenDone() {
 	}
 }
 
-function GetTitle(responseText)
-{
-    if (typeof responseText !== "undefined" && responseText.length > 1)
-    {
-        return SiteParser.GetTitle(responseText);
-    }
-}
-
-function GetAuthorTitle(responseText)
-{
-    return ParseString(responseText, 'id="productTitle"', '>', '<');
-}
-
-function GetDateOfPublication(responseText, callback)
-{
-    var pubdate = $(responseText).find('#pubdate').val();
-    if(pubdate === undefined){
-        var publisherElement = $(responseText).find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
-        var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
-
-        callback(dateOfPublication);
-        return;
-    }
-
-    $.ajax({
-        url: "/gp/product/features/ebook-synopsis/formatDate.html",
-        data: { datetime: pubdate },
-        dataType: "json",
-        success: function (responseJson) {
-            var dateOfPublication = responseJson.value;
-            if(dateOfPublication != null) callback(dateOfPublication.toString());
-        }
-    });
-}
-
-function GetGoogleImageSearchUrl(responseText, url, callback){
-    var googleUrl = "https://www.google.com/";
-    if (typeof responseText === "undefined" || responseText.length <= 1){
-        callback(googleUrl);
-        return;
-    }
-    SiteParser.GetGoogleImageSearchUrlRel(responseText, url, function(rel){
-        if (rel == 'undefined' || rel.length<1) callback(googleUrl);
-        callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
-    });
-}
-function GetGoogleSearchUrlByTitleAndAuthor(title, author){
-    var baseUrl = "http://google.com/";
-    if((title=='undefined' || title.length<1) || (author=='undefined' || author.length<1)) return baseUrl;
-    title = title.replace(/ /g, "+");
-    author = author.replace(/ /g, "+");
-    return baseUrl + "?q=" + title + "+" + author + "&oq=" + title + "+" + author + "#safe=off&q="+ title + "+" + author;
-}
-
 function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, reviews, category, categoryKind)
 {
     var parser = new BookPageParser();

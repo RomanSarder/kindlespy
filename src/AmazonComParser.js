@@ -95,3 +95,6 @@ AmazonComParser.prototype.FormatPrice = function(price) {
 AmazonComParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
     callback($(responseText).find('#main-image').attr('rel'));
 };
+AmazonComParser.prototype.GetImageUrlSrc = function(responseText) {
+    return ParseString($(responseText).find('#holderMainImage noscript').text(),"src=","\"", "\" ");
+};

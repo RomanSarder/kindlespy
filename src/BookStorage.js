@@ -59,7 +59,7 @@ BookStorage.prototype.EnableTracking = function(bookUrl) {
                 trackingEnabled: true,
                 title: book.title,
                 author: book.author,
-                image: 'http://url.to/image.png', // TODO: fix after parsing is done
+                image: book.imageUrl,
                 currentSalesRank: book.salesRank,
                 price: book.price,
                 pages: book.printLength,

@@ -3,18 +3,74 @@
  */
 
 function BookPageParser(){
-
+    this._siteParser = {};
 }
 
+BookPageParser.prototype.GetDateOfPublication = function(responseText, callback) {
+    var pubdate = $(responseText).find('#pubdate').val();
+    if(pubdate === undefined){
+        var publisherElement = $(responseText).find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
+        var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
+
+        callback(dateOfPublication);
+        return;
+    }
+
+    $.ajax({
+        url: "/gp/product/features/ebook-synopsis/formatDate.html",
+        data: { datetime: pubdate },
+        dataType: "json",
+        success: function (responseJson) {
+            var dateOfPublication = responseJson.value;
+            if(dateOfPublication != null) callback(dateOfPublication.toString());
+        }
+    });
+};
+
+BookPageParser.prototype.GetAuthorTitle = function(responseText) {
+    return ParseString(responseText, 'id="productTitle"', '>', '<');
+};
+
+BookPageParser.prototype.GetGoogleSearchUrlByTitleAndAuthor = function(title, author){
+    var baseUrl = "http://google.com/";
+    if((title=='undefined' || title.length<1) || (author=='undefined' || author.length<1)) return baseUrl;
+    title = title.replace(/ /g, "+");
+    author = author.replace(/ /g, "+");
+    return baseUrl + "?q=" + title + "+" + author + "&oq=" + title + "+" + author + "#safe=off&q="+ title + "+" + author;
+};
+
+BookPageParser.prototype.GetGoogleImageSearchUrl = function(responseText, url, callback){
+    var googleUrl = "https://www.google.com/";
+    if (typeof responseText === "undefined" || responseText.length <= 1){
+        callback(googleUrl);
+        return;
+    }
+    this._siteParser.GetGoogleImageSearchUrlRel(responseText, url, function(rel){
+        if (rel == 'undefined' || rel.length<1) callback(googleUrl);
+        callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
+    });
+}
+BookPageParser.prototype.GetImageUrl = function(responseText){
+    if (typeof responseText === "undefined" || responseText.length <= 1){
+        return;
+    }
+    var src = this._siteParser.GetImageUrlSrc(responseText);
+    if (src == 'undefined' || src.length<1) return;
+    return src;
+}
+BookPageParser.prototype.GetTitle = function(responseText) {
+    if (typeof responseText !== "undefined" && responseText.length > 1)
+    {
+        return this._siteParser.GetTitle(responseText);
+    }
+};
+
 BookPageParser.prototype.GetReviews = function(responseText) {
-    // TODO: check
     var rl_reviews = $(responseText).find("#acr .acrCount a:first");
     return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
 };
 
 BookPageParser.prototype.GetPrice = function(responseText) {
-    // TODO: check
-    // TODO: parse price from book page
     var priceBlock = $(responseText).find('#priceBlock b.priceLarge');
     return priceBlock ? priceBlock.text().trim() : "";
 };
@@ -22,7 +78,7 @@ BookPageParser.prototype.GetPrice = function(responseText) {
 BookPageParser.prototype.GetSalesRank = function(responseText) {
     if (typeof responseText === "undefined" || responseText === "") return '0';
 
-    var szPattern = SiteParser.AmazonBestSellersPattern;
+    var szPattern = this._siteParser.AmazonBestSellersPattern;
     var pos = responseText.indexOf(szPattern);
 
     if (typeof pos === "undefined" || pos < 0)
@@ -49,9 +105,9 @@ BookPageParser.prototype.GetSalesRank = function(responseText) {
 };
 
 BookPageParser.prototype.GetEstSale = function(salesRank) {
-    var data = SiteParser.EstSalesScale;
+    var data = this._siteParser.EstSalesScale;
     if (typeof salesRank === "undefined") return 1;
-    var sale = salesRank.replace(SiteParser.ThousandSeparator, "");
+    var sale = salesRank.replace(this._siteParser.ThousandSeparator, "");
 
     for (var i = 0; i < data.length; i++) {
         if (sale >= data[i].min && sale <= data[i].max) return data[i].EstSale;
@@ -82,26 +138,27 @@ BookPageParser.prototype.GetAuthor = function(responseText) {
 };
 
 BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
-    var siteParser = GetSiteParser(url);
+    this._siteParser = GetSiteParser(url);
     var _this = this;
 
     $.get(url, function (responseText) {
-        var entryTitle = GetTitle(responseText);
-        if (typeof entryTitle === "undefined" || entryTitle === "") entryTitle = GetAuthorTitle(responseText);
+        var entryTitle = _this.GetTitle(responseText);
+        if (typeof entryTitle === "undefined" || entryTitle === "") entryTitle = _this.GetAuthorTitle(responseText);
         if (typeof entryTitle === "undefined") return;
-        if (typeof reviews === "undefined") reviews = _this.GetReviews(responseText);
-        if (typeof price === "undefined") price = _this.GetPrice(responseText);
+        if (!reviews) reviews = _this.GetReviews(responseText);
+        if (!price) price = _this.GetPrice(responseText);
 
         var entrySalesRank = _this.GetSalesRank(responseText);
         var entryEstSale = _this.GetEstSale(entrySalesRank);
         var entryPrice = price;
-        var realPrice = siteParser.ParsePrice(price);
+        var realPrice = _this._siteParser.ParsePrice(price);
         var entrySalesRecv = _this.GetSalesRecv(entryEstSale, realPrice);
         var entryPrintLength = _this.GetPrintLength(responseText);
         var entryAuthor = _this.GetAuthor(responseText);
-        var entryGoogleSearchUrl = GetGoogleSearchUrlByTitleAndAuthor(entryTitle, entryAuthor);
-        GetGoogleImageSearchUrl(responseText, url, function (entryGoogleImageSearchUrl) {
-            GetDateOfPublication(responseText, function (entryDateOfPublication) {
+        var entryGoogleSearchUrl = _this.GetGoogleSearchUrlByTitleAndAuthor(entryTitle, entryAuthor);
+        var entryImageUrl = _this.GetImageUrl(responseText);
+        _this.GetGoogleImageSearchUrl(responseText, url, function (entryGoogleImageSearchUrl) {
+            _this.GetDateOfPublication(responseText, function (entryDateOfPublication) {
                 if (typeof entryPrice === "undefined") entryPrice = "0";
                 if (typeof entryEstSale === "undefined") entryPrice = "0";
                 if (typeof entrySalesRecv == "undefined") entrySalesRecv = "0";
@@ -109,10 +166,11 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                 if (typeof entrySalesRank === "undefined" || entrySalesRank.length < 1) entrySalesRank = "1";
                 if (typeof entryPrintLength === "undefined" || entryPrintLength == '' || entryPrintLength == "NaN") entryPrintLength = "n/a";
                 if (typeof entryAuthor === "undefined" || entryAuthor.length < 1) entryAuthor = "n/a";
+                if (typeof entryImageUrl === "undefined")entryImageUrl = '';
 
                 callback({
                     title: entryTitle,
-                    price: SiteParser.FormatPrice(realPrice),
+                    price: _this._siteParser.FormatPrice(realPrice),
                     estSale: entryEstSale,
                     salesRecv: entrySalesRecv,
                     reviews: reviews,
@@ -121,7 +179,8 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                     author: entryAuthor,
                     dateOfPublication: entryDateOfPublication,
                     googleSearchUrl: entryGoogleSearchUrl,
-                    googleImageSearchUrl: entryGoogleImageSearchUrl
+                    googleImageSearchUrl: entryGoogleImageSearchUrl,
+                    imageUrl: entryImageUrl
                 });
             });
         });
