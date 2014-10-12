@@ -19,7 +19,7 @@ function GetParameterByName(url, name) {
  * Returns default value if parameter is not passed to function, otherwise returns it's value.
  * @param param parameter
  * @param defaultValue default param value
- * @returns {object} default value if parameter is not set
+ * @returns default value if parameter is not set
   */
 function ValueOrDefault(param, defaultValue){
     return typeof param === "undefined" ? defaultValue : param;

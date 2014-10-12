@@ -487,6 +487,9 @@ function RankTrackingSingleShow(bookUrl){
     $('.header').css("margin","0");
     $(".table-head").css("width","75%");
 
+    $('.header').html('');
+    $('.content').html('');
+
     Storage.GetBook(bookUrl, function(bookData) {
         if(bookData) {
             UpdateTrackedBookView(bookData);
@@ -508,12 +511,14 @@ function UpdateTrackedBookView(bookData){
     $('#disableTracking').toggle(bookData.trackingEnabled);
 
     $('#enableTracking').click(function () {
+        $('#enableTracking').prop('disabled', true);
         Storage.EnableTracking(bookData.url, function() {
+            $('#enableTracking').prop('disabled', false);
             RankTrackingSingleShow(bookData.url);
         });
     });
     $('#disableTracking').click(function () {
-        Storage.DisableTracking(bookData.url, function() {
+        Storage.DisableTracking(bookData.url, function(bytesInUse) {
             RankTrackingSingleShow(bookData.url);
         });
     });

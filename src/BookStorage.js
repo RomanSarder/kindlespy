@@ -62,15 +62,17 @@ BookStorage.prototype.EnableTracking = function(bookUrl, callback) {
 /**
  * Disable tracking for the book
  * @param bookUrl
+ * @param {function=} callback function(bytesInUse) {...}
  */
-BookStorage.prototype.DisableTracking = function(bookUrl) {
+BookStorage.prototype.DisableTracking = function(bookUrl, callback) {
+    callback = ValueOrDefault(callback, function() {});
     var _this = this;
     // search url in storage
     this.GetBook(bookUrl, function(bookData) {
         if(bookData === undefined) return;
         // change status to not-tracking
         bookData.trackingEnabled = false;
-        _this.UpdateBookInStorage(bookUrl, bookData, function(bytesInUse) {});
+        _this.UpdateBookInStorage(bookUrl, bookData, callback);
     });
 };
 
@@ -120,7 +122,7 @@ BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
 
 /**
  * Returns all books from the storage
- * @param callback function(object bookData) {...};
+ * @param {function} callback function(object bookData) {...};
  */
 BookStorage.prototype.GetAllBooks = function(callback) {
     this._storage.get('trackingData', function(items) {
@@ -181,12 +183,34 @@ BookStorage.prototype.TrackData = function () {
         var dateDiffMillis = Date.now() - Number(result.lastUpdate);
         console.log(dateDiffMillis);
         // if previous update was < 2h ago then do nothing
-        if(dateDiffMillis / 1000 / 60 / 60 < 2) return;
+        //if(dateDiffMillis / 1000 / 60 / 60 < 2) return;
+        // if previous update was < 1m ago then do nothing
+        if(dateDiffMillis / 1000 < 60) return;
         _this._storage.set({lastUpdate:Date.now()}, function(bytesInUse) {
-            //var today = new Date().setHours(0,0,0,0);
-            //TODO: iterate through all tracked books
-            //TODO: if the last data is not from today
-            //TODO: add the today's day data
+            _this.GetAllBooks(function(/** Array */ books) {
+                var today = new Date().setHours(0,0,0,0);
+                // iterate through all tracked books
+                books.forEach(function(book) {
+                    // if the last data is not from today
+                    for(var i=0;i<book.salesRankData.length;i++) {
+                        if(book.salesRankData[i].date === today) return;
+                    }
+
+                    // add the today's day data
+                    var bookParser = new BookPageParser();
+                    bookParser.GetSalesRankFromUrl(book.url, function(salesRank){
+                        book.currentSalesRank = salesRank;
+                        book.salesRankData.push({
+                            date: today,
+                            salesRank: salesRank
+                        });
+
+                        _this.UpdateBookInStorage(book.url, book, function() {
+                            setTimeout("_this.TrackData()", 4*60*60*1000) // 4h
+                        });
+                    });
+                });
+            });
         });
     });
 };

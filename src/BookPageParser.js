@@ -137,6 +137,17 @@ BookPageParser.prototype.GetAuthor = function(responseText) {
     return author;
 };
 
+BookPageParser.prototype.GetSalesRankFromUrl = function(url, callback) {
+    this._siteParser = GetSiteParser(url);
+    var _this = this;
+
+    $.get(url, function (responseText) {
+        var salesRank = _this.GetSalesRank(responseText);
+        if (!salesRank) salesRank = "1";
+        callback(salesRank);
+    });
+};
+
 BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
     this._siteParser = GetSiteParser(url);
     var _this = this;
