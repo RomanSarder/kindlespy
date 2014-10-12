@@ -81,9 +81,11 @@ BookStorage.prototype.DisableTracking = function(bookUrl) {
  * @param callback function(object bookData) {...};
  */
 BookStorage.prototype.GetBook = function(bookUrl, callback) {
+    var _this = this;
     this._storage.get('trackingData', function(items) {
         if(items !== undefined && items.trackingData !== undefined) {
-            callback(items.trackingData[bookUrl]);
+            var index = _this.FindUrlIndex(items.trackingData, bookUrl);
+            callback(items.trackingData[index]);
             return;
         }
 
@@ -122,9 +124,25 @@ BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
  */
 BookStorage.prototype.GetAllBooks = function(callback) {
     this._storage.get('trackingData', function(items) {
-        if(items !== undefined && items.trackingData !== undefined) callback(items.trackingData);
+        if(items !== undefined && items.trackingData !== undefined) {
+            callback(items.trackingData);
+            return;
+        }
+
         callback(undefined);
     });
+};
+
+BookStorage.prototype.FindUrlIndex = function(trackingData, url) {
+    var index;
+    for (var i = 0; i < trackingData.length; i++) {
+        if (trackingData[i].url === url) {
+            index = i;
+            break;
+        }
+    }
+
+    return index;
 };
 
 /**
@@ -138,8 +156,14 @@ BookStorage.prototype.UpdateBookInStorage = function(bookUrl, bookData, callback
     this._storage.get('trackingData', function(items) {
         console.log(items);
         if(items === undefined) items = {};
-        if(items.trackingData === undefined) items.trackingData = {};
-        items.trackingData[bookUrl] = bookData;
+        if(items.trackingData === undefined) items.trackingData = [];
+        var index = _this.FindUrlIndex(items.trackingData, bookUrl);
+        if(index === undefined) {
+            items.trackingData.push(bookData);
+        }else{
+            items.trackingData[index] = bookData;
+        }
+
         _this._storage.set(items, callback);
     });
 };
