@@ -116,7 +116,7 @@ BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
             trackingEnabled: false,
             title: book.title,
             author: book.author,
-            book.imageUrl,
+            image: book.imageUrl,
             currentSalesRank: book.salesRank,
             price: book.price,
             pages: book.printLength,
