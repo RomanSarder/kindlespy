@@ -389,6 +389,7 @@ function WordsInfoUpdate()
     $('#NoDataFooter').hide();
     $('#ExportBtn').show();
     $('#LinkBack').hide();
+    $('#BookTracked').hide();
 
     LoadAdvertisementBanner();
 
@@ -434,6 +435,7 @@ function RankTrackingListShow() {
     $('#NoDataFooter').hide();
     $('#ExportBtn').hide();
     $('#LinkBack').show();
+    $('#BookTracked').hide();
     $('.info.single_book').hide();
     $('.info.list_books').show();
 
@@ -465,8 +467,9 @@ function RankTrackingSingleShow(bookUrl){
     $('#WordCloudFooter').hide();
     $('#BestSellersRankingFooter').hide();
     $('#NoDataFooter').hide();
-    $('#ExportBtn').hide();
+    $('#ExportBtn').show();
     $('#LinkBack').show();
+    $('#BookTracked').show();
     $('.info.list_books').hide();
     $('.info.single_book').show();
     $(".table-head").html("<label>Bestseller rank tracking(30 days)<label>");
@@ -522,6 +525,19 @@ function UpdateTrackedBookView(bookData){
             RankTrackingSingleShow(bookData.url);
         });
     });
+    $('#singleResult1').text(bookData.currentSalesRank);
+    $('#singleResult2').text(bookData.price);
+    $('#singleResult3').text(bookData.pages);
+    $('#singleResult4').text(bookData.estSales);
+    $('#singleResult5').text(bookData.estSalesRev);
+    $('#singleResult6').text(bookData.numberOfReviews);
+    $('#days').text(bookData.salesRankData.length);
+    var sum=0;
+    for(var j=0; j<bookData.salesRankData.length;j++){
+        sum = sum+bookData.salesRankData[j].salesRank;
+    }
+    $('#AvgSalesRank').text(sum/bookData.salesRankData.length);
+
     //$('.info.single_book').html(info);
     var chartData = bookData.salesRankData;
     var labels = [];
@@ -853,6 +869,7 @@ function LoadData(obj) {
         $('#BestSellersRankingFooter').hide();
         $('#NoDataFooter').show();
         $('#LinkBack').hide();
+        $('#BookTracked').hide();
         setTimeout(UpdateTable.bind(null,obj), 6000);
     }else{
         UpdateTable(obj);
@@ -871,6 +888,7 @@ function UpdateTable(obj)
         $('#NoDataFooter').show();
         $('#ExportBtn').show();
         $('#LinkBack').hide();
+        $('#BookTracked').hide();
         $('.info.single_book').hide();
         $('.info.list_books').show();
 
@@ -956,6 +974,7 @@ function UpdateTable(obj)
     $('#NoDataFooter').hide();
     $('#ExportBtn').show();
     $('#LinkBack').hide();
+    $('#BookTracked').hide();
     $('.info.single_book').hide();
     $('.info.list_books').show();
 
