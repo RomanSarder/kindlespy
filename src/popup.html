@@ -49,10 +49,19 @@ body, div, a, p, table, tr, td, th {
 	line-height: 23px;
     min-height: 45px;;
 }
+.info.single_book {
+    width: 75%;
+    margin: 0;
+}
 .info-item {
 	float: left;
 	width: 20%;
 	text-align: left;
+}
+.info.single_book .info-item {
+    float: left;
+    width: 15%;
+    text-align: left;
 }
 .content {
 	overflow: auto;
@@ -340,7 +349,7 @@ td.wow
                     <a id="BestSellerLink" href="#">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id="TitleWordCloud" href="#">Titles: Word Cloud (20)</a>
                 </div>
             </div>
-            <div class="info">
+            <div class="info list_books">
                 <div class="info-item">
                     <span style="font-size:11px">Results:</span>
                     <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="result1">1-20</div>
@@ -362,6 +371,32 @@ td.wow
                     <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="result5">31</div>
                 </div>
             </div>
+            <div class="info single_book">
+                <div class="info-item">
+                    <span style="font-size:11px">Sales Rank:</span>
+                    <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="singleResult1">0</div>
+                </div>
+                <div class="info-item">
+                    <span style="font-size:11px">Price:</span>
+                    <div style="font-size:16px;font-weight:bold; margin-top:-6px;" id="singleResult2">0</div>
+                </div>
+                <div class="info-item">
+                    <span style="font-size:11px">Pages:</span>
+                    <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="singleResult3">0</div>
+                </div>
+                <div class="info-item">
+                    <span style="font-size:11px">Est.Sales:</span>
+                    <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="singleResult4">0</div>
+                </div>
+                <div class="info-item">
+                    <span style="font-size:11px">Est.Sales Rev:</span>
+                    <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="singleResult5">0</div>
+                </div>
+                <div class="info-item">
+                    <span style="font-size:11px">No Reviews:</span>
+                    <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="singleResult6">0</div>
+                </div>
+            </div>
             <div class="table-head">
                 <label style="padding-left:6px;" class="sort-column" id="no">#</label>
                 <label style="padding-left:4px;" class="sort-column" id="title-book"> Kindle Book Title</label>
@@ -381,6 +416,9 @@ td.wow
             </div>
         </div>
         <div class="footer">
+            <div style="float: left;width: 15%;margin-top: 22px;" id="LinkBack">
+                <a id="LinkBackTo" style="float:right;" href="#"><< Back to results</a>
+            </div>
             <div id="BestSellersRankingFooter">
                 <div style="float:left;width:25%;margin-top: 22px;">
                     <div style="display: table;text-align: center;"><a href="#" style="margin-left: 29px;" id="PullResult">Pull Results 1-20</a></div>
@@ -417,11 +455,11 @@ td.wow
                 <div style="float: left;width: 65%;margin-top: 5px;">
                 </div>
             </div>
-            <div style="float:left;width:10%;">
+            <div id="ExportBtn" style="float:left;width:10%;">
                 <div style="display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;"><div style="font-size:11px; margin-top: 10px">Export</div>
                     <div style="font-size:16px;font-weight:bold"><img src="../icons/download.png" id="Export" style="zoom: .8"></div></div>
             </div>
-            <div style="float:left;width:25%;">
+            <div style="float:right;width:25%;">
                 <div style="margin: 0 auto;display: table;text-align: center;padding-top: 5px;">
                     <div id="ad"/>
                 </div>
@@ -433,6 +471,7 @@ td.wow
 <script src="../libs/xpathjs.min.js" language="javascript"></script>
 <script src="../libs/jquery.number.min.js" language="javascript"></script>
 <script src="HelperFunctions.js" language="javascript"></script>
+<script src="BookStorage.js" language="javascript"></script>
 <script src="AmazonComParser.js" language="javascript"></script>
 <script src="AmazonCoUkParser.js" language="javascript"></script>
 <script src="AmazonDeParser.js" language="javascript"></script>
