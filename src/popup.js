@@ -946,7 +946,7 @@ function UpdateTable(obj)
     $('.content').css("line-height:" , "55px");
     $('.header').css("width","99%");
     $('.header').css("margin","auto 0");
-    $(".table-head").css("width","99%");
+    $(".table-head").css("width","97%");
 
     chrome.runtime.sendMessage({type: "get-settings"}, function(response)
     {
