@@ -155,7 +155,6 @@ BookStorage.prototype.FindUrlIndex = function(trackingData, url) {
 BookStorage.prototype.UpdateBookInStorage = function(bookUrl, bookData, callback) {
     var _this = this;
     this._storage.get('trackingData', function(items) {
-        console.log(items);
         if(items === undefined) items = {};
         if(items.trackingData === undefined) items.trackingData = [];
         var index = _this.FindUrlIndex(items.trackingData, bookUrl);
@@ -175,16 +174,13 @@ BookStorage.prototype.UpdateBookInStorage = function(bookUrl, bookData, callback
 BookStorage.prototype.TrackData = function () {
     var _this = this;
     this._storage.get('lastUpdate', function(result) {
-        console.log(result);
         if(result === undefined) result = {};
         if(result.lastUpdate === undefined) result.lastUpdate = 0;
-        console.log(result.lastUpdate);
         var dateDiffMillis = Date.now() - Number(result.lastUpdate);
-        console.log(dateDiffMillis);
-        // if previous update was < 2h ago then do nothing
-        //if(dateDiffMillis / 1000 / 60 / 60 < 2) return;
+        // if previous update was < 1h ago then do nothing
+        if(dateDiffMillis / 1000 / 60 / 60 < 1) return;
         // if previous update was < 1m ago then do nothing
-        if(dateDiffMillis / 1000 < 60) return;
+        //if(dateDiffMillis / 1000 < 60) return;
         _this._storage.set({lastUpdate:Date.now()}, function(bytesInUse) {
             _this.GetAllBooks(function(/** Array */ books) {
                 var today = new Date().setHours(0,0,0,0);
@@ -206,6 +202,7 @@ BookStorage.prototype.TrackData = function () {
 
                         _this.UpdateBookInStorage(book.url, book, function() {
                             setTimeout("_this.TrackData()", 4*60*60*1000) // 4h
+                            setTimeout("_this.TrackData()", 24*60*60*1000) // 24h
                         });
                     });
                 });
