@@ -17,7 +17,7 @@ BookPageParser.prototype.GetDateOfPublication = function(responseText, callback)
     }
 
     $.ajax({
-        url: "/gp/product/features/ebook-synopsis/formatDate.html",
+        url: this._siteParser.MainUrl + "/gp/product/features/ebook-synopsis/formatDate.html",
         data: { datetime: pubdate },
         dataType: "json",
         success: function (responseJson) {
@@ -49,7 +49,8 @@ BookPageParser.prototype.GetGoogleImageSearchUrl = function(responseText, url, c
         if (rel == 'undefined' || rel.length<1) callback(googleUrl);
         callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
     });
-}
+};
+
 BookPageParser.prototype.GetImageUrl = function(responseText){
     if (typeof responseText === "undefined" || responseText.length <= 1){
         return;
@@ -57,7 +58,8 @@ BookPageParser.prototype.GetImageUrl = function(responseText){
     var src = this._siteParser.GetImageUrlSrc(responseText);
     if (src == 'undefined' || src.length<1) return;
     return src;
-}
+};
+
 BookPageParser.prototype.GetTitle = function(responseText) {
     if (typeof responseText !== "undefined" && responseText.length > 1)
     {
@@ -81,15 +83,13 @@ BookPageParser.prototype.GetSalesRank = function(responseText) {
     var szPattern = this._siteParser.AmazonBestSellersPattern;
     var pos = responseText.indexOf(szPattern);
 
-    if (typeof pos === "undefined" || pos < 0)
-        return '0';
+    if (typeof pos === "undefined" || pos < 0) return '0';
 
     var szSalesRank = responseText.substr(pos + szPattern.length);
     szPattern = '>';
     pos = szSalesRank.indexOf(szPattern);
 
-    if (typeof pos === "undefined" || pos < 0)
-        return "0";
+    if (typeof pos === "undefined" || pos < 0) return "0";
 
     var szSalesRank = szSalesRank.substr(pos + szPattern.length);
     szSalesRank = szSalesRank.trim();
@@ -126,7 +126,6 @@ BookPageParser.prototype.GetPrintLength = function(responseText) {
     return parseInt($(responseText).find('#pageCountAvailable span').text()).toString();
 };
 
-
 BookPageParser.prototype.GetAuthor = function(responseText) {
     var tmpResponseText = ParseString(responseText, 'contributorNameTrigger', '>', '/a>');
     var author = ParseString(tmpResponseText, 'contributorNameTrigger', '>', '<');
@@ -134,6 +133,7 @@ BookPageParser.prototype.GetAuthor = function(responseText) {
         tmpResponseText = ParseString(responseText, "<div class=\"buying\">", 'parseasinTitle', "<span class=\"byLinePipe\">");
         author = ParseString(tmpResponseText , "<a", '>', '</a>');
     }
+
     return author;
 };
 

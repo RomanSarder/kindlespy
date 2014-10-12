@@ -493,9 +493,7 @@ function RankTrackingSingleShow(bookUrl){
             return;
         }
 
-        Storage.InitBookFromUrl(bookUrl, function(bookData) {
-            UpdateTrackedBookView(bookData);
-        });
+        Storage.InitBookFromUrl(bookUrl, UpdateTrackedBookView);
     });
 }
 

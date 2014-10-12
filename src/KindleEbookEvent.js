@@ -13,19 +13,13 @@ $(window).ready(function () {
     BookStorage = new BookStorage();
     BookStorage.TrackData();
 
-    if (SiteParser === undefined){
-        return;
-    }
+    if (SiteParser === undefined) return;
+    if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;
 
     if (ParentUrl.indexOf("/ref=") >= 0)
     {
         var _Pos = Url.lastIndexOf('/');
         ParentUrl = Url.substr(0, _Pos);
-    }
-
-    if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0){
-
-       return;
     }
 
     $("#nav-searchbar").submit(function()
@@ -38,11 +32,9 @@ $(window).ready(function () {
     if (IsAuthorPage()){
         scrapeAuthorPage(Url);
     }
-
     else if (IsSearchPage(Url)) {
         scrapeSearchPage(Url);
     }
-
     else if (IsBestSellersPage(Url)){
         scrapeBestSellersPage(Url);
     }
@@ -89,8 +81,7 @@ function GetReviewrInfo(responseText)
         str = str.substr(pos + pattern.length);
 
         review = ParseString(str, "product-reviews", '>', '<');
-        if (typeof review !== "undefined" && review.length > 0)
-            return review;
+        if (typeof review !== "undefined" && review.length > 0) return review;
 
         pos = str.indexOf(pattern);
     }
