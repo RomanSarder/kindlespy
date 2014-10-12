@@ -56,7 +56,7 @@ AmazonDeParser.Region = "DE";
 
 AmazonDeParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
-}
+};
 
 AmazonDeParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
@@ -68,27 +68,29 @@ AmazonDeParser.prototype.GetKindleEditionRow = function(resultItem) {
     });
 
     return retval;
-}
+};
 
 AmazonDeParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("a:first").attr("href");
-}
+};
 
 AmazonDeParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("span.bld");
-}
+};
 
 AmazonDeParser.prototype.GetReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".rvwCnt > a:first").text();
-}
+};
 
 AmazonDeParser.prototype.ParsePrice = function(price) {
+    if(!price) return 0;
     return price.substr(4).replace(/\./g,'').replace(',', '.');
-}
+};
 
 AmazonDeParser.prototype.FormatPrice = function(price) {
     return this.CurrencySign + price;
-}
+};
+
 AmazonDeParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
     callback($(responseText).find('#main-image').attr('rel'));
-}
+};

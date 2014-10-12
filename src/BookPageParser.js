@@ -7,12 +7,14 @@ function BookPageParser(){
 }
 
 BookPageParser.prototype.GetReviews = function(responseText) {
+    // TODO: check
     var rl_reviews = $(responseText).find("#acr .acrCount a:first");
     return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
 };
 
 BookPageParser.prototype.GetPrice = function(responseText) {
-    //TODO: parse price from book page
+    // TODO: check
+    // TODO: parse price from book page
     var priceBlock = $(responseText).find('#priceBlock b.priceLarge');
     return priceBlock ? priceBlock.text().trim() : "";
 };
@@ -96,7 +98,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
         var realPrice = siteParser.ParsePrice(price);
         var entrySalesRecv = _this.GetSalesRecv(entryEstSale, realPrice);
         var entryPrintLength = _this.GetPrintLength(responseText);
-        var entryAuthor = GetAuthor(responseText);
+        var entryAuthor = _this.GetAuthor(responseText);
         var entryGoogleSearchUrl = GetGoogleSearchUrlByTitleAndAuthor(entryTitle, entryAuthor);
         GetGoogleImageSearchUrl(responseText, url, function (entryGoogleImageSearchUrl) {
             GetDateOfPublication(responseText, function (entryDateOfPublication) {

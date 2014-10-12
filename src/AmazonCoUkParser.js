@@ -56,7 +56,7 @@ AmazonCoUkParser.Region = "UK";
 
 AmazonCoUkParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
-}
+};
 
 AmazonCoUkParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
@@ -68,27 +68,29 @@ AmazonCoUkParser.prototype.GetKindleEditionRow = function(resultItem) {
     });
 
     return retval;
-}
+};
 
 AmazonCoUkParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("a:first").attr("href");
-}
+};
 
 AmazonCoUkParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("span.bld");
-}
+};
 
 AmazonCoUkParser.prototype.GetReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".rvwCnt > a:first").text();
-}
+};
 
 AmazonCoUkParser.prototype.ParsePrice = function(price) {
+    if(!price) return 0;
     return price.substr(1);
-}
+};
 
 AmazonCoUkParser.prototype.FormatPrice = function(price) {
     return this.CurrencySign + price;
-}
+};
+
 AmazonCoUkParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
     var path = url.split("/");
     if(path.length > 5)
@@ -96,8 +98,9 @@ AmazonCoUkParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, u
              callback((responseText!==null)?$(responseText).find('#main-image').attr('rel'):"");
         });
     callback("");
-}
+};
+
 AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCode, callback) {
     var urlAmazonCom = "http://www.amazon.com/product/dp/" + bookCode;
     $.get(urlAmazonCom, callback);
-}
+};
