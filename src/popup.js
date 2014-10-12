@@ -502,9 +502,7 @@ function RankTrackingSingleShow(bookUrl){
 
 function UpdateTrackedBookView(bookData){
     var header = "<div><b>Book Title</b>:" + bookData.title + "</div>";
-    var ContentHtml = '<div>' +
-        '<canvas id="canvas" height="300" width="500"></canvas>' +
-        '</div><br>' +
+    var ContentHtml = '<div><canvas id="canvas" height="300" width="500"></canvas></div>' +
         '<button id="enableTracking" name="track">Track SalesRank</button>' +
         '<button id="disableTracking" name="track">Disable Tracking</button>';
     $('.header').html(header);
