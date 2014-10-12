@@ -439,9 +439,10 @@ function RankTrackingListShow() {
 
     LoadAdvertisementBanner();
 
-    $('#data-body').css("overflow-y", "hidden");
+    $('#data-body').css("overflow-y", "auto");
     $('.table-head').html(tableHead);
     $('.table-head').css("background-color", "#333333");
+    $('.table-head').css("width", "97%");
 
     $('.content').css("overflow", "auto");
     $('.content').css("width", "99%");
@@ -455,7 +456,6 @@ function RankTrackingListShow() {
     $('.content').css("line-height:", "55px");
     $('.header').css("width","99%");
     $('.header').css("margin","0 auto");
-    $(".table-head").css("width","99%");
 
     UpdateRateTrackingTable();
 
@@ -521,8 +521,18 @@ function UpdateTrackedBookView(bookData){
 }
 
 function UpdateRateTrackingTable(){
-    var html = "";
-    $("table[name='data']").find("tbody").html(html);
+    Storage.GetAllBooks(function(books){
+        var html = "";
+        for(var i=0;i<books.length;i++){
+            html += "<tr>" +
+                "<td >" + (i+1) + "</td>" +
+                "<td style=\"width:520px;padding-right: 20px;\">" + books[i].title + "</td>" +
+                "<td style=\"width:75px;padding-right: 10px;padding-left: 30px;\">" + books[i].salesRankData.length + "</td>" +
+                "<td><a id='RankTrackingResult' href='#'>Results</a></td>" +
+            "</tr>";
+        }
+        $("table[name='data']").find("tbody").html(html);
+    });
 }
 
 function InsertDatas(PageNumber)
