@@ -24,21 +24,25 @@ var bookDataExample = {
     ]
 };
 
+/**
+ * Empty storage
+ */
 BookStorage.prototype.Clear = function () {
     this._storage.clear();
 };
 
+/**
+ * Enable tracking for the book
+ * @param bookUrl
+ */
 BookStorage.prototype.EnableTracking = function(bookUrl) {
     var _this = this;
-    //TODO: search url in storage
+    // search url in storage
     this.GetBookFromStorage(bookUrl, function(bookData) {
-        console.log(bookData);
         var changeStatus = function(bookData){
-            //TODO: change status to tracking
-            console.log('aa');
-
+            // change status to tracking
             bookData.trackingEnabled = true;
-            //TODO: update data
+            // update data
             _this.UpdateBookInStorage(bookUrl, bookData, function() {});
         };
 
@@ -47,8 +51,7 @@ BookStorage.prototype.EnableTracking = function(bookUrl) {
             return;
         }
 
-        //TODO: if not found, add new item to storage
-        console.log('bb');
+        // if not found, add new item to storage
         var bookParser = new BookPageParser();
         bookParser.GetBookData(bookUrl, null, null, function(book){
             console.log('bbb');
@@ -56,7 +59,7 @@ BookStorage.prototype.EnableTracking = function(bookUrl) {
                 trackingEnabled: true,
                 title: book.title,
                 author: book.author,
-                image: 'http://url.to/image.png', // not yet available
+                image: 'http://url.to/image.png', // TODO: fix after parsing is done
                 currentSalesRank: book.salesRank,
                 price: book.price,
                 pages: book.printLength,
@@ -75,28 +78,35 @@ BookStorage.prototype.EnableTracking = function(bookUrl) {
     });
 };
 
+/**
+ * Disable tracking for the book
+ * @param bookUrl
+ */
 BookStorage.prototype.DisableTracking = function(bookUrl) {
     var _this = this;
-    //TODO: search url in storage
+    // search url in storage
     this.GetBookFromStorage(bookUrl, function(bookData) {
-        //TODO: change status to not-tracking
-        console.debug(bookData);
         if(bookData === undefined) return;
+        // change status to not-tracking
         bookData.trackingEnabled = false;
         _this.UpdateBookInStorage(bookUrl, bookData, function(bytesInUse) {});
     });
 };
 
+/**
+ * Takes a book from the storage and returns it
+ * @param bookUrl
+ * @param callback function(object bookData) {...};
+ */
 BookStorage.prototype.GetBookFromStorage = function(bookUrl, callback) {
     this._storage.get('trackingData', function(items) {
-        console.log(items);
         if(items !== undefined && items.trackingData !== undefined) callback(items.trackingData[bookUrl]);
         callback(undefined);
     });
 };
 
 /**
- *
+ * Inserts or updates a book in the storage with new bookData object
  * @param bookUrl
  * @param bookData
  * @param callback function(integer bytesInUse) {...};
@@ -112,6 +122,9 @@ BookStorage.prototype.UpdateBookInStorage = function(bookUrl, bookData, callback
     });
 };
 
+/**
+ * Scans all books and fill them with today's data
+ */
 BookStorage.prototype.TrackData = function () {
     var _this = this;
     this._storage.get('lastUpdate', function(result) {

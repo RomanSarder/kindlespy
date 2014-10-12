@@ -1,5 +1,5 @@
 /**
- * Created by Andrey on 12.10.2014.
+ * Created by Andrey Klochkov on 12.10.2014.
  */
 
 function BookPageParser(){

@@ -1,4 +1,5 @@
 /**
+ * Created by Andrey Klochkov on 11.09.2014.
  * class AmazonCoUkParser
  */
 
