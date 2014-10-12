@@ -4,19 +4,25 @@
 
 var ParentUrl;
 var SiteParser;
+var BookStorage;
 
 $(window).ready(function () {
     var Url = location.href;
     ParentUrl = Url;
     SiteParser = GetSiteParser(Url);
+    BookStorage = new BookStorage();
+    BookStorage.TrackData();
+
+    if (SiteParser === undefined){
+        return;
+    }
+
     if (ParentUrl.indexOf("/ref=") >= 0)
     {
         var _Pos = Url.lastIndexOf('/');
         ParentUrl = Url.substr(0, _Pos);
     }
-    if(typeof  SiteParser=="undefined"){
-        //setInterval("saveToLocalStorage()",10000);
-    }
+
     if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0){
 
        return;
@@ -41,38 +47,7 @@ $(window).ready(function () {
         scrapeBestSellersPage(Url);
     }
 });
-function saveToLocalStorage(){
-    var d = new Date();
-    var t = d.getTime();
-    var storage = chrome.storage.local;
 
-    storage.get({KeyIds: []}, function (result) {
-       var KeyIds = result.KeyIds;
-        KeyIds.push({timeValue: t});
-        storage.set({KeyIds: KeyIds}, function () {
-            storage.get('KeyIds', function (result) {
-                console.log(result.KeyIds)
-            });
-        });
-    });
-    /*var myKey = 'myKey';
-
-    var obj= {};
-
-    obj[myKey] = t;
-
-    storage.set(obj);
-
-    storage.get(myTestVar,function(result){
-        console.log(myTestVar,result);
-        //console output = myVariableKeyName {myTestVar:'my test var'}
-    });
-
-    storage.get('myTestVar',function(result){
-        console.log(result);
-        //console output = {myTestVar:'my test var'}
-    })*/
-}
 function IsAuthorPage(){
     return document.documentElement.innerHTML.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0;
 }

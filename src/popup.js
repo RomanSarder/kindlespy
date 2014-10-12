@@ -7,23 +7,22 @@ var refresed = false;
 var bIsSellWin = true;
 var IsErrorWindow = false;
 var SiteParser;
-var columnGetterFunctions = new Array();
-columnGetterFunctions['no'] = function(a){return parseInt(a.No)}
+var Storage = new BookStorage();
+var columnGetterFunctions = [];
+columnGetterFunctions['no'] = function(a){return parseInt(a.No)};
 columnGetterFunctions['pageno'] = function(a){
     var printLength = parseInt(a.PrintLength);
     return isNaN(printLength) ? 0 : printLength;
-}
-columnGetterFunctions['title-book'] = function(a){return a.Title}
-columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace(/[^0-9\.]/g, ''))}
-columnGetterFunctions['est-sales'] = function(a){return a.EstSales}
-columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv}
-columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(/,/g,''))}
-columnGetterFunctions['sales-rank'] = function(a){return parseInt(a.SalesRank.replace(/,/g,''))}
+};
+columnGetterFunctions['title-book'] = function(a){return a.Title};
+columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace(/[^0-9\.]/g, ''))};
+columnGetterFunctions['est-sales'] = function(a){return a.EstSales};
+columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv};
+columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(/,/g,''))};
+columnGetterFunctions['sales-rank'] = function(a){return parseInt(a.SalesRank.replace(/,/g,''))};
 
 var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
-
-var bDebug = false;
 
 $(window).ready(function () {
     $('#LinkBackTo').click(function () {
@@ -461,7 +460,8 @@ function RankTrackingListShow() {
     UpdateRateTrackingTable();
 
 }
-function RankTrackingSingleShow(){
+
+function RankTrackingSingleShow(bookUrl){
     $('#WordCloudFooter').hide();
     $('#BestSellersRankingFooter').hide();
     $('#NoDataFooter').hide();
@@ -486,57 +486,43 @@ function RankTrackingSingleShow(){
     $('.header').css("width","75%");
     $('.header').css("margin","0");
     $(".table-head").css("width","75%");
-    var title = "Title test";
-    var ranks = new Array();
-    var rank = 0;
-    var bookId="B006LSZECO";
-    var status = true;
-    chrome.storage.local.get({bookIDs: [bookId]}, function (result) {
-        var bookIDs = result.bookIDs;
-        if(bookIDs.length<0){
-            bookIDs.add(bookId);
-            status = false;
-        }else {
-            status = bookIDs.bookIDs[0].status;
-        }
-        if(result.bookIDs[0].lastUpdateDate !== new Date().getDay()) {
-            bookIDs.push({rank: ranks.add(rank), lastUpdateDate: new Date().getDay(), title: title, status: status});
-            chrome.storage.local.set({bookIDs: bookIDs}, function () {
-                chrome.storage.local.get('bookIDs', function (result) {
-                    UpdateTrackedBookView(result);
 
-                });
-            });
-        }else{
-            chrome.storage.local.get('bookIDs', function (result) {
-                UpdateTrackedBookView(result);
-
-            });
+    Storage.GetBook(bookUrl, function(bookData) {
+        if(bookData) {
+            UpdateTrackedBookView(bookData);
+            return;
         }
 
-
+        Storage.InitBookFromUrl(bookUrl, function(bookData) {
+            UpdateTrackedBookView(bookData);
+        });
     });
-
-
 }
-function UpdateTrackedBookView(result){
-    var text="Track SalesRank";
-    var header = "<div><b>Book Title</b>:" + result.bookIDs[0].title + "</div>";
-    if(!result.bookIDs[0].status)
-        text="Disable Tracking";
-    var ContentHtml = "Graphic<br><button id=\"track\" name=\"track\">" + text + "</button>";
+
+function UpdateTrackedBookView(bookData){
+    var header = "<div><b>Book Title</b>:" + bookData.title + "</div>";
+    var ContentHtml = 'Graphic<br>' +
+        '<button id="enableTracking" name="track" display="none">Track SalesRank</button>' +
+        '<button id="disableTracking" name="track" display="none">Disable Tracking</button>';
     $('.header').html(header);
     $('.content').html(ContentHtml);
+    $('#enableTracking').toggle(!bookData.trackingEnabled);
+    $('#disableTracking').toggle(bookData.trackingEnabled);
     //Add evento for traking button
-    $('#track').click(function () {
-       result.bookIDs[0];
+    $('#enableTracking').click(function () {
+       Storage.EnableTracking(bookData.url);
+    });
+    $('#disableTracking').click(function () {
+        Storage.DisableTracking(bookData.url);
     });
     //$('.info.single_book').html(info);
 }
+
 function UpdateRateTrackingTable(){
     var html = "";
     $("table[name='data']").find("tbody").html(html);
 }
+
 function InsertDatas(PageNumber)
 {
     var category = "";
@@ -570,7 +556,9 @@ function InsertDatas(PageNumber)
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow'>" + obj[i].Title + "</td>" +
-                "<td style='width:35px;'><a class='RankTrackingResultSingle' href='" + "#" + "' >T</a> " + " | " + "<a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " + "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
+                "<td style='width:35px;'><a class='RankTrackingResultSingle' href='" + "#" + "' bookUrl='" + obj[i].Url + "'>T</a> " + " | " +
+                    "<a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " +
+                    "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
                 "<td style='padding-left:15px; width:30px;'>" +obj[i].PrintLength + "</td>" +
                 "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
                 "<td style='padding-left:15px; width:60px;' align='right'>" + addCommas(obj[i].EstSales) +"</td>" +
@@ -640,7 +628,7 @@ function InsertDatas(PageNumber)
     var RankTrackingResultSingle = document.getElementsByClassName('RankTrackingResultSingle');
     for(var i = 0;i<RankTrackingResultSingle.length; i++) {
         RankTrackingResultSingle[i].addEventListener("click", function () {
-            RankTrackingSingleShow();
+            RankTrackingSingleShow($(this).attr('bookUrl'));
         });
     }
 }

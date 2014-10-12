@@ -7,6 +7,7 @@ function BookStorage() {
 }
 
 var bookDataExample = {
+    url: 'http://book.url',
     trackingEnabled: true,
     title: 'test title',
     author: 'A. Lastname',
@@ -38,7 +39,7 @@ BookStorage.prototype.Clear = function () {
 BookStorage.prototype.EnableTracking = function(bookUrl) {
     var _this = this;
     // search url in storage
-    this.GetBookFromStorage(bookUrl, function(bookData) {
+    this.GetBook(bookUrl, function(bookData) {
         var changeStatus = function(bookData){
             // change status to tracking
             bookData.trackingEnabled = true;
@@ -52,29 +53,30 @@ BookStorage.prototype.EnableTracking = function(bookUrl) {
         }
 
         // if not found, add new item to storage
-        var bookParser = new BookPageParser();
-        bookParser.GetBookData(bookUrl, null, null, function(book){
-            console.log('bbb');
-            var bookData = {
-                trackingEnabled: true,
-                title: book.title,
-                author: book.author,
-                image: book.imageUrl,
-                currentSalesRank: book.salesRank,
-                price: book.price,
-                pages: book.printLength,
-                estSales: book.estSale,
-                estSalesRev: book.salesRecv,
-                numberOfReviews: book.reviews,
-                estDailyRev: '$233.00', // TODO: how to get it?
-                salesRankData: [
-                    {date: Date.UTC(2014, 11, 9), salesRank: 100},
-                    {date: Date.UTC(2014, 11, 10), salesRank: 110}
-                ]
-            };
-
-            changeStatus(bookData);
-        });
+        _this.InitBookFromUrl(bookUrl, changeStatus);
+//        var bookParser = new BookPageParser();
+//        bookParser.GetBookData(bookUrl, null, null, function(book){
+//            var bookData = {
+//                url: bookUrl,
+//                trackingEnabled: true,
+//                title: book.title,
+//                author: book.author,
+//                image: 'http://url.to/image.png', // TODO: fix after parsing is done
+//                currentSalesRank: book.salesRank,
+//                price: book.price,
+//                pages: book.printLength,
+//                estSales: book.estSale,
+//                estSalesRev: book.salesRecv,
+//                numberOfReviews: book.reviews,
+//                estDailyRev: '$233.00', // TODO: how to get it?
+//                salesRankData: [
+//                    {date: Date.UTC(2014, 11, 9), salesRank: 100},
+//                    {date: Date.UTC(2014, 11, 10), salesRank: 110}
+//                ]
+//            };
+//
+//            changeStatus(bookData);
+//        });
     });
 };
 
@@ -85,7 +87,7 @@ BookStorage.prototype.EnableTracking = function(bookUrl) {
 BookStorage.prototype.DisableTracking = function(bookUrl) {
     var _this = this;
     // search url in storage
-    this.GetBookFromStorage(bookUrl, function(bookData) {
+    this.GetBook(bookUrl, function(bookData) {
         if(bookData === undefined) return;
         // change status to not-tracking
         bookData.trackingEnabled = false;
@@ -95,12 +97,49 @@ BookStorage.prototype.DisableTracking = function(bookUrl) {
 
 /**
  * Takes a book from the storage and returns it
+ * If not found, grabs data from the page
  * @param bookUrl
  * @param callback function(object bookData) {...};
  */
-BookStorage.prototype.GetBookFromStorage = function(bookUrl, callback) {
+BookStorage.prototype.GetBook = function(bookUrl, callback) {
     this._storage.get('trackingData', function(items) {
         if(items !== undefined && items.trackingData !== undefined) callback(items.trackingData[bookUrl]);
+        callback(undefined);
+    });
+};
+
+BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
+    var bookParser = new BookPageParser();
+    bookParser.GetBookData(bookUrl, null, null, function(book){
+        var bookData = {
+            url: bookUrl,
+            trackingEnabled: false,
+            title: book.title,
+            author: book.author,
+            book.imageUrl,
+            currentSalesRank: book.salesRank,
+            price: book.price,
+            pages: book.printLength,
+            estSales: book.estSale,
+            estSalesRev: book.salesRecv,
+            numberOfReviews: book.reviews,
+            estDailyRev: '$233.00', // TODO: how to get it?
+            salesRankData: [
+                {date: Date.UTC(2014, 11, 9), salesRank: 100},
+                {date: Date.UTC(2014, 11, 10), salesRank: 110}
+            ]
+        };
+        callback(bookData);
+    });
+};
+
+/**
+ * Returns all books from the storage
+ * @param callback function(object bookData) {...};
+ */
+BookStorage.prototype.GetAllBooks = function(callback) {
+    this._storage.get('trackingData', function(items) {
+        if(items !== undefined && items.trackingData !== undefined) callback(items.trackingData);
         callback(undefined);
     });
 };
