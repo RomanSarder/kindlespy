@@ -573,7 +573,7 @@ function InsertDatas(PageNumber)
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow'>" + obj[i].Title + "</td>" +
-                "<td style='width:35px;'><a class='RankTrackingResultSingle' href='" + "#" + "' bookUrl='" + obj[i].Url + "'>T</a> " + " | " +
+                "<td style='width:50px;'><a class='RankTrackingResultSingle' href='" + "#" + "' bookUrl='" + obj[i].Url + "'>T</a> " + " | " +
                     "<a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " +
                     "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
                 "<td style='padding-left:15px; width:30px;'>" +obj[i].PrintLength + "</td>" +
