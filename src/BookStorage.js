@@ -112,8 +112,7 @@ BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
             numberOfReviews: book.reviews,
             estDailyRev: '$233.00', // TODO: how to get it?
             salesRankData: [
-                {date: Date.UTC(2014, 11, 9), salesRank: 100},
-                {date: Date.UTC(2014, 11, 10), salesRank: 110}
+                {date: new Date().setHours(0,0,0,0), salesRank: book.salesRank}
             ]
         };
         callback(bookData);

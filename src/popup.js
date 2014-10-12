@@ -502,7 +502,9 @@ function RankTrackingSingleShow(bookUrl){
 
 function UpdateTrackedBookView(bookData){
     var header = "<div><b>Book Title</b>:" + bookData.title + "</div>";
-    var ContentHtml = 'Graphic<br>' +
+    var ContentHtml = '<div>' +
+        '<canvas id="canvas" height="300" width="500"></canvas>' +
+        '</div><br>' +
         '<button id="enableTracking" name="track">Track SalesRank</button>' +
         '<button id="disableTracking" name="track">Disable Tracking</button>';
     $('.header').html(header);
@@ -523,6 +525,37 @@ function UpdateTrackedBookView(bookData){
         });
     });
     //$('.info.single_book').html(info);
+    var chartData = bookData.salesRankData;
+    var labels = [];
+    var data = [];
+    for(var i=0;i<chartData.length;i++){
+        labels.push(new Date(chartData[i].date).toDateString());
+        data.push(chartData[i].salesRank);
+    }
+
+    if(labels.length === 1) labels.push('');
+    if(data.length === 1) labels.push('');
+
+    var lineChartData = {
+        labels: labels,
+        datasets: [
+        {
+        label: "Sales Rank",
+        fillColor: "rgba(220,220,220,0.2)",
+        strokeColor: "rgba(220,220,220,1)",
+        pointColor: "rgba(220,220,220,1)",
+        pointStrokeColor: "#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "rgba(220,220,220,1)",
+        data: data
+        }
+        ]
+    };
+
+    var ctx = document.getElementById("canvas").getContext("2d");
+    window.myLine = new Chart(ctx).Line(lineChartData, {
+        responsive: false
+    });
 }
 
 function UpdateRateTrackingTable(){
