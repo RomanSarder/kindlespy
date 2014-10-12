@@ -452,10 +452,10 @@ function RankTrackingListShow() {
     $('.content').css("min-height", "340px");
     $('.content').css("margin-left", "0px");
     $('.content').css("margin-top", "0px");
-    $('.content').css("margin:", "0 auto");
+    //$('.content').css("margin:", "0 auto");
     $('.content').css("line-height:", "55px");
     $('.header').css("width","99%");
-    $('.header').css("margin","0 auto");
+    //$('.header').css("margin","0 auto");
 
     UpdateRateTrackingTable();
 
@@ -481,10 +481,10 @@ function RankTrackingSingleShow(bookUrl){
     $('.content').css("min-height", "340px");
     $('.content').css("margin-left", "0px");
     $('.content').css("margin-top", "0px");
-    $('.content').css("margin:", "0 auto");
+    //$('.content').css("margin:", "0 auto");
     $('.content').css("line-height:", "55px");
     $('.header').css("width","75%");
-    $('.header').css("margin","0");
+    //$('.header').css("margin","0");
     $(".table-head").css("width","75%");
 
     $('.header').html('');
@@ -853,10 +853,10 @@ function UpdateTable(obj)
         $('.content').css("max-height" , "340px");
         $('.content').css("margin-left" , "0px");
         $('.content').css("margin-top" , "0px");
-        $('.content').css("margin:" , "0 auto");
+        //$('.content').css("margin:" , "0 auto");
         $('.content').css("line-height" , "55px");
         $('.header').css("width","99%");
-        $('.header').css("margin","auto 0");
+        //$('.header').css("margin","auto 0");
         $(".table-head").css("width","99%");
 
         chrome.runtime.sendMessage({type: "get-settings"}, function(response)
@@ -942,10 +942,10 @@ function UpdateTable(obj)
     $('.content').css("min-height" , "340px");
     $('.content').css("margin-left" , "0px");
     $('.content').css("margin-top" , "0px");
-    $('.content').css("margin:" , "0 auto");
+    //$('.content').css("margin:" , "0 auto");
     $('.content').css("line-height:" , "55px");
     $('.header').css("width","99%");
-    $('.header').css("margin","auto 0");
+    //$('.header').css("margin","auto 0");
     $(".table-head").css("width","97%");
 
     chrome.runtime.sendMessage({type: "get-settings"}, function(response)
