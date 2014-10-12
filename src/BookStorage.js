@@ -214,3 +214,18 @@ BookStorage.prototype.TrackData = function () {
         });
     });
 };
+
+/**
+ * Returns number of books from the storage
+ * @param {function} callback function(object bookData) {...};
+ */
+BookStorage.prototype.GetNumberOfBooks = function(callback) {
+    this._storage.get('trackingData', function(items) {
+        if(items !== undefined && items.trackingData !== undefined) {
+            callback(items.trackingData.length);
+            return;
+        }
+
+        callback(undefined);
+    });
+};

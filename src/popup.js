@@ -533,10 +533,11 @@ function UpdateRateTrackingTable(){
                 "<td >" + (i+1) + "</td>" +
                 "<td style=\"width:520px;padding-right: 20px;\">" + books[i].title + "</td>" +
                 "<td style=\"width:75px;padding-right: 10px;padding-left: 30px;\">" + books[i].salesRankData.length + "</td>" +
-                "<td><a id='RankTrackingResult' href='#'>Results</a></td>" +
+                "<td><a class='RankTrackingResultSingle' href='#' bookUrl='" + books[i].url + "'>Results</a></td>" +
             "</tr>";
         }
         $("table[name='data']").find("tbody").html(html);
+        addEventListenerForSingleResultBook();
     });
 }
 
@@ -642,6 +643,9 @@ function InsertDatas(PageNumber)
     $('#totalReSalesRecv').html(SiteParser.CurrencySign + " " + addCommas(averageSalesRecv));/**/
 
     //AddEventListener for T links
+    addEventListenerForSingleResultBook();
+}
+function addEventListenerForSingleResultBook(){
     var RankTrackingResultSingle = document.getElementsByClassName('RankTrackingResultSingle');
     for(var i = 0;i<RankTrackingResultSingle.length; i++) {
         RankTrackingResultSingle[i].addEventListener("click", function () {
@@ -649,7 +653,6 @@ function InsertDatas(PageNumber)
         });
     }
 }
-
 function ExportSellResult()
 {
     var x = new Array(PageNum * 20 + 1);
@@ -905,12 +908,16 @@ function UpdateTable(obj)
     }
 
     IsErrorWindow = false;
+    Storage.GetNumberOfBooks(function(num){
+        var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
+        $('.header').html(HeaderHtml);
+        SetupClickListeners();
+    });
 
-    var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (1)</a></div>";
 	var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:175px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"searchf\" style=\"padding-right:25px;\">More</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:8px;\">Page(s)</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">Price</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Est. Sales</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Sales Rev.</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" >Sales Rank</label>"
     var InfoHtml = "<div class=\"info-item\"><span style=\"font-size:11px\">Results:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rank:</span><div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">2,233</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rev:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">$7,000.00</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Price:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">$7.95</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. No. Reviews:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">31</div></div>";
-	$('.header').html(HeaderHtml);
+
     $('.content').html(ContentHtml);
     $('.info.list_books').html(InfoHtml);
     $('#WordCloudFooter').hide();
@@ -969,8 +976,6 @@ function UpdateTable(obj)
             });
         }
     });
-
-    SetupClickListeners();
 
     $('.sort-column').each(function( index ){
         $(this).click(function() {
