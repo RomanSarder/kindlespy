@@ -500,18 +500,22 @@ function RankTrackingSingleShow(bookUrl){
 function UpdateTrackedBookView(bookData){
     var header = "<div><b>Book Title</b>:" + bookData.title + "</div>";
     var ContentHtml = 'Graphic<br>' +
-        '<button id="enableTracking" name="track" display="none">Track SalesRank</button>' +
-        '<button id="disableTracking" name="track" display="none">Disable Tracking</button>';
+        '<button id="enableTracking" name="track">Track SalesRank</button>' +
+        '<button id="disableTracking" name="track">Disable Tracking</button>';
     $('.header').html(header);
     $('.content').html(ContentHtml);
     $('#enableTracking').toggle(!bookData.trackingEnabled);
     $('#disableTracking').toggle(bookData.trackingEnabled);
-    //Add evento for traking button
+
     $('#enableTracking').click(function () {
-       Storage.EnableTracking(bookData.url);
+        Storage.EnableTracking(bookData.url, function() {
+            RankTrackingSingleShow(bookData.url);
+        });
     });
     $('#disableTracking').click(function () {
-        Storage.DisableTracking(bookData.url);
+        Storage.DisableTracking(bookData.url, function() {
+            RankTrackingSingleShow(bookData.url);
+        });
     });
     //$('.info.single_book').html(info);
 }

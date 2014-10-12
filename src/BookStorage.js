@@ -35,8 +35,10 @@ BookStorage.prototype.Clear = function () {
 /**
  * Enable tracking for the book
  * @param bookUrl
+ * @param {function=} callback function() {...}
  */
-BookStorage.prototype.EnableTracking = function(bookUrl) {
+BookStorage.prototype.EnableTracking = function(bookUrl, callback) {
+    callback = ValueOrDefault(callback, function() {});
     var _this = this;
     // search url in storage
     this.GetBook(bookUrl, function(bookData) {
@@ -44,7 +46,7 @@ BookStorage.prototype.EnableTracking = function(bookUrl) {
             // change status to tracking
             bookData.trackingEnabled = true;
             // update data
-            _this.UpdateBookInStorage(bookUrl, bookData, function() {});
+            _this.UpdateBookInStorage(bookUrl, bookData, callback);
         };
 
         if(bookData !== undefined) {
@@ -54,29 +56,6 @@ BookStorage.prototype.EnableTracking = function(bookUrl) {
 
         // if not found, add new item to storage
         _this.InitBookFromUrl(bookUrl, changeStatus);
-//        var bookParser = new BookPageParser();
-//        bookParser.GetBookData(bookUrl, null, null, function(book){
-//            var bookData = {
-//                url: bookUrl,
-//                trackingEnabled: true,
-//                title: book.title,
-//                author: book.author,
-//                image: 'http://url.to/image.png', // TODO: fix after parsing is done
-//                currentSalesRank: book.salesRank,
-//                price: book.price,
-//                pages: book.printLength,
-//                estSales: book.estSale,
-//                estSalesRev: book.salesRecv,
-//                numberOfReviews: book.reviews,
-//                estDailyRev: '$233.00', // TODO: how to get it?
-//                salesRankData: [
-//                    {date: Date.UTC(2014, 11, 9), salesRank: 100},
-//                    {date: Date.UTC(2014, 11, 10), salesRank: 110}
-//                ]
-//            };
-//
-//            changeStatus(bookData);
-//        });
     });
 };
 

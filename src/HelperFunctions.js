@@ -22,7 +22,7 @@ function GetParameterByName(url, name) {
  * @returns {object} default value if parameter is not set
   */
 function ValueOrDefault(param, defaultValue){
-    return typeof param !== 'undefined' ? param : defaultValue;
+    return typeof param === "undefined" ? defaultValue : param;
 }
 
 /**
