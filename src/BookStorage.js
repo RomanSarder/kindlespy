@@ -188,7 +188,7 @@ BookStorage.prototype.TrackData = function () {
                 books.forEach(function(book) {
                     // if the last data is not from today
                     for(var i=0;i<book.salesRankData.length;i++) {
-                        if(book.salesRankData[i].date === today) return;
+                        if(!book.trackingEnabled || book.salesRankData[i].date === today) return;
                     }
 
                     // add the today's day data
@@ -199,7 +199,7 @@ BookStorage.prototype.TrackData = function () {
                             date: today,
                             salesRank: salesRank
                         });
-
+                        if((book.salesRankData.length % 30) === 0) book.trackingEnabled = false;
                         _this.UpdateBookInStorage(book.url, book, function() {
                             setTimeout("_this.TrackData()", 4*60*60*1000) // 4h
                             setTimeout("_this.TrackData()", 24*60*60*1000) // 24h
