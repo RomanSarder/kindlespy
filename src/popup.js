@@ -532,11 +532,20 @@ function UpdateTrackedBookView(bookData){
     $('#singleResult5').text(bookData.estSalesRev);
     $('#singleResult6').text(bookData.numberOfReviews);
     $('#days').text(bookData.salesRankData.length);
-    var sum=0;
-    for(var j=0; j<bookData.salesRankData.length;j++){
-        sum = sum+bookData.salesRankData[j].salesRank;
+    var sumRank=0;
+    var points = bookData.salesRankData.length;
+    for(var j=0; j<points;j++){
+        sumRank = sumRank + parseInt(bookData.salesRankData[j].salesRank);
     }
-    $('#AvgSalesRank').text(sum/bookData.salesRankData.length);
+    var avgSalesRank = sumRank/points;
+    var bookPageParser = new BookPageParser(bookData.url);
+    var estSale = bookPageParser.GetEstSale(avgSalesRank);
+    var realPrice = SiteParser.ParsePrice(bookData.price);
+    var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
+    var EstDailyRev = Math.round((SalesRecv/30)*100)/100;//30days
+
+    $('#AvgSalesRank').text(avgSalesRank);
+    $('#EstDailyRev').text(EstDailyRev);
 
     //$('.info.single_book').html(info);
     var chartData = bookData.salesRankData;

@@ -353,7 +353,7 @@ function processWhenDone() {
 
 function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, reviews, category, categoryKind)
 {
-    var parser = new BookPageParser();
+    var parser = new BookPageParser(url);
     parser.GetBookData(url, price, reviews, function(pageData) {
         chrome.runtime.sendMessage({type: "get-settings"}, function (response) {
             if (response.settings.PullStatus) {

@@ -96,7 +96,7 @@ BookStorage.prototype.GetBook = function(bookUrl, callback) {
 };
 
 BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
-    var bookParser = new BookPageParser();
+    var bookParser = new BookPageParser(bookUrl);
     bookParser.GetBookData(bookUrl, null, null, function(book){
         var bookData = {
             url: bookUrl,
@@ -192,7 +192,7 @@ BookStorage.prototype.TrackData = function () {
                     }
 
                     // add the today's day data
-                    var bookParser = new BookPageParser();
+                    var bookParser = new BookPageParser(book.url);
                     bookParser.GetSalesRankFromUrl(book.url, function(salesRank){
                         book.currentSalesRank = salesRank;
                         book.salesRankData.push({

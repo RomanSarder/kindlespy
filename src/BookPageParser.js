@@ -2,8 +2,8 @@
  * Created by Andrey Klochkov on 12.10.2014.
  */
 
-function BookPageParser(){
-    this._siteParser = {};
+function BookPageParser(url){
+    this._siteParser = GetSiteParser(url);
 }
 
 BookPageParser.prototype.GetDateOfPublication = function(responseText, callback) {
@@ -107,7 +107,7 @@ BookPageParser.prototype.GetSalesRank = function(responseText) {
 BookPageParser.prototype.GetEstSale = function(salesRank) {
     var data = this._siteParser.EstSalesScale;
     if (typeof salesRank === "undefined") return 1;
-    var sale = salesRank.replace(this._siteParser.ThousandSeparator, "");
+    var sale = salesRank.toString().replace(this._siteParser.ThousandSeparator, "");
 
     for (var i = 0; i < data.length; i++) {
         if (sale >= data[i].min && sale <= data[i].max) return data[i].EstSale;
@@ -138,7 +138,6 @@ BookPageParser.prototype.GetAuthor = function(responseText) {
 };
 
 BookPageParser.prototype.GetSalesRankFromUrl = function(url, callback) {
-    this._siteParser = GetSiteParser(url);
     var _this = this;
 
     $.get(url, function (responseText) {
@@ -149,7 +148,6 @@ BookPageParser.prototype.GetSalesRankFromUrl = function(url, callback) {
 };
 
 BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
-    this._siteParser = GetSiteParser(url);
     var _this = this;
 
     $.get(url, function (responseText) {
