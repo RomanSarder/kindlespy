@@ -683,6 +683,7 @@ function InsertDatas(PageNumber)
     }
 
     $("table[name='data']").find("tbody").html(html);
+    addEventListenerForSingleResultBook();
 
     if (categoryKind.indexOf("Seller") >= 0)
         $("#CategoryKind").html("Best Sellers in");
@@ -697,9 +698,6 @@ function InsertDatas(PageNumber)
     $('#result4').html(SiteParser.CurrencySign + " " +  addCommas((averagePrice/nTotalCnt).toFixed(2)));
     $('#result5').html(addCommas(Math.floor(averageReview / nTotalCnt)));
     $('#totalReSalesRecv').html(SiteParser.CurrencySign + " " + addCommas(averageSalesRecv));/**/
-
-    //AddEventListener for T links
-    addEventListenerForSingleResultBook();
 }
 function addEventListenerForSingleResultBook(){
     var RankTrackingResultSingle = document.getElementsByClassName('RankTrackingResultSingle');
