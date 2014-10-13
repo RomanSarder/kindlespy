@@ -18,10 +18,9 @@ var bookDataExample = {
     estSales: 2233,
     estSalesRev: '$7,000.00',
     numberOfReviews: 31,
-    estDailyRev: '$233.00', // TODO: how to get it?
     salesRankData: [
-        {date: Date.UTC(2014, 11, 9), salesRank: 100},
-        {date: Date.UTC(2014, 11, 10), salesRank: 110}
+        {date: Date.UTC(2014, 11, 9), salesRank: '100'},
+        {date: Date.UTC(2014, 11, 10), salesRank: '110'}
     ]
 };
 
@@ -110,7 +109,6 @@ BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
             estSales: book.estSale,
             estSalesRev: book.salesRecv,
             numberOfReviews: book.reviews,
-            estDailyRev: '$233.00', // TODO: how to get it?
             salesRankData: [
                 {date: new Date().setHours(0,0,0,0), salesRank: book.salesRank}
             ]

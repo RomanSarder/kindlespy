@@ -51,7 +51,7 @@ function resetCss(){
     $('#BestSellersRankingFooter').hide();
     $('#NoDataFooter').hide();
     $('#ExportBtn').hide();
-    $('#TrackedPanel').hide();
+    $('#TrackedPanelFooter').hide();
     $('#BookTracked').hide();
 
 }
@@ -411,7 +411,7 @@ function RankTrackingListShow() {
     $('.info.list_books').html(info);
     resetCss();
     $('#main-content').show();
-    $('#TrackedPanel').show();
+    $('#TrackedPanelFooter').show();
     $('.info.list_books').show();
 
     LoadAdvertisementBanner();
@@ -427,7 +427,7 @@ function RankTrackingSingleShow(bookUrl){
     resetCss();
     $('#main-content').show();
     $('#ExportBtn').show();
-    $('#TrackedPanel').show();
+    $('#TrackedPanelFooter').show();
     $('#BookTracked').show();
     $('.info.single_book').show();
     $('.right-panel').show();
@@ -474,7 +474,7 @@ function UpdateTrackedBookView(bookData){
     $('#singleResult2').text(bookData.price);
     $('#singleResult3').text(bookData.pages);
     $('#singleResult4').text(bookData.estSales);
-    $('#singleResult5').text(bookData.estSalesRev);
+    $('#singleResult5').text(SiteParser.CurrencySign + " " + addCommas(bookData.estSalesRev));
     $('#singleResult6').text(bookData.numberOfReviews);
     var sumRank=0;
     var points = bookData.salesRankData.length;
@@ -490,7 +490,7 @@ function UpdateTrackedBookView(bookData){
 
     $('#days').text(points);
     $('#AvgSalesRank').text(avgSalesRank);
-    $('#EstDailyRev').text(EstDailyRev);
+    $('#EstDailyRev').text(SiteParser.CurrencySign + " " + EstDailyRev);
     $('#authorName').text(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
 
