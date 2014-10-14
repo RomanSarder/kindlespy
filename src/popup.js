@@ -404,7 +404,7 @@ function WordsInfoUpdate()
 }
 function RankTrackingListShow() {
     var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
-    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:450px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"daysTracked\" style=\"padding-right:40px;\">Days Tracked</label><label class=\"sort-column\" id=\"resTracking\" style=\"padding-right:5px;\">Tracking</label>";
+    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:350px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"daysTracked\" style=\"padding-right:35px;\">Days Tracked</label><label class=\"sort-column\" id=\"resTracking\" style=\"padding-right:45px;\">Tracking</label><label class=\"sort-column\" id=\"removeTracking\" style=\"padding-right:5px;\">Action</label>";
     var info = "<div style=\"font-size:15px;\"><b>Best Seller Rank Tracking:</b></div>";
     $('.header').html("");
     $('#main-content').html(ContentHtml);
@@ -452,9 +452,9 @@ function RankTrackingSingleShow(bookUrl){
 
 function UpdateTrackedBookView(bookData){
     var ContentHtml = '';
-    var header = "<div style='float:left;font-size:14px;padding-left:11px;width: 75%;'><b>Book Title</b>:" + bookData.title + "</div>";
+    var header = "<div style='float:left;font-size:14px;padding-left:11px;width: 75%;'><b>Book Title</b>: " + bookData.title + "</div>";
     if(bookData.trackingEnabled)
-        var ContentHtml = '<div><canvas id="canvas" height="340" width="520"></canvas></div>';
+        ContentHtml = '<div><canvas id="canvas" height="340" width="520"></canvas></div>';
     else
         ContentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
     $('.header').html(header);
@@ -537,14 +537,25 @@ function UpdateRateTrackingTable(){
         for(var i=0;i<books.length;i++){
             html += "<tr>" +
                 "<td >" + (i+1) + "</td>" +
-                "<td style=\"width:520px;padding-right: 20px;\">" + books[i].title + "</td>" +
+                "<td style=\"width:500px;padding-right: 20px;\">" + books[i].title + "</td>" +
                 "<td style=\"width:75px;padding-right: 10px;padding-left: 30px;\">" + books[i].salesRankData.length + "</td>" +
-                "<td><a class='RankTrackingResultSingle' href='#' bookUrl='" + books[i].url + "'>Results</a></td>" +
+                "<td style=\"width:85px;\"><a class='RankTrackingResultSingle' href='#' bookUrl='" + books[i].url + "'>Results</a></td>" +
+                "<td style=\"width:85px;\"><a class='RankTrackingRemove' href='#' bookUrl='" + books[i].url + "'>Remove</a></td>" +
             "</tr>";
         }
         $("table[name='data']").find("tbody").html(html);
         addEventListenerForSingleResultBook();
-    });
+
+        //Remove links
+        var RemoveRankTrackedBooks = document.getElementsByClassName('RankTrackingRemove');
+        for(var i = 0;i<RemoveRankTrackedBooks.length; i++) {
+            RemoveRankTrackedBooks[i].addEventListener("click", function () {
+                Storage.RemoveBookInStorage($(this).attr('bookUrl'), function(){
+                    RankTrackingListShow();
+                });
+            });
+        }
+  });
 }
 
 function InsertDatas(PageNumber)

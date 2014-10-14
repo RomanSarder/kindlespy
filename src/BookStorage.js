@@ -223,3 +223,21 @@ BookStorage.prototype.GetNumberOfBooks = function(callback) {
         callback(undefined);
     });
 };
+
+/**
+ * Remove tracked book in the storage by Url
+ * @param bookUrl
+ * @param callback function(integer bytesInUse) {...};
+ */
+BookStorage.prototype.RemoveBookInStorage = function(bookUrl, callback) {
+    var _this = this;
+    this._storage.get('trackingData', function(items) {
+        if(items === undefined) return;
+        if(items.trackingData === undefined) return;
+        var index = _this.FindUrlIndex(items.trackingData, bookUrl);
+        if(index !== undefined)
+            items.trackingData.splice(index, 1);
+        _this._storage.set(items, callback);
+    });
+};
+
