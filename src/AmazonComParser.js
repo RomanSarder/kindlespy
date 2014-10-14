@@ -98,3 +98,7 @@ AmazonComParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, ur
 AmazonComParser.prototype.GetImageUrlSrc = function(responseText) {
     return ParseString($(responseText).find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
+AmazonComParser.prototype.GetReviews = function(responseText) {
+    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
+};

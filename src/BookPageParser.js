@@ -68,8 +68,9 @@ BookPageParser.prototype.GetTitle = function(responseText) {
 };
 
 BookPageParser.prototype.GetReviews = function(responseText) {
-    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
-    return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
+    if (typeof responseText !== "undefined" && responseText.length > 1) {
+        return this._siteParser.GetReviews(responseText);
+    }
 };
 
 BookPageParser.prototype.GetPrice = function(responseText) {

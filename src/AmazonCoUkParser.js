@@ -109,3 +109,11 @@ AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCod
 AmazonCoUkParser.prototype.GetImageUrlSrc = function(responseText) {
     return $(responseText).find('#prodImage').attr('src');
 };
+
+AmazonCoUkParser.prototype.GetReviews = function(responseText) {
+    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    if (rl_reviews.length)
+        return $(rl_reviews).text().replace('reviews','').trim();
+    else
+        return  "0";
+}

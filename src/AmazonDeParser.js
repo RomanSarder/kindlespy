@@ -99,3 +99,10 @@ AmazonDeParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url
 AmazonDeParser.prototype.GetImageUrlSrc = function(responseText) {
     return $(responseText).find('#main-image').attr('src');
 };
+AmazonDeParser.prototype.GetReviews = function(responseText) {
+    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    if (rl_reviews.length)
+        return $(rl_reviews).text().replace('Rezensionen','').trim();
+    else
+        return  "0";
+};

@@ -351,6 +351,15 @@ td.wow
     border: 1px solid black;
     color: white;
 }
+.brtdisable{
+    margin: 20% 0px;
+}
+.brtdisable div {
+    font-size:30px;
+    text-align: center;
+    color: darkgray;
+    line-height: 30px;
+}
 </style>
 <body style="margin: 0 auto; height: 591px;">
     <div style="width:770px; height: 591px;">
@@ -397,7 +406,7 @@ td.wow
                         <span style="font-size:11px">Price:</span>
                         <div style="font-size:16px;font-weight:bold; margin-top:-6px;" id="singleResult2">0</div>
                     </div>
-                    <div class="info-item">
+                    <div class="info-item" style="width:13%;">
                         <span style="font-size:11px">Pages:</span>
                         <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="singleResult3">0</div>
                     </div>
@@ -405,7 +414,7 @@ td.wow
                         <span style="font-size:11px">Est.Sales:</span>
                         <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="singleResult4">0</div>
                     </div>
-                    <div class="info-item">
+                    <div class="info-item" style="width:20%;">
                         <span style="font-size:11px">Est.Sales Rev:</span>
                         <div style="font-size:16px;font-weight:bold;margin-top:-6px;" id="singleResult5">0</div>
                     </div>
@@ -456,10 +465,10 @@ td.wow
                         <img id="bookImage" src=""/>
                     </div>
                     <div style="text-align: center;margin: 10px 0;">
-                        <b>Author:</b><span id="authorName"></span>
+                        <b>Author: </b><span id="authorName"></span>
                     </div>
                     <div style="text-align: center;">
-                        <button id="enableTracking" name="track">Track SalesRank</button>
+                        <button id="enableTracking" name="track" style="display: none;">Track SalesRank</button>
                         <button id="disableTracking" name="track">Disable Tracking</button>
                     </div>
                 </div>
@@ -472,16 +481,16 @@ td.wow
                 </div>
                 <div id="BookTracked">
                     <div style="float:left;width:15%;padding-top: 10px;border-left: 1px solid 999999;padding-bottom: 14px;">
-                        <div style="margin: 0 auto;display: table;text-align: center;padding-top: 5px;"><span style="font-size:11px">Data points(Days):</span>
-                            <div style="font-size:16px;font-weight:bold" id="days">2</div></div>
+                        <div style="margin: 0 auto;display: table;padding-top: 5px;"><span style="font-size:11px">Data points(Days):</span>
+                            <div style="font-size:16px;font-weight:bold" id="days">0</div></div>
                     </div>
-                    <div style="float:left;width:15%;padding-top: 10px;border-left: 1px solid 999999;padding-bottom: 14px;">
-                        <div style="margin: 0 auto;display: table;text-align: center;padding-top: 5px;"><span style="font-size:11px">Avg.Sales Rank:</span>
-                            <div style="font-size:16px;font-weight:bold" id="AvgSalesRank">$97,000.00</div></div>
+                    <div style="float:left;width:16%;padding-top: 10px;border-left: 1px solid 999999;padding-bottom: 14px;">
+                        <div style="margin: 0 auto;display: table;padding-top: 5px;"><span style="font-size:11px">Avg.Sales Rank:</span>
+                            <div style="font-size:16px;font-weight:bold" id="AvgSalesRank">0</div></div>
                     </div>
-                    <div style="float:left;width:15%;padding-top: 10px;border-left: 1px solid 999999;padding-bottom: 14px;">
-                        <div style="margin: 0 auto;display: table;text-align: center;padding-top: 5px;"><span style="font-size:11px">Est.Daily Rev.:</span>
-                            <div style="font-size:16px;font-weight:bold" id="EstDailyRev">$233</div></div>
+                    <div style="float:left;width:16%;padding-top: 10px;border-left: 1px solid 999999;padding-bottom: 14px;">
+                        <div style="margin: 0 auto;display: table;padding-top: 5px;"><span style="font-size:11px">Est.Daily Rev.:</span>
+                            <div style="font-size:16px;font-weight:bold" id="EstDailyRev">0</div></div>
                     </div>
                 </div>
             </div>
@@ -521,11 +530,11 @@ td.wow
                 <div style="float: left;width: 65%;margin-top: 5px;">
                 </div>
             </div>
-            <div id="ExportBtn" style="float:left;width:10%;">
-                <div style="display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; border-right : 1px solid 999999; padding:0 18px;"><div style="font-size:11px; margin-top: 10px">Export</div>
+            <div id="ExportBtn" style="float:left;width:9%;">
+                <div style="display:table;text-align:center;margin:0 auto;border-left : 1px solid 999999; padding:0 18px;"><div style="font-size:11px; margin-top: 10px">Export</div>
                     <div style="font-size:16px;font-weight:bold"><img src="../icons/download.png" id="Export" style="zoom: .8"></div></div>
             </div>
-            <div id="AdPanel" style="float:right;width:25%;">
+            <div id="AdPanel" style="float:right;width:25%;border-left: 1px solid 999999;min-height:59px;">
                 <div style="margin: 0 auto;display: table;text-align: center;padding-top: 5px;">
                     <div id="ad"/>
                 </div>

@@ -451,8 +451,12 @@ function RankTrackingSingleShow(bookUrl){
 }
 
 function UpdateTrackedBookView(bookData){
+    var ContentHtml = '';
     var header = "<div style='float:left;font-size:14px;padding-left:11px;width: 75%;'><b>Book Title</b>:" + bookData.title + "</div>";
-    var ContentHtml = '<div><canvas id="canvas" height="340" width="520"></canvas></div>';
+    if(bookData.trackingEnabled)
+        var ContentHtml = '<div><canvas id="canvas" height="340" width="520"></canvas></div>';
+    else
+        ContentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
     $('.header').html(header);
     $('#main-content').html(ContentHtml);
     $('#enableTracking').toggle(!bookData.trackingEnabled);
@@ -470,12 +474,12 @@ function UpdateTrackedBookView(bookData){
             RankTrackingSingleShow(bookData.url);
         });
     });
-    $('#singleResult1').text(bookData.currentSalesRank);
-    $('#singleResult2').text(bookData.price);
-    $('#singleResult3').text(bookData.pages);
-    $('#singleResult4').text(bookData.estSales);
-    $('#singleResult5').text(SiteParser.CurrencySign + " " + addCommas(bookData.estSalesRev));
-    $('#singleResult6').text(bookData.numberOfReviews);
+    $('#singleResult1').html(bookData.currentSalesRank);
+    $('#singleResult2').html(bookData.price);
+    $('#singleResult3').html(bookData.pages);
+    $('#singleResult4').html(addCommas(bookData.estSales));
+    $('#singleResult5').html(SiteParser.FormatPrice(addCommas(Math.round(bookData.estSalesRev))));
+    $('#singleResult6').html(bookData.numberOfReviews);
     var sumRank=0;
     var points = bookData.salesRankData.length;
     for(var j=0; j<points;j++){
@@ -484,14 +488,14 @@ function UpdateTrackedBookView(bookData){
     var avgSalesRank = sumRank/points;
     var bookPageParser = new BookPageParser(bookData.url);
     var estSale = bookPageParser.GetEstSale(avgSalesRank);
-    var realPrice = SiteParser.ParsePrice(bookData.price);
+    var realPrice = parseFloat(bookData.price.replace(/[^0-9\.]/g, ''));
     var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
     var EstDailyRev = Math.round((SalesRecv/30)*100)/100;//30days
 
-    $('#days').text(points);
-    $('#AvgSalesRank').text(avgSalesRank);
-    $('#EstDailyRev').text(SiteParser.CurrencySign + " " + EstDailyRev);
-    $('#authorName').text(bookData.author);
+    $('#days').html(points);
+    $('#AvgSalesRank').html(addCommas(avgSalesRank));
+    $('#EstDailyRev').html(SiteParser.FormatPrice(addCommas(EstDailyRev)));
+    $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
 
     var chartData = bookData.salesRankData;
@@ -640,10 +644,10 @@ function InsertDatas(PageNumber)
 
     $("#title").html(category + ":");
     $('#result2').html(addCommas(Math.floor(averageSalesRank / nTotalCnt)));
-    $('#result3').html(SiteParser.CurrencySign + " " + addCommas(Math.floor(averageSalesRecv / nTotalCnt)));
-    $('#result4').html(SiteParser.CurrencySign + " " +  addCommas((averagePrice/nTotalCnt).toFixed(2)));
+    $('#result3').html(SiteParser.FormatPrice(addCommas(Math.floor(averageSalesRecv / nTotalCnt))));
+    $('#result4').html(SiteParser.FormatPrice(addCommas((averagePrice/nTotalCnt).toFixed(2))));
     $('#result5').html(addCommas(Math.floor(averageReview / nTotalCnt)));
-    $('#totalReSalesRecv').html(SiteParser.CurrencySign + " " + addCommas(averageSalesRecv));/**/
+    $('#totalReSalesRecv').html(SiteParser.FormatPrice(addCommas(averageSalesRecv)));/**/
 }
 function addEventListenerForSingleResultBook(){
     var RankTrackingResultSingle = document.getElementsByClassName('RankTrackingResultSingle');
@@ -814,6 +818,9 @@ function LoadData(obj) {
         $('.header').html("");
         $('.info.list_books').html("");
         $('.info.list_books').show();
+        $('#ExportBtn').show();
+        $('#NoDataFooter').show();
+
 
         $('.table-head').html("");
         $('#main-content').html("<div><img style=\"width:100%\" src=\"loading.gif\"//></div>");
