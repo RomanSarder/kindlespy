@@ -506,6 +506,8 @@ function UpdateTrackedBookView(bookData){
     else {
         contentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
         $('#enableTracking').prop('disabled', false);
+        $('#BookTracked').hide();
+        $('#ExportBtn').hide();
     }
     $('#tracking-header').show();
     $('#LinkBackTo').show();
@@ -534,7 +536,7 @@ function UpdateTrackedBookView(bookData){
     var EstDailyRev = Math.round((SalesRecv/30)*100)/100;//30days
 
     $('#days').html(points);
-    $('#AvgSalesRank').html(addCommas(avgSalesRank.toFixed(2)));
+    $('#AvgSalesRank').html(Math.round(avgSalesRank));
     $('#EstDailyRev').html(SiteParser.FormatPrice(addCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
