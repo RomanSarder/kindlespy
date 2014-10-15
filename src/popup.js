@@ -463,6 +463,8 @@ function resetTrackingBookPage(bookUrl) {
     $('#enableTracking').show();
     $('#enableTracking').prop('disabled', true);
     $('#disableTracking').hide();
+    $('#ExportBtn').hide();
+    $('#BookTracked').hide();
 }
 
 function RankTrackingSingleShow(bookUrl){
@@ -470,9 +472,7 @@ function RankTrackingSingleShow(bookUrl){
     resetTrackingBookPage(bookUrl);
     $('#tracking-header').show();
     $('#tracking-content').show();
-    $('#ExportBtn').show();
     $('#TrackedPanelFooter').show();
-    $('#BookTracked').show();
     $('.info.single_book').show();
     $('.right-panel').show();
     $(".table-head").html("<label>Bestseller rank tracking(30 days)<label>");
@@ -502,12 +502,12 @@ function UpdateTrackedBookView(bookData){
         contentHtml = '<div><canvas id="canvas" height="290" width="520"></canvas></div>';
         $('#infoPages').show();
         $('.info.single_book .info-item').css('width', '16%');
+        $('#ExportBtn').show();
+        $('#BookTracked').show();
     }
     else {
         contentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
         $('#enableTracking').prop('disabled', false);
-        $('#BookTracked').hide();
-        $('#ExportBtn').hide();
     }
     $('#tracking-header').show();
     $('#LinkBackTo').show();
