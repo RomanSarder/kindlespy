@@ -75,6 +75,10 @@ BookPageParser.prototype.GetReviews = function(responseText) {
 
 BookPageParser.prototype.GetPrice = function(responseText) {
     var priceBlock = $(responseText).find('#priceBlock b.priceLarge');
+    if(priceBlock && priceBlock.text().trim() !== '') {
+         return priceBlock.text().trim();
+    }
+    priceBlock = $(responseText).find('#kindle_meta_binding_winner .price');
     return priceBlock ? priceBlock.text().trim() : "";
 };
 

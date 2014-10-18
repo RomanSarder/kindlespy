@@ -425,7 +425,7 @@ function WordsInfoUpdate()
 }
 function RankTrackingListShow() {
     var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
-    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:350px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"daysTracked\" style=\"padding-right:35px;\">Days Tracked</label><label class=\"sort-column\" id=\"resTracking\" style=\"padding-right:45px;\">Tracking</label><label class=\"sort-column\" id=\"removeTracking\" style=\"padding-right:5px;\">Action</label>";
+    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:350px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"daysTracked\" style=\"padding-right:30px;\">Days Tracked</label><label class=\"sort-column\" id=\"resTracking\" style=\"padding-right:45px;\">Tracking</label><label class=\"sort-column\" id=\"removeTracking\" style=\"padding-right:5px;\">Action</label>";
     var info = "<div style=\"font-size:15px;\"><b>Best Seller Rank Tracking:</b></div>";
     $('#main-header').html('');
     $('#main-content').html(ContentHtml);
@@ -526,17 +526,17 @@ function UpdateTrackedBookView(bookData){
     var sumRank=0;
     var points = bookData.salesRankData.length;
     for(var j=0; j<points;j++){
-        sumRank = sumRank + parseInt(bookData.salesRankData[j].salesRank);
+        sumRank += parseInt(bookData.salesRankData[j].salesRank.replace(SiteParser.ThousandSeparator, "").trim());
     }
     var avgSalesRank = sumRank/points;
     var bookPageParser = new BookPageParser(bookData.url);
     var estSale = bookPageParser.GetEstSale(avgSalesRank);
     var realPrice = parseFloat(bookData.price.replace(/[^0-9\.]/g, ''));
     var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
-    var EstDailyRev = Math.round((SalesRecv/30)*100)/100;//30days
+    var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
 
     $('#days').html(points);
-    $('#AvgSalesRank').html(Math.round(avgSalesRank));
+    $('#AvgSalesRank').html(addCommas(Math.floor(avgSalesRank)));
     $('#EstDailyRev').html(SiteParser.FormatPrice(addCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
