@@ -4,7 +4,10 @@ var clouds = [];
 var PageNum = 1;
 var CurrentPageUrl = "";
 var refreshed = false;
-var bIsSellWin = true;
+var BEST_SELLERS = "best-sellers";
+var WORD_CLOUD = "word-cloud";
+var RANK_TRACKING = "rank-tracking";
+var activeTab = BEST_SELLERS;
 var IsErrorWindow = false;
 var SiteParser;
 var Storage = new BookStorage();
@@ -27,7 +30,7 @@ var currentSortDirection = 1; //1 = ask, -1 = desc
 $(window).ready(function () {
     $('#LinkBackTo').click(function () {
         $('#data-body').css("overflow-y", "auto");
-        bIsSellWin = true;
+        activeTab = BEST_SELLERS;
         frun();
     });
     $('#enableTracking').click(function () {
@@ -132,7 +135,7 @@ function AutoAddFunc()
         {
             frun();
         }
-        else if (!refreshed && bIsSellWin)
+        else if (!refreshed && (activeTab == BEST_SELLERS))
         {	
 			if (obj.length > 0)
 			{
@@ -465,6 +468,7 @@ function resetTrackingBookPage(bookUrl) {
     $('#disableTracking').hide();
     $('#ExportBtn').hide();
     $('#BookTracked').hide();
+    $('#ExportBtn').attr('book-url','');
 }
 
 function RankTrackingSingleShow(bookUrl){
@@ -540,6 +544,7 @@ function UpdateTrackedBookView(bookData){
     $('#EstDailyRev').html(SiteParser.FormatPrice(addCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
+    $('#ExportBtn').attr('book-url', bookData.url);
 
     var chartData = bookData.salesRankData;
     var labels = [];
@@ -669,7 +674,7 @@ function InsertDatas(PageNumber)
         }
     }
 
-    if (bIsSellWin && PageNumber * 20 >= 20)
+    if ((activeTab == BEST_SELLERS) && PageNumber * 20 >= 20)
     {
         $('#data-body').css("overflow-y" , "scroll");
     }
@@ -794,6 +799,68 @@ function ExportSellResult()
     link.click();
 }
 
+function ExportRankTrackedResult(){
+    var bookUrl = $('#ExportBtn').attr('book-url');
+    Storage.GetBook(bookUrl, function(bookData) {
+        if(bookData) {
+            var x = new Array(bookData.salesRankData.length+1);
+
+            for (var i = 0; i < bookData.salesRankData.length+1; i++) {
+                x[i] = new Array(2);
+            }
+
+            x[0][0] = "Date";
+            x[0][1] = "Sales Rank";
+
+            for(var index = 0; index < bookData.salesRankData.length; index ++) {
+                x[index + 1][0] = new Date(bookData.salesRankData[index].date).toDateString();
+                x[index + 1][1] = addCommas(bookData.salesRankData[index].salesRank);
+            }
+
+            var csvContent = "\uFEFF";
+            x.forEach(function(infoArray, index){
+                if (index <= bookData.salesRankData.length)
+                {
+                    var dataString = [];
+                    for (var i = 0; i < infoArray.length; i++)
+                    {
+                        var quotesRequired = false;
+                        if (infoArray[i].indexOf(",") >= 0)
+                            quotesRequired = true;
+                        var escapeQuotes = false;
+                        if (infoArray[i].indexOf("\"") >= 0)
+                            escapeQuotes = true;
+
+                        var fieldValue = (escapeQuotes ? infoArray[i].replace("\"", "\"\"") : infoArray[i]);
+
+                        if (fieldValue.indexOf("\r") >= 0 || fieldValue.indexOf("\n") >= 0)
+                        {
+                            quotesRequired = true;
+                            fieldValue = fieldValue.replace("\r\n", "");
+                            fieldValue = fieldValue.replace("\r", "");
+                            fieldValue = fieldValue.replace("\n", "");
+                        }
+                    dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
+                    }
+                    for (var i = 0; i < dataString.length; i ++)
+                        csvContent += dataString[i];
+                }
+            });
+
+            var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
+            var url = URL.createObjectURL(blob);
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1;
+            var yyyy = today.getFullYear();
+            var link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "rs-" + bookData.title + "-" + mm + "-" + dd + "-" + yyyy + ".csv");
+            link.click();
+        }
+    });
+}
+
 function addCommas(nStr)
 {
     nStr += '';
@@ -811,20 +878,20 @@ function SetupClickListeners(){
     var linkTitleWord = document.getElementById('TitleWordCloud');
     linkTitleWord.addEventListener('click', function() {
         WordsInfoUpdate();
-        bIsSellWin = false;
+        activeTab = WORD_CLOUD;
     });
 
     var BestSellerLink = document.getElementById('BestSellerLink');
     BestSellerLink.addEventListener('click', function() {
         $('#data-body').css("overflow-y" , "auto");
-        bIsSellWin = true;
+        activeTab = BEST_SELLERS;
         frun();
     });
 
     var linkRankTrackingResultList = document.getElementById('RankTrackingResultList');
     linkRankTrackingResultList.addEventListener('click', function() {
         RankTrackingListShow();
-        bIsSellWin = false;
+        activeTab = RANK_TRACKING;
     });
 
     var link2 = document.getElementById('refresh');
@@ -858,8 +925,17 @@ function SetupStaticClickListeners() {
 
     var link4 = document.getElementById('Export');
     link4.addEventListener('click', function() {
-		if (bIsSellWin) ExportSellResult();
-		else ExportWordCloudResult();
+        switch(activeTab){
+            case BEST_SELLERS:
+                ExportSellResult();
+                break;
+            case WORD_CLOUD:
+                ExportWordCloudResult();
+                break;
+            case RANK_TRACKING:
+                ExportRankTrackedResult();
+                break;
+        }
     });
 	
     isStaticLinkInitialized = true;
