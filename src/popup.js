@@ -31,6 +31,7 @@ $(window).ready(function () {
     $('#LinkBackTo').click(function () {
         $('#data-body').css("overflow-y", "auto");
         activeTab = BEST_SELLERS;
+        chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
         frun();
     });
     $('#enableTracking').click(function () {
@@ -1060,7 +1061,15 @@ function frun()
             SiteParser = GetSiteParser(CurrentPageUrl);
             chrome.runtime.sendMessage({type: "save-UrlParams", MainUrl: SiteParser.MainUrl, ParamUrlBestSellers: SiteParser.ParamUrlBestSellers});
             InitRegionSelector();
-            LoadInfos();
+            chrome.runtime.sendMessage({type: "get-type-page"}, function(result) {
+                if(result.TYPE == 'single') {
+                    RankTrackingSingleShow(CurrentPageUrl);
+                    return;
+                }
+                LoadInfos();
+            });
+
+
         }
     });
 }

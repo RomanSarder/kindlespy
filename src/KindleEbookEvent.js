@@ -29,7 +29,7 @@ $(window).ready(function () {
         chrome.runtime.sendMessage({type: "remove-settings", ParentUrl: ParentUrl});
         setTimeout("processWhenDone()", 1500);
     });
-
+    chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
     if (IsAuthorPage()){
         scrapeAuthorPage(Url);
     }
@@ -38,6 +38,9 @@ $(window).ready(function () {
     }
     else if (IsBestSellersPage(Url)){
         scrapeBestSellersPage(Url);
+    }
+    else if (IsSingleBookPage(Url)){
+        chrome.runtime.sendMessage({type: "set-type-page", TYPE: 'single'});
     }
 });
 
@@ -52,6 +55,12 @@ function IsSearchPage(Url){
 function IsBestSellersPage(Url){
     return (Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store") >= 0 && Url.indexOf("digital-text") > 0)
         || (Url.indexOf(SiteParser.MainUrl +"/gp/bestsellers") >= 0 && Url.indexOf("digital-text") > 0);
+}
+
+function IsSingleBookPage(Url){
+    var fullUrl = Url.split("/");
+    var mainUrl = fullUrl[0] +"//"+ fullUrl[2];
+    return (mainUrl.indexOf(SiteParser.MainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
 }
 
 function GetNoInfo(responseText)
