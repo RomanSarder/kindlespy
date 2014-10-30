@@ -76,6 +76,7 @@ BookPageParser.prototype.GetReviews = function(responseText) {
 BookPageParser.prototype.GetPrice = function(responseText) {
     var priceBlock = $(responseText).find('#priceBlock b.priceLarge');
     if(priceBlock && priceBlock.text().trim() !== '') {
+        if(priceBlock.text().trim() == "Free") return this._siteParser.FormatPrice("0.00");
          return priceBlock.text().trim();
     }
     priceBlock = $(responseText).find('#kindle_meta_binding_winner .price');
