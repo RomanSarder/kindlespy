@@ -50,6 +50,11 @@ $(window).ready(function () {
             RankTrackingSingleShow($(_this).data().url);
         });
     });
+    $('.logo').click(function () {
+        Storage.logger.GetCustomerID(function(result){
+            alert("Your user id: " + result);
+        });
+    });
 });
 
 function resetCss(){
