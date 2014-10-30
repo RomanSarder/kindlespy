@@ -43,7 +43,8 @@
                 "src/AmazonComParser.js",
                 "src/AmazonCoUkParser.js",
                 "src/AmazonDeParser.js",
-                "src/KindleEbookEvent.js"
+                "src/KindleEbookEvent.js",
+                "src/Logger.js"
             ]
         }
     ],

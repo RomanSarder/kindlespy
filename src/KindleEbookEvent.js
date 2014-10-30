@@ -11,6 +11,7 @@ $(window).ready(function () {
     ParentUrl = Url;
     SiteParser = GetSiteParser(Url);
     BookStorage = new BookStorage();
+    BookStorage.logger.SaveLogDataToFile("First run BookStorage.TrackData");
     BookStorage.TrackData();
 
     if (SiteParser === undefined) return;
