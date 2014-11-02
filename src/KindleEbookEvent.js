@@ -11,8 +11,7 @@ $(window).ready(function () {
     ParentUrl = Url;
     SiteParser = GetSiteParser(Url);
     BookStorage = new BookStorage();
-    BookStorage.logger.SaveLogDataToFile("First run BookStorage.TrackData");
-    BookStorage.TrackData();
+    setInterval("BookStorage.TrackData()", 2*60*60*1000);
 
     if (SiteParser === undefined) return;
     if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;
