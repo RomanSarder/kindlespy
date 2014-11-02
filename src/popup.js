@@ -557,7 +557,7 @@ function UpdateTrackedBookView(bookData){
     var data = [];
     for(var i=0;i<chartData.length;i++){
         labels.push(new Date(chartData[i].date).toDateString());
-        data.push(chartData[i].salesRank);
+        data.push(chartData[i].salesRank.replace(/[^0-9\.]/g, ''));
     }
 
     if(labels.length === 1) labels.push('');
