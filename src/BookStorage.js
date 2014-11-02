@@ -183,8 +183,6 @@ BookStorage.prototype.TrackData = function () {
             _this.logger.SaveLogDataToFile("Previous update was " + dateDiffMillis / 1000 / 60 / 60 + " ago that's why do nothing");
             return;
         }
-        // if previous update was < 1m ago then do nothing
-        //if(dateDiffMillis / 1000 < 60) return;
         _this._storage.set({lastUpdate:Date.now()}, function(bytesInUse) {
             _this.logger.SaveLogDataToFile("Set lastUpdate: " + GetFormattedDate(new Date()));
             _this.GetAllBooks(function(/** Array */ books) {
@@ -213,11 +211,7 @@ BookStorage.prototype.TrackData = function () {
                             _this.logger.SaveLogDataToFile("salesRankData tracked more than 30 days");
                         }
                         _this.UpdateBookInStorage(book.url, book, function() {
-                            _this.logger.SaveLogDataToFile("BookStorage.TrackData going to start in a 4 hours");
-                            setTimeout("_this.TrackData()", 4*60*60*1000) // 4h
-                            _this.logger.SaveLogDataToFile("BookStorage.TrackData going to start in a 24 hours");
-                            setTimeout("_this.TrackData()", 24*60*60*1000) // 24h
-
+                            _this.logger.SaveLogDataToFile("BookStorage.UpdateBookInStorage already updated");
                         });
                     });
                 });
