@@ -38,7 +38,7 @@ Pager.prototype.LoadNextPage = function(callback){
             totalItemsLoaded += pulledItems;
             _this.alreadyPulled = 0;
             i++;
-            if(totalItemsLoaded<pager.itemsInResult) {
+            if(totalItemsLoaded<_this.itemsInResult) {
                 setTimeout(PullOnePage.bind(_this), 1000);
             } else {
                 _this.pagesLoaded++;
