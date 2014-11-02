@@ -4,19 +4,24 @@
 
 var ParentUrl;
 var SiteParser;
+var BookStorage;
 
 $(window).ready(function () {
     var Url = location.href;
     ParentUrl = Url;
     SiteParser = GetSiteParser(Url);
+    BookStorage = new BookStorage();
+    BookStorage.logger.SaveLogDataToFile("First run BookStorage.TrackData");
+    BookStorage.TrackData();
+
+    if (SiteParser === undefined) return;
+    if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;
+
     if (ParentUrl.indexOf("/ref=") >= 0)
     {
         var _Pos = Url.lastIndexOf('/');
         ParentUrl = Url.substr(0, _Pos);
     }
-
-    if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0)
-        return;
 
     $("#nav-searchbar").submit(function()
     {
@@ -24,17 +29,18 @@ $(window).ready(function () {
         chrome.runtime.sendMessage({type: "remove-settings", ParentUrl: ParentUrl});
         setTimeout("processWhenDone()", 1500);
     });
-
+    chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
     if (IsAuthorPage()){
         scrapeAuthorPage(Url);
     }
-
     else if (IsSearchPage(Url)) {
         scrapeSearchPage(Url);
     }
-
     else if (IsBestSellersPage(Url)){
         scrapeBestSellersPage(Url);
+    }
+    else if (IsSingleBookPage(Url)){
+        chrome.runtime.sendMessage({type: "set-type-page", TYPE: 'single'});
     }
 });
 
@@ -51,27 +57,10 @@ function IsBestSellersPage(Url){
         || (Url.indexOf(SiteParser.MainUrl +"/gp/bestsellers") >= 0 && Url.indexOf("digital-text") > 0);
 }
 
-function ParseString(responseText, pattern, startchar, endchar)
-{
-    var pos = responseText.indexOf(pattern);
-    if (pos < 0)
-        return "";
-
-    var str = responseText.substr(pos + pattern.length);
-
-    pos = str.indexOf(startchar);
-
-    if (pos < 0)
-        return "";
-
-    str = str.substr(pos + startchar.length);
-
-    pos = str.indexOf(endchar);
-
-    if (pos < 0)
-        return "";
-
-    return str.substr(0, pos).trim();
+function IsSingleBookPage(Url){
+    var fullUrl = Url.split("/");
+    var mainUrl = fullUrl[0] +"//"+ fullUrl[2];
+    return (mainUrl.indexOf(SiteParser.MainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
 }
 
 function GetNoInfo(responseText)
@@ -102,8 +91,7 @@ function GetReviewrInfo(responseText)
         str = str.substr(pos + pattern.length);
 
         review = ParseString(str, "product-reviews", '>', '<');
-        if (typeof review !== "undefined" && review.length > 0)
-            return review;
+        if (typeof review !== "undefined" && review.length > 0) return review;
 
         pos = str.indexOf(pattern);
     }
@@ -151,7 +139,7 @@ function ParseBestSellersPage(responseText, parentUrl, IsFree)
             if (typeof url[i] === "undefined" || url[i].length < 1)
                 continue;
             if (response.settings.PullStatus)
-                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller"), 500*i); //continue to try other sizes after 0.5 sec
+                setTimeout(parseDataFromBookPageAndSend.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller"), 500*i); //continue to try other sizes after 0.5 sec
         }
     });
 }
@@ -161,64 +149,6 @@ function LoadBestSellersUrl(url, parentUrl, IsFree)
     $.get(url, function(responseText){
         setTimeout(ParseBestSellersPage.bind(null, responseText, parentUrl, IsFree), 1000);
     });
-}
-
-function GetAuthorPageUrl(responseText)
-{
-    if(responseText.length<0) return "";
-    var urls = responseText.match(/<a href=\"(.*)\".*><span .*>Kindle Edition<\/span>/);
-    if(urls!=null) return urls[1];
-
-    return ParseString(responseText, 'class="title"', 'href="', '">');
-}	
-
-function GetAuthorPrice(responseText)
-{
-    var str = responseText;
-    var pos = 0;
-
-    var strSplit = str.split("<tr class>");
-    var bFind = false;
-    for (var i = 0; i < strSplit.length; i++)
-    {
-        if (strSplit[i].toLowerCase().trim().indexOf("kindle edition") >= 0)
-        {
-            pos = strSplit[i].toLowerCase().trim().indexOf("kindle edition");
-
-            str = strSplit[i].substr(pos);
-
-            bFind = true;
-            break;
-        }
-    }
-
-    if (!bFind)
-        return "0";
-
-    pos = str.indexOf('$');
-
-    while (pos >= 0)
-    {
-        str = str.substr(pos + 1);
-        var _pos = str.indexOf('<');
-
-        if (_pos >= 0)
-        {
-            var price = str.substr(0, _pos).trim();
-            if (typeof price !== "undefined" && price.indexOf("0.00") < 0)
-                return "$" + price;
-        }
-
-        pos = str.indexOf('$');
-    }
-
-    return "0";
-
-}
-
-function GetAuthorReview(responseText)
-{
-    return ParseString(responseText,'reviewsCount">', '">', '<');
 }
 
 function GetAuthorCategory(responseText)
@@ -284,7 +214,7 @@ function ParseAuthorPage(startIndex, maxResults, responseText, parentUrl)
 
             if (response.settings.PullStatus)
             {
-                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Author"), 500*i); //continue to try other sizes after 0.5 sec
+                setTimeout(parseDataFromBookPageAndSend.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Author"), 500*i); //continue to try other sizes after 0.5 sec
             }
         }
     });
@@ -356,7 +286,7 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
 
             if (response.settings.PullStatus && parentUrl === purl)
             {
-                setTimeout(fRun.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Search"), 1000*i); //continue to try other sizes after 0.5 sec
+                setTimeout(parseDataFromBookPageAndSend.bind(null, No[i], url[i], price[i], parentUrl, "", review[i], category, "Search"), 1000*i); //continue to try other sizes after 0.5 sec
             }
         }
     });
@@ -431,216 +361,34 @@ function processWhenDone() {
 	}
 }
 
-function GetSalesRank(responseText)
+function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, reviews, category, categoryKind)
 {
-    if (typeof responseText !== "undefined" && responseText.length > 1)
-    {
-        var szPattern = SiteParser.AmazonBestSellersPattern;
-        var pos = responseText.indexOf(szPattern);
-
-        if (typeof pos === "undefined" || pos < 0)
-            return "0";
-
-        var szSalesRank = responseText.substr(pos + szPattern.length);
-        szPattern = '>';
-        pos = szSalesRank.indexOf(szPattern);
-
-        if (typeof pos === "undefined" || pos < 0)
-            return "0";
-
-        var szSalesRank = szSalesRank.substr(pos + szPattern.length);
-        szSalesRank = szSalesRank.trim();
-        var szTmp = szSalesRank.split(" ");
-        for (var i = 0; i < szTmp.length; i++)
-        {
-            if (szTmp[i].indexOf('#') >= 0)
-            {
-                szSalesRank = szTmp[i].substr(szTmp[i].indexOf('#') + 1);
-                return szSalesRank;
-            }
-        }
-
-        return "0";
-    }
-
-    return "0";
-}
-
-function GetTitle(responseText)
-{
-    if (typeof responseText !== "undefined" && responseText.length > 1)
-    {
-        return SiteParser.GetTitle(responseText);
-    }
-}
-
-function GetAuthorTitle(responseText)
-{
-    return ParseString(responseText, 'id="productTitle"', '>', '<');
-}
-
-function GetAuthor(responseText)
-{
-    var tmpResponseText = ParseString(responseText, 'contributorNameTrigger', '>', '/a>');
-    var author = ParseString(tmpResponseText, 'contributorNameTrigger', '>', '<');
-    if ((author == '')||(author == 'undefined')){
-        tmpResponseText = ParseString(responseText, "<div class=\"buying\">", 'parseasinTitle', "<span class=\"byLinePipe\">");
-        author = ParseString(tmpResponseText , "<a", '>', '</a>');
-    }
-    return author;
-}
-
-function GetDateOfPublication(responseText, callback)
-{
-    var pubdate = $(responseText).find('#pubdate').val();
-    if(pubdate === undefined){
-        var publisherElement = $(responseText).find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
-        var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
-
-        callback(dateOfPublication);
-        return;
-    }
-
-    $.ajax({
-        url: "/gp/product/features/ebook-synopsis/formatDate.html",
-        data: { datetime: pubdate },
-        dataType: "json",
-        success: function (responseJson) {
-            var dateOfPublication = responseJson.value;
-            if(dateOfPublication != null) callback(dateOfPublication.toString());
-        }
-    });
-}
-
-function GetEstSale(salesRank)
-{
-    data = SiteParser.EstSalesScale;
-
-    if (typeof salesRank === "undefined")
-        return 1;
-
-    var sale = salesRank.replace(SiteParser.ThousandSeparator, "");
-
-    for (var i = 0; i < data.length; i++)
-    {
-        if (sale >= data[i].min && sale <= data[i].max)
-        {
-            return data[i].EstSale;
-        }
-    }
-
-    return "0";
-}
-
-function GetPrice(price)
-{
-    if (typeof price === "undefined")
-        return 1;
-
-    if (price.indexOf("Free") >= 0)
-        return 0;
-
-    return SiteParser.ParsePrice(price);
-}
-
-function GetSalesRecv(estsales, realPrice)
-{
-    if (typeof estsales === "undefined")
-        return 1 * price;
-
-    return estsales * realPrice;
-}
-
-function GetPrintLength(responseText){
-	return parseInt($(responseText).find('#pageCountAvailable span').text()).toString();
-}
-
-function GetGoogleImageSearchUrl(responseText, url, callback){
-    var googleUrl = "https://www.google.com/";
-    if (typeof responseText === "undefined" || responseText.length <= 1){
-        callback(googleUrl);
-        return;
-    }
-    SiteParser.GetGoogleImageSearchUrlRel(responseText, url, function(rel){
-        if (rel == 'undefined' || rel.length<1) callback(googleUrl);
-        callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
-    });
-}
-function GetGoogleSearchUrlByTitleAndAuthor(title, author){
-    var baseUrl = "http://google.com/";
-    if((title=='undefined' || title.length<1) || (author=='undefined' || author.length<1)) return baseUrl;
-    title = title.replace(/ /g, "+");
-    author = author.replace(/ /g, "+");
-    return baseUrl + "?q=" + title + "+" + author + "&oq=" + title + "+" + author + "#safe=off&q="+ title + "+" + author;
-}
-
-function fRun(num, url, price, parenturl, nextUrl, reviews, category, categoryKind)
-{
-    $.get(url, function(responseText){
-        var entryUrl = url;
-        var entryParentUrl = parenturl;
-        var entryTitle = GetTitle(responseText);
-        var entryPrice = price;
-        var realPrice = SiteParser.ParsePrice(price);
-
-        if (typeof entryPrice === "undefined" || entryPrice.length <= 1)
-            return;
-
-        var entrySalesRank = GetSalesRank(responseText);
-        var entryEstSale = GetEstSale(entrySalesRank);
-        var entrySalesRecv = GetSalesRecv(entryEstSale, realPrice);
-        var entryPrintLength = GetPrintLength(responseText);
-        var entryAuthor = GetAuthor(responseText);
-        var entryGoogleSearchUrl = GetGoogleSearchUrlByTitleAndAuthor(entryTitle, entryAuthor);
-        GetGoogleImageSearchUrl(responseText, url, function(entryGoogleImageSearchUrl){
-            GetDateOfPublication(responseText, function(entryDateOfPublication){
-                if(typeof reviews === "undefined") {
-                    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
-                    reviews = rl_reviews.length? parseInt($(rl_reviews).text()).toString():"0";
-                }
-
-                if (typeof entryTitle === "undefined" || entryTitle === "")
-                {
-                    entryTitle = GetAuthorTitle(responseText);
-                }
-
-                if (typeof entryTitle === "undefined")
-                    return;
-
-                if (typeof entryPrice === "undefined")
-                    entryPrice = "0";
-
-                if (typeof entryEstSale === "undefined")
-                    entryPrice = "0";
-
-                if (typeof entrySalesRecv == "undefined")
-                    entrySalesRecv = "0";
-
-                if (typeof reviews === "undefined")
-                    reviews = "0";
-
-                if (typeof  entrySalesRank === "undefined" || entrySalesRank.length < 1)
-                    entrySalesRank = "1";
-
-                if (typeof entryPrintLength === "undefined" || entryPrintLength =='' || entryPrintLength =="NaN")
-                    entryPrintLength = "n/a";
-
-                if (typeof entryAuthor === "undefined" || entryAuthor.length < 1)
-                    entryAuthor = "n/a";
-
-                chrome.runtime.sendMessage({type:"get-settings"}, function(response){
-                    if (response.settings.PullStatus) {
-                        chrome.runtime.sendMessage({type: "save-settings", No: num, URL: entryUrl, ParentURL: entryParentUrl,
-                            NextUrl: nextUrl, Title: entryTitle, Price: SiteParser.FormatPrice(realPrice), EstSales: entryEstSale,
-                            SalesRecv: entrySalesRecv, Reviews: reviews, SalesRank: entrySalesRank,
-                            Category:category, CategoryKind: categoryKind,
-                            PrintLength:entryPrintLength, Author:entryAuthor, DateOfPublication:entryDateOfPublication,
-                            GoogleSearchUrl:entryGoogleSearchUrl, GoogleImageSearchUrl:entryGoogleImageSearchUrl});
-                    }
+    var parser = new BookPageParser(url);
+    parser.GetBookData(url, price, reviews, function(pageData) {
+        chrome.runtime.sendMessage({type: "get-settings"}, function (response) {
+            if (response.settings.PullStatus) {
+                chrome.runtime.sendMessage({
+                    type: "save-settings",
+                    No: num,
+                    URL: url,
+                    ParentURL: parenturl,
+                    NextUrl: nextUrl,
+                    Title: pageData.title,
+                    Price: pageData.price,
+                    EstSales: pageData.estSale,
+                    SalesRecv: pageData.salesRecv,
+                    Reviews: pageData.reviews,
+                    SalesRank: pageData.salesRank,
+                    Category: category,
+                    CategoryKind: categoryKind,
+                    PrintLength: pageData.printLength,
+                    Author: pageData.author,
+                    DateOfPublication: pageData.dateOfPublication,
+                    GoogleSearchUrl: pageData.googleSearchUrl,
+                    GoogleImageSearchUrl: pageData.googleImageSearchUrl
                 });
-            });
+            }
         });
-
     });
 }
 
@@ -658,11 +406,10 @@ function LoadSearchResultsPage(callback){
     if(SearchResultsPager === undefined) {
         SearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, ParentUrl){
             return ParseSearchPage(startFromIndex, maxResults, responseText, ParentUrl, search);
-            //return ParseAuthorPage(startFromIndex, maxResults, responseText, ParentUrl);
         }, function(url, page){
             return url + '&page=' + page;
         });
-    };
+    }
 
     setTimeout(SearchResultsPager.LoadNextPage.bind(SearchResultsPager, callback), 1000);
 }
@@ -677,10 +424,11 @@ function LoadAuthorResultPage(callback){
         }, function(url, page){
             return url + '?page=' + page;
         });
-    };
+    }
 
     AuthorPager.LoadNextPage(callback);
 }
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         var pageNumber = request.page;

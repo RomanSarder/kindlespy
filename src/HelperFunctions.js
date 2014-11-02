@@ -1,12 +1,12 @@
 /**
- * Created by Andrey on 09.08.14.
+ * Created by Andrey Klochkov on 09.08.14.
  */
 
 /**
  * Parses URL and returns a get parameter requested
- * @param url - url to parse
- * @param name - parameter name
- * @returns parameter value
+ * @param url url to parse
+ * @param name parameter name
+ * @returns {string} parameter value
   */
 function GetParameterByName(url, name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -17,18 +17,42 @@ function GetParameterByName(url, name) {
 
 /**
  * Returns default value if parameter is not passed to function, otherwise returns it's value.
- * @param param - parameter
- * @param defaultValue - default param value
+ * @param param parameter
+ * @param defaultValue default param value
  * @returns default value if parameter is not set
   */
 function ValueOrDefault(param, defaultValue){
-    return typeof param !== 'undefined' ? param : defaultValue;
+    return typeof param === "undefined" ? defaultValue : param;
+}
+
+/**
+ * Returns substring between startChar and endChar after pattern in the text
+ * @param text
+ * @param pattern
+ * @param startChar
+ * @param endChar
+ * @returns {string}
+ */
+function ParseString(text, pattern, startChar, endChar)
+{
+    var pos = text.indexOf(pattern);
+    if (pos < 0) return "";
+
+    var str = text.substr(pos + pattern.length);
+    pos = str.indexOf(startChar);
+    if (pos < 0) return "";
+
+    str = str.substr(pos + startChar.length);
+    pos = str.indexOf(endChar);
+    if (pos < 0) return "";
+
+    return str.substr(0, pos).trim();
 }
 
 /**
  * Creates a concrete site parser object depending on URL
  * @param url
- * @returns SiteParser
+ * @returns {object} SiteParser
   */
 function GetSiteParser(url){
     if(url.indexOf(AmazonComParser.MainUrl)!=-1)

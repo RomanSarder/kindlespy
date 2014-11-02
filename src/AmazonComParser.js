@@ -1,4 +1,5 @@
 /**
+ * Created by Andrey Klochkov on 11.09.2014.
  * class AmazonComParser
  */
 
@@ -56,7 +57,7 @@ AmazonComParser.Region = "USA";
 
 AmazonComParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", '>', '<');
-}
+};
 
 AmazonComParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
@@ -66,29 +67,38 @@ AmazonComParser.prototype.GetKindleEditionRow = function(resultItem) {
     });
 
     return retval;
-}
+};
 
 AmazonComParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find(".tpType > a:first").attr("href");
-}
+};
 
 AmazonComParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
     var priceTag = kindleEditionRow.find(".toeOurPrice > a:first");
     if (priceTag.length > 0) return priceTag;
     return kindleEditionRow.find(".toeOurPriceWithRent > a:first");
-}
+};
 
 AmazonComParser.prototype.GetReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".reviewsCount > a:first").text();
-}
+};
 
 AmazonComParser.prototype.ParsePrice = function(price) {
+    if(!price) return 0;
     return price.substr(1);
-}
+};
 
 AmazonComParser.prototype.FormatPrice = function(price) {
     return this.CurrencySign + price;
-}
+};
+
 AmazonComParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
     callback($(responseText).find('#main-image').attr('rel'));
-}
+};
+AmazonComParser.prototype.GetImageUrlSrc = function(responseText) {
+    return ParseString($(responseText).find('#holderMainImage noscript').text(),"src=","\"", "\" ");
+};
+AmazonComParser.prototype.GetReviews = function(responseText) {
+    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
+};

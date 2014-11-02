@@ -1,5 +1,5 @@
 /**
- * Created by Andrey on 15.09.2014.
+ * Created by Andrey Klochkov on 15.09.2014.
  */
 
 function Pager(itemsPerPage, pullItemsFunction, getPageUrlFunction){
@@ -19,32 +19,32 @@ Pager.prototype.LoadNextPage = function(callback){
 
     this.isInProgress = true;
 
-    var pager = this;
+    var _this = this;
     var totalItemsLoaded = 0;
     var pulledItems;
-    var i=this.lastPage;
+    var i = this.lastPage;
     setTimeout(PullOnePage.bind(this), 1000);
 
     function PullOnePage() {
-        $.get(pager.getPageUrlFunction(ParentUrl, i).trim(), function (responseText) {
-            var startFromIndex = (i - 1) * pager.itemsPerPage + pager.alreadyPulled;
-            var maxResults = pager.itemsInResult - totalItemsLoaded;
-            pulledItems = pager.pullItemsFunction(startFromIndex, maxResults, responseText, ParentUrl);
+        $.get(_this.getPageUrlFunction(ParentUrl, i).trim(), function (responseText) {
+            var startFromIndex = (i - 1) * _this.itemsPerPage + _this.alreadyPulled;
+            var maxResults = _this.itemsInResult - totalItemsLoaded;
+            pulledItems = _this.pullItemsFunction(startFromIndex, maxResults, responseText, ParentUrl);
 
             if (pulledItems === undefined) {
-                pager.isInProgress = false;
+                _this.isInProgress = false;
                 return;
             }
             totalItemsLoaded += pulledItems;
-            pager.alreadyPulled = 0;
+            _this.alreadyPulled = 0;
             i++;
-            if(totalItemsLoaded<pager.itemsInResult) {
-                setTimeout(PullOnePage.bind(pager), 1000);
+            if(totalItemsLoaded<_this.itemsInResult) {
+                setTimeout(PullOnePage.bind(_this), 1000);
             } else {
-                pager.pagesLoaded++;
-                pager.lastPage = i-1;
-                pager.alreadyPulled = pulledItems;
-                pager.isInProgress = false;
+                _this.pagesLoaded++;
+                _this.lastPage = i-1;
+                _this.alreadyPulled = pulledItems;
+                _this.isInProgress = false;
                 if(callback !== undefined)
                     callback();
             };

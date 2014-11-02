@@ -6,6 +6,7 @@ var defaultSetting = {
     "PageNum" : "1",
     "MainUrl": "http://www.amazon.com/",
     "ParamUrlBestSellers" : "154606011",
+    "TYPE" : "",
     "Book":
         [
             {"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":""}
@@ -168,6 +169,17 @@ function onMessageReceived(b, a, d){
         setting.PullStatus = b.PullStatus;
         localStorage.settings = JSON.stringify(setting);
         d({});
+    }
+    else if ("set-type-page" === b.type)
+    {
+        var setting = getSetting();
+        setting.TYPE = b.TYPE;
+        localStorage.settings = JSON.stringify(setting);
+    }
+    else if ("get-type-page" === b.type)
+    {
+        var setting = getSetting();
+        d({TYPE:setting.TYPE});
     }
 }
 

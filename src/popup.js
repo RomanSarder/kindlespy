@@ -3,27 +3,87 @@ var obj = [];
 var clouds = [];
 var PageNum = 1;
 var CurrentPageUrl = "";
-var refresed = false;
-var bIsSellWin = true;
+var refreshed = false;
+var BEST_SELLERS = "best-sellers";
+var WORD_CLOUD = "word-cloud";
+var RANK_TRACKING = "rank-tracking";
+var activeTab = BEST_SELLERS;
 var IsErrorWindow = false;
 var SiteParser;
-var columnGetterFunctions = new Array();
-columnGetterFunctions['no'] = function(a){return parseInt(a.No)}
+var Storage = new BookStorage();
+var columnGetterFunctions = [];
+columnGetterFunctions['no'] = function(a){return parseInt(a.No)};
 columnGetterFunctions['pageno'] = function(a){
     var printLength = parseInt(a.PrintLength);
     return isNaN(printLength) ? 0 : printLength;
-}
-columnGetterFunctions['title-book'] = function(a){return a.Title}
-columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace(/[^0-9\.]/g, ''))}
-columnGetterFunctions['est-sales'] = function(a){return a.EstSales}
-columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv}
-columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(/,/g,''))}
-columnGetterFunctions['sales-rank'] = function(a){return parseInt(a.SalesRank.replace(/,/g,''))}
+};
+columnGetterFunctions['title-book'] = function(a){return a.Title};
+columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace(/[^0-9\.]/g, ''))};
+columnGetterFunctions['est-sales'] = function(a){return a.EstSales};
+columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv};
+columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(/,/g,''))};
+columnGetterFunctions['sales-rank'] = function(a){return parseInt(a.SalesRank.replace(/,/g,''))};
 
 var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
 
-var bDebug = false;
+$(window).ready(function () {
+    $('#LinkBackTo').click(function () {
+        $('#data-body').css("overflow-y", "auto");
+        activeTab = BEST_SELLERS;
+        chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
+        frun();
+    });
+    $('#enableTracking').click(function () {
+        $('#enableTracking').prop('disabled', true);
+        $('#LinkBackTo').hide();
+        var _this = this;
+        Storage.EnableTracking($(_this).data().url, function() {
+            $('#enableTracking').prop('disabled', false);
+            $('#LinkBackTo').show();
+            RankTrackingSingleShow($(_this).data().url);
+        });
+    });
+    $('#disableTracking').click(function () {
+        var _this = this;
+        Storage.DisableTracking($(_this).data().url, function(bytesInUse) {
+            RankTrackingSingleShow($(_this).data().url);
+        });
+    });
+    $('.logo').click(function () {
+        Storage.logger.GetCustomerID(function(result){
+            alert("Your user id: " + result);
+        });
+    });
+});
+
+function resetCss(){
+    // header
+    $('#main-header').hide();
+    $('#tracking-header').hide();
+
+    // info
+    $('.info.single_book').hide();
+    $('.info.list_books').hide();
+    $('.info.single_book .info-item').css('width', '');
+    $('#infoPages').hide();
+
+    // content
+    $('#word-cloud-content').hide();
+    $('#no-data-found-content').hide();
+    $('#main-content').hide();
+    $('#tracking-content').hide();
+    $('.right-panel').hide();
+    $('.left-panel').css('width', '');
+
+    // footer
+    $('#WordCloudFooter').hide();
+    $('#BestSellersRankingFooter').hide();
+    $('#NoDataFooter').hide();
+    $('#ExportBtn').hide();
+    $('#TrackedPanelFooter').hide();
+    $('#BookTracked').hide();
+}
 
 function AutoAddFunc()
 {
@@ -81,7 +141,7 @@ function AutoAddFunc()
         {
             frun();
         }
-        else if (!refresed && bIsSellWin)
+        else if (!refreshed && (activeTab == BEST_SELLERS))
         {	
 			if (obj.length > 0)
 			{
@@ -93,7 +153,7 @@ function AutoAddFunc()
         }
     });
 
-    if (!refresed)
+    if (!refreshed)
     {
         setTimeout(AutoAddFunc, 1000);
     }
@@ -128,11 +188,6 @@ function shuffle(array) {
     }
 
     return array;
-}
-
-function changeSwitchColor(color)
-{
-    $('div.switch').css("background-color", color);
 }
 
 function ExportWordCloudResult()
@@ -195,7 +250,7 @@ function ExportWordCloudResult()
 
 function WordsInfoUpdate()
 {
-    var xPathRes = document.evaluate ( "/html/body/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var xPathRes = document.evaluate ( "/html/body/div/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var InnerTexts = "";
 
     if (xPathRes.length < 1)
@@ -282,7 +337,7 @@ function WordsInfoUpdate()
 
     var InfoHtml = "<div style=\"font-size:11px;color:#a8a8a8;padding-top: 1px\">" + "Showing top 50 of " + (clouds.length - 1) + " possible words:</div>";
 
-    $('.info').html(InfoHtml);
+    $('.info.list_books').html(InfoHtml);
     var level = [];
 
     var nlevelIndex = 0;
@@ -348,7 +403,7 @@ function WordsInfoUpdate()
         contentHtml += "<span class=\"occurcnt\"><span class=\"best" + ShuffleArray[i].Level + "\">" + "&nbsp;" + ShuffleArray[i].Word + "</span>(" + ShuffleArray[i].Len + ")&nbsp;</span>";
     }
 
-    $('.content').html(contentHtml);
+    $('#word-cloud-content').html(contentHtml);
 
     var wordsHTML = "";
     nCnt = 1;
@@ -365,53 +420,198 @@ function WordsInfoUpdate()
     }
 
     $('.table-head').html("");
-    $('.content').css("overflow" , "auto");
 
-    $('.content').css("width" , "97%");
-    $('.content').css("height" , "380px");
-    $('.content').css("display" , "block");
-    $('.content').css("max-height" , "380px");
-    $('.content').css("min-height" , "380px");
-    $('.content').css("margin-top" , "-25px");
-    $('.content').css("margin-left" , "21px");
-    $('.content').css("line-height" , "55px");
+    resetCss();
 
     $('#Words').html(wordsHTML);
+    $('#main-header').show();
+    $('#word-cloud-content').show();
+    $('.info.list_books').show();
     $('#WordCloudFooter').show();
-    $('#BestSellersRankingFooter').hide();
-    $('#NoDataFooter').hide();
+    $('#ExportBtn').show();
+
+    LoadAdvertisementBanner();
+}
+function RankTrackingListShow() {
+    var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
+    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:350px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"daysTracked\" style=\"padding-right:30px;\">Days Tracked</label><label class=\"sort-column\" id=\"resTracking\" style=\"padding-right:45px;\">Tracking</label><label class=\"sort-column\" id=\"removeTracking\" style=\"padding-right:5px;\">Action</label>";
+    var info = "<div style=\"font-size:15px;\"><b>Best Seller Rank Tracking:</b></div>";
+    $('#main-header').html('');
+    $('#main-content').html(ContentHtml);
+    $('.info.list_books').html(info);
+    resetCss();
+    $('#main-header').show();
+    $('#main-content').show();
+    $('#TrackedPanelFooter').show();
+    $('.info.list_books').show();
 
     LoadAdvertisementBanner();
 
-    chrome.runtime.sendMessage({type: "get-settings"}, function(response)
-    {
-        var setting = response.settings;
-        $("input[name='checkbox']").attr('checked', setting.PullStatus);
+    $('#data-body').css("overflow-y", "auto");
+    $('.table-head').html(tableHead);
+    $('.table-head').css("background-color", "#333333");
 
-        if($("input[name='checkbox']").prop('checked'))
-        {
-            setTimeout(changeSwitchColor.bind(null, "#009900"), 300);
+    UpdateRateTrackingTable();
+}
+
+var prevBookUrl;
+function resetTrackingBookPage(bookUrl) {
+    if(prevBookUrl === bookUrl) return;
+    prevBookUrl = bookUrl;
+    $('#singleResult1').html('');
+    $('#singleResult2').html('');
+    $('#singleResult3').html('');
+    $('#singleResult4').html('');
+    $('#singleResult5').html('');
+    $('#singleResult6').html('');
+    $('#days').html('');
+    $('#AvgSalesRank').html('');
+    $('#EstDailyRev').html('');
+    $('#authorName').html('');
+    $('#bookImage').attr('src','');
+    $('#enableTracking').show();
+    $('#enableTracking').prop('disabled', true);
+    $('#disableTracking').hide();
+    $('#ExportBtn').hide();
+    $('#BookTracked').hide();
+    $('#ExportBtn').attr('book-url','');
+}
+
+function RankTrackingSingleShow(bookUrl){
+    resetCss();
+    resetTrackingBookPage(bookUrl);
+    $('#tracking-header').show();
+    $('#tracking-content').show();
+    $('#TrackedPanelFooter').show();
+    $('.info.single_book').show();
+    $('.right-panel').show();
+    $(".table-head").html("<label>Bestseller rank tracking(30 days)<label>");
+
+    LoadAdvertisementBanner();
+
+    $('.left-panel').css("width", "525px");
+
+    $('#main-header').html('');
+    $('#tracking-content').html('');
+
+    $('#LinkBackTo').hide();
+    Storage.GetBook(bookUrl, function(bookData) {
+        if(bookData) {
+            UpdateTrackedBookView(bookData);
+            return;
         }
-        else
-        {
-            setTimeout(changeSwitchColor.bind(null, "#ff0000"), 300);
-        }
+
+        Storage.InitBookFromUrl(bookUrl, UpdateTrackedBookView);
     });
+}
 
-    $("input[name='checkbox']").click(function() {
-        if($("input[name='checkbox']").prop('checked'))
+function UpdateTrackedBookView(bookData){
+    var contentHtml = '';
+    $('#bookTitle').text(bookData.title);
+    if(bookData.trackingEnabled){
+        contentHtml = '<div><canvas id="canvas" height="290" width="520"></canvas></div>';
+        $('#infoPages').show();
+        $('.info.single_book .info-item').css('width', '16%');
+        $('#ExportBtn').show();
+        $('#BookTracked').show();
+    }
+    else {
+        contentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
+        $('#enableTracking').prop('disabled', false);
+    }
+    $('#tracking-header').show();
+    $('#LinkBackTo').show();
+    $('#tracking-content').html(contentHtml);
+    $('#enableTracking').toggle(!bookData.trackingEnabled);
+    $('#disableTracking').toggle(bookData.trackingEnabled);
+    $('#enableTracking').data({url: bookData.url});
+    $('#disableTracking').data({url: bookData.url});
+
+    $('#singleResult1').html(bookData.currentSalesRank);
+    $('#singleResult2').html(bookData.price);
+    $('#singleResult3').html(bookData.pages);
+    $('#singleResult4').html(addCommas(bookData.estSales));
+    $('#singleResult5').html(SiteParser.FormatPrice(addCommas(Math.round(bookData.estSalesRev))));
+    $('#singleResult6').html(bookData.numberOfReviews);
+    var sumRank=0;
+    var points = bookData.salesRankData.length;
+    for(var j=0; j<points;j++){
+        sumRank += parseInt(bookData.salesRankData[j].salesRank.replace(SiteParser.ThousandSeparator, "").trim());
+    }
+    var avgSalesRank = sumRank/points;
+    var bookPageParser = new BookPageParser(bookData.url);
+    var estSale = bookPageParser.GetEstSale(avgSalesRank);
+    var realPrice = parseFloat(bookData.price.replace(/[^0-9\.]/g, ''));
+    var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
+    var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
+
+    $('#days').html(points);
+    $('#AvgSalesRank').html(addCommas(Math.floor(avgSalesRank)));
+    $('#EstDailyRev').html(SiteParser.FormatPrice(addCommas(EstDailyRev)));
+    $('#authorName').html(bookData.author);
+    $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
+    $('#ExportBtn').attr('book-url', bookData.url);
+
+    var chartData = bookData.salesRankData;
+    var labels = [];
+    var data = [];
+    for(var i=0;i<chartData.length;i++){
+        labels.push(new Date(chartData[i].date).toDateString());
+        data.push(chartData[i].salesRank);
+    }
+
+    if(labels.length === 1) labels.push('');
+    if(data.length === 1) labels.push('');
+
+    var lineChartData = {
+        labels: labels,
+        datasets: [
         {
-            setTimeout(changeSwitchColor.bind(null, "#009900"), 300);
-            chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: true}, function(response){
+        label: "Sales Rank",
+        fillColor: "rgba(220,220,220,0.2)",
+        strokeColor: "rgba(220,220,220,1)",
+        pointColor: "rgba(220,220,220,1)",
+        pointStrokeColor: "#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "rgba(220,220,220,1)",
+        data: data
+        }
+        ]
+    };
+
+    var canvas = document.getElementById("canvas");
+    if(!canvas) return;
+    var context = canvas.getContext("2d");
+    window.myLine = new Chart(context).Line(lineChartData, {
+        bezierCurve: false
+    });
+}
+
+function UpdateRateTrackingTable(){
+    Storage.GetAllBooks(function(books){
+        var html = "";
+        for(var i=0;i<books.length;i++){
+            html += "<tr>" +
+                "<td >" + (i+1) + "</td>" +
+                "<td style=\"width:500px;padding-right: 20px;\">" + books[i].title + "</td>" +
+                "<td style=\"width:75px;padding-right: 10px;padding-left: 30px;\">" + books[i].salesRankData.length + "</td>" +
+                "<td style=\"width:85px;\"><a class='RankTrackingResultSingle' href='#' bookUrl='" + books[i].url + "'>Results</a></td>" +
+                "<td style=\"width:85px;\"><a class='RankTrackingRemove' href='#' bookUrl='" + books[i].url + "'>Remove</a></td>" +
+            "</tr>";
+        }
+        $("table[name='data']").find("tbody").html(html);
+        addEventListenerForSingleResultBook();
+
+        //Remove links
+        var RemoveRankTrackedBooks = document.getElementsByClassName('RankTrackingRemove');
+        for(var i = 0;i<RemoveRankTrackedBooks.length; i++) {
+            RemoveRankTrackedBooks[i].addEventListener("click", function () {
+                Storage.RemoveBookInStorage($(this).attr('bookUrl'), function(){
+                    RankTrackingListShow();
+                });
             });
         }
-        else
-        {
-            setTimeout(changeSwitchColor.bind(null, "#ff0000"), 300);
-            chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: false}, function(response){
-            });
-        }
-    });
+  });
 }
 
 function InsertDatas(PageNumber)
@@ -447,7 +647,9 @@ function InsertDatas(PageNumber)
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow'>" + obj[i].Title + "</td>" +
-                "<td style='width:35px;'><a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " + "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
+                "<td style='width:50px;'><a class='RankTrackingResultSingle' href='" + "#" + "' bookUrl='" + obj[i].Url + "'>T</a> " + " | " +
+                    "<a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " +
+                    "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
                 "<td style='padding-left:15px; width:30px;'>" +obj[i].PrintLength + "</td>" +
                 "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
                 "<td style='padding-left:15px; width:60px;' align='right'>" + addCommas(obj[i].EstSales) +"</td>" +
@@ -478,7 +680,7 @@ function InsertDatas(PageNumber)
         }
     }
 
-    if (bIsSellWin && PageNumber * 20 >= 20)
+    if ((activeTab == BEST_SELLERS) && PageNumber * 20 >= 20)
     {
         $('#data-body').css("overflow-y" , "scroll");
     }
@@ -498,6 +700,7 @@ function InsertDatas(PageNumber)
     }
 
     $("table[name='data']").find("tbody").html(html);
+    addEventListenerForSingleResultBook();
 
     if (categoryKind.indexOf("Seller") >= 0)
         $("#CategoryKind").html("Best Sellers in");
@@ -508,12 +711,19 @@ function InsertDatas(PageNumber)
 
     $("#title").html(category + ":");
     $('#result2').html(addCommas(Math.floor(averageSalesRank / nTotalCnt)));
-    $('#result3').html(SiteParser.CurrencySign + " " + addCommas(Math.floor(averageSalesRecv / nTotalCnt)));
-    $('#result4').html(SiteParser.CurrencySign + " " +  addCommas((averagePrice/nTotalCnt).toFixed(2)));
+    $('#result3').html(SiteParser.FormatPrice(addCommas(Math.floor(averageSalesRecv / nTotalCnt))));
+    $('#result4').html(SiteParser.FormatPrice(addCommas((averagePrice/nTotalCnt).toFixed(2))));
     $('#result5').html(addCommas(Math.floor(averageReview / nTotalCnt)));
-    $('#totalReSalesRecv').html(SiteParser.CurrencySign + " " + addCommas(averageSalesRecv));/**/
+    $('#totalReSalesRecv').html(SiteParser.FormatPrice(addCommas(averageSalesRecv)));/**/
 }
-
+function addEventListenerForSingleResultBook(){
+    var RankTrackingResultSingle = document.getElementsByClassName('RankTrackingResultSingle');
+    for(var i = 0;i<RankTrackingResultSingle.length; i++) {
+        RankTrackingResultSingle[i].addEventListener("click", function () {
+            RankTrackingSingleShow($(this).attr('bookUrl'));
+        });
+    }
+}
 function ExportSellResult()
 {
     var x = new Array(PageNum * 20 + 1);
@@ -595,6 +805,68 @@ function ExportSellResult()
     link.click();
 }
 
+function ExportRankTrackedResult(){
+    var bookUrl = $('#ExportBtn').attr('book-url');
+    Storage.GetBook(bookUrl, function(bookData) {
+        if(bookData) {
+            var x = new Array(bookData.salesRankData.length+1);
+
+            for (var i = 0; i < bookData.salesRankData.length+1; i++) {
+                x[i] = new Array(2);
+            }
+
+            x[0][0] = "Date";
+            x[0][1] = "Sales Rank";
+
+            for(var index = 0; index < bookData.salesRankData.length; index ++) {
+                x[index + 1][0] = new Date(bookData.salesRankData[index].date).toDateString();
+                x[index + 1][1] = addCommas(bookData.salesRankData[index].salesRank);
+            }
+
+            var csvContent = "\uFEFF";
+            x.forEach(function(infoArray, index){
+                if (index <= bookData.salesRankData.length)
+                {
+                    var dataString = [];
+                    for (var i = 0; i < infoArray.length; i++)
+                    {
+                        var quotesRequired = false;
+                        if (infoArray[i].indexOf(",") >= 0)
+                            quotesRequired = true;
+                        var escapeQuotes = false;
+                        if (infoArray[i].indexOf("\"") >= 0)
+                            escapeQuotes = true;
+
+                        var fieldValue = (escapeQuotes ? infoArray[i].replace("\"", "\"\"") : infoArray[i]);
+
+                        if (fieldValue.indexOf("\r") >= 0 || fieldValue.indexOf("\n") >= 0)
+                        {
+                            quotesRequired = true;
+                            fieldValue = fieldValue.replace("\r\n", "");
+                            fieldValue = fieldValue.replace("\r", "");
+                            fieldValue = fieldValue.replace("\n", "");
+                        }
+                    dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
+                    }
+                    for (var i = 0; i < dataString.length; i ++)
+                        csvContent += dataString[i];
+                }
+            });
+
+            var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
+            var url = URL.createObjectURL(blob);
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1;
+            var yyyy = today.getFullYear();
+            var link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "rs-" + bookData.title + "-" + mm + "-" + dd + "-" + yyyy + ".csv");
+            link.click();
+        }
+    });
+}
+
 function addCommas(nStr)
 {
     nStr += '';
@@ -612,14 +884,20 @@ function SetupClickListeners(){
     var linkTitleWord = document.getElementById('TitleWordCloud');
     linkTitleWord.addEventListener('click', function() {
         WordsInfoUpdate();
-        bIsSellWin = false;
+        activeTab = WORD_CLOUD;
     });
 
     var BestSellerLink = document.getElementById('BestSellerLink');
     BestSellerLink.addEventListener('click', function() {
         $('#data-body').css("overflow-y" , "auto");
-        bIsSellWin = true;
+        activeTab = BEST_SELLERS;
         frun();
+    });
+
+    var linkRankTrackingResultList = document.getElementById('RankTrackingResultList');
+    linkRankTrackingResultList.addEventListener('click', function() {
+        RankTrackingListShow();
+        activeTab = RANK_TRACKING;
     });
 
     var link2 = document.getElementById('refresh');
@@ -630,6 +908,7 @@ function SetupClickListeners(){
         SetActivePage(PageNum);
         location.reload();
     });
+
 }
 
 var isStaticLinkInitialized = false;
@@ -652,8 +931,17 @@ function SetupStaticClickListeners() {
 
     var link4 = document.getElementById('Export');
     link4.addEventListener('click', function() {
-		if (bIsSellWin) ExportSellResult();
-		else ExportWordCloudResult();
+        switch(activeTab){
+            case BEST_SELLERS:
+                ExportSellResult();
+                break;
+            case WORD_CLOUD:
+                ExportWordCloudResult();
+                break;
+            case RANK_TRACKING:
+                ExportRankTrackedResult();
+                break;
+        }
     });
 	
     isStaticLinkInitialized = true;
@@ -664,13 +952,18 @@ function LoadData(obj) {
 
     if (typeof obj === undefined || obj.length < 1)
     {
-        $('.header').html("");
-        $('.info').html("");
-        $('.table-head').html("");
-        $('.content').html("<div><img style=\"width:100%\" src=\"loading.gif\"//></div>");
-        $('#WordCloudFooter').hide();
-        $('#BestSellersRankingFooter').hide();
+        resetCss();
+        $('#main-header').html('');
+        $('.info.list_books').html("");
+        $('.info.list_books').show();
+        $('#ExportBtn').show();
         $('#NoDataFooter').show();
+
+        $('.table-head').html("");
+        $('#main-content').html("<div><img style=\"width:100%\" src=\"loading.gif\"//></div>");
+        $('#main-content').show();
+        $('#main-header').show();
+
         setTimeout(UpdateTable.bind(null,obj), 6000);
     }else{
         UpdateTable(obj);
@@ -680,63 +973,22 @@ function UpdateTable(obj)
 {
     if (typeof obj === undefined || obj.length < 1)
     {
-        $('.header').html("");
-        $('.info').html("");
-        $('.table-head').html("");
-        $('.content').html("<div><div style=\"width:72%; margin:0 auto;line-height:25px;font-size:18px;\"><b style=\"font-size:26px;margin-left: 150px;\">No Data Can Be Found!</b><br><br>KindleSpy can only pull data from Category pages, author pages & search results pages on the Kindle Store.<br><br>Results are only supported from Amazon US and UK. <br> <br>If you have continued problems, please see our troubleshooting section <a href=\"http://www.kdspy.com/members/kindlespy/troubleshooting/\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">here</a>.<br> <br> <b>>> </b>For the Kindle Bestsellers, click here for <a href=\"http://www.kdspy.com/u/amazonkindle\" target=\"_blank\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">US</a> or <a href=\"http://www.kdspy.com/u/amazonkindleuk\" target=\"_blank\" style=\"color: 0000c0;font-size:20px;font-weight:bold\" id=\"ClickHere\">UK</a> categories.  </div>  </div>");
-        $('#WordCloudFooter').hide();
-        $('#BestSellersRankingFooter').hide();
+        resetCss();
+        $('#main-header').html('');
+        $('.info.list_books').html('');
+        $('.info.list_books').show();
+        $('.table-head').html('');
+        $('#no-data-found-content').show();
         $('#NoDataFooter').show();
+        $('#ExportBtn').show();
 
         LoadAdvertisementBanner();
-
-        $('#data-body').css("overflow-y" , "scroll");
-        $('.content').css("overflow" , "inherit");
-        $('.content').css("width" , "99%");
-        $('.content').css("height" , "340px");
-        $('.content').css("display" , "block");
-        $('.content').css("max-height" , "340px");
-        $('.content').css("margin-left" , "0px");
-        $('.content').css("margin-top" , "0px");
-        $('.content').css("margin:" , "0 auto");
-        $('.content').css("line-height" , "55px");
-
-        chrome.runtime.sendMessage({type: "get-settings"}, function(response)
-        {
-            var setting = response.settings;
-            $("input[name='checkbox']").attr('checked', setting.PullStatus);
-
-            if($("input[name='checkbox']").prop('checked'))
-            {
-                setTimeout(changeSwitchColor.bind(null, "#009900"), 300);
-            }
-            else
-            {
-                setTimeout(changeSwitchColor.bind(null, "#ff0000"), 300);
-            }
-        });
-
-        $("input[name='checkbox']").click(function() {
-            if($("input[name='checkbox']").prop('checked'))
-            {
-                setTimeout(changeSwitchColor.bind(null, "#009900"), 300);
-                chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: true}, function(response){
-                });
-            }
-            else
-            {
-                setTimeout(changeSwitchColor.bind(null, "#ff0000"), 300);
-                chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: false}, function(response){
-                });
-            }
-        });
 
         var link2 = document.getElementById('ClickHere');
         link2.addEventListener('click', function() {
             chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
                 chrome.tabs.update(response.ID, {url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html"});
                 window.close();
-                return;
             });
         });
 
@@ -750,65 +1002,31 @@ function UpdateTable(obj)
     }
 
     IsErrorWindow = false;
+    Storage.GetNumberOfBooks(function(num){
+        num = (num === undefined)?0:num;
+        var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
+        $('#main-header').html(HeaderHtml);
+        SetupClickListeners();
+    });
 
-	var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a></div>";
 	var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
-    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:175px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"searchf\" style=\"padding-right:8px;\">Search</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:8px;\">Page(s)</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">Price</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Est. Sales</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Sales Rev.</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" >Sales Rank</label>"
+    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:175px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"searchf\" style=\"padding-right:25px;\">More</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:8px;\">Page(s)</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">Price</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Est. Sales</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Sales Rev.</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" >Sales Rank</label>"
     var InfoHtml = "<div class=\"info-item\"><span style=\"font-size:11px\">Results:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rank:</span><div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">2,233</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rev:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">$7,000.00</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Price:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">$7.95</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. No. Reviews:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">31</div></div>";
-	$('.header').html(HeaderHtml);
-    $('.content').html(ContentHtml);
-    $('.info').html(InfoHtml);
-    $('#WordCloudFooter').hide();
+
+    resetCss();
+    $('#main-content').html(ContentHtml);
+    $('.info.list_books').html(InfoHtml);
+    $('#main-content').show();
+    $('#main-header').show();
     $('#BestSellersRankingFooter').show();
-    $('#NoDataFooter').hide();
+    $('#ExportBtn').show();
+    $('.info.list_books').show();
 
     LoadAdvertisementBanner();
 
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(tableHead);
     $('.table-head').css("background-color" , "#333333");
-
-    $('.content').css("overflow" , "auto");
-    $('.content').css("width" , "99%");
-    $('.content').css("height" , "340px");
-    $('.content').css("display" , "block");
-    $('.content').css("max-height" , "340px");
-    $('.content').css("min-height" , "340px");
-    $('.content').css("margin-left" , "0px");
-    $('.content').css("margin-top" , "0px");
-    $('.content').css("margin:" , "0 auto");
-    $('.content').css("line-height:" , "55px");
-
-    chrome.runtime.sendMessage({type: "get-settings"}, function(response)
-    {
-         var setting = response.settings;
-         $("input[name='checkbox']").attr('checked', setting.PullStatus);
-        if($("input[name='checkbox']").prop('checked'))
-        {
-            setTimeout(changeSwitchColor.bind(null, "#009900"), 300);
-        }
-        else
-        {
-            setTimeout(changeSwitchColor.bind(null, "#ff0000"), 300);
-        }
-    });
-
-    $("input[name='checkbox']").click(function() {
-        if($("input[name='checkbox']").prop('checked'))
-        {
-            setTimeout(changeSwitchColor.bind(null, "#009900"), 300);
-         chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: true}, function(response){
-         });
-        }
-        else
-        {
-            setTimeout(changeSwitchColor.bind(null, "#ff0000"), 300);
-            chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: false}, function(response){
-            });
-        }
-    });
-
-    SetupClickListeners();
 
     $('.sort-column').each(function( index ){
         $(this).click(function() {
@@ -820,7 +1038,7 @@ function UpdateTable(obj)
 
             currentSortColumn = newSortColumn;
         });
-    })
+    });
 
     $('#TitleWordCloud').text("Titles: Word Cloud (20)");
     InsertDatas(0);
@@ -848,7 +1066,15 @@ function frun()
             SiteParser = GetSiteParser(CurrentPageUrl);
             chrome.runtime.sendMessage({type: "save-UrlParams", MainUrl: SiteParser.MainUrl, ParamUrlBestSellers: SiteParser.ParamUrlBestSellers});
             InitRegionSelector();
-            LoadInfos();
+            chrome.runtime.sendMessage({type: "get-type-page"}, function(result) {
+                if(result.TYPE == 'single') {
+                    RankTrackingSingleShow(CurrentPageUrl);
+                    return;
+                }
+                LoadInfos();
+            });
+
+
         }
     });
 }
@@ -862,6 +1088,7 @@ function compare(a,b) {
     return 0;
 }
 
+var isRefreshStarted = false;
 function LoadInfos()
 {
     var url = CurrentPageUrl;
@@ -918,8 +1145,10 @@ function LoadInfos()
         LoadAdvertisementBanner();
     });
 
-    if (!refresed)
+    if (!isRefreshStarted) {
         setTimeout(AutoAddFunc, 1000);
+        isRefreshStarted = true;
+    }
 }
 
 function InitRegionSelector(){

@@ -1,4 +1,5 @@
 /**
+ * Created by Andrey Klochkov on 11.09.2014.
  * class AmazonComParser
  */
 
@@ -56,7 +57,7 @@ AmazonDeParser.Region = "DE";
 
 AmazonDeParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
-}
+};
 
 AmazonDeParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
@@ -68,27 +69,40 @@ AmazonDeParser.prototype.GetKindleEditionRow = function(resultItem) {
     });
 
     return retval;
-}
+};
 
 AmazonDeParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("a:first").attr("href");
-}
+};
 
 AmazonDeParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("span.bld");
-}
+};
 
 AmazonDeParser.prototype.GetReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".rvwCnt > a:first").text();
-}
+};
 
 AmazonDeParser.prototype.ParsePrice = function(price) {
+    if(!price) return 0;
     return price.substr(4).replace(/\./g,'').replace(',', '.');
-}
+};
 
 AmazonDeParser.prototype.FormatPrice = function(price) {
     return this.CurrencySign + price;
-}
+};
+
 AmazonDeParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
     callback($(responseText).find('#main-image').attr('rel'));
-}
+};
+
+AmazonDeParser.prototype.GetImageUrlSrc = function(responseText) {
+    return $(responseText).find('#main-image').attr('src');
+};
+AmazonDeParser.prototype.GetReviews = function(responseText) {
+    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    if (rl_reviews.length)
+        return $(rl_reviews).text().replace('Rezensionen','').trim();
+    else
+        return  "0";
+};
