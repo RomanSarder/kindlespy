@@ -2,45 +2,48 @@
  * Created by Andrey Klochkov on 30.10.2014.
  */
 function Logger() {
-    Logger.userID;
 }
 
+Logger.userID = undefined;
+
 var waitForId = false;
-Logger.prototype.GetCustomerID = function(callback){
+Logger.prototype.GetCustomerID = function(callback) {
     callback = ValueOrDefault(callback, function() {});
+    var _this = this;
     if (waitForId) {
-        var _this = this;
         setTimeout(function(){_this.GetCustomerID(callback);}, 700);
         return;
     }
-    if ((Logger.userID!==undefined)&&(Logger.userID!="")) callback(Logger.userID);
+    if ((Logger.userID !== undefined) && (Logger.userID != "")) {
+        callback(Logger.userID);
+        return;
+    }
     waitForId = true;
-    var _this = this;
-    this.GetCustomerIDFromStorage(function(id){
-        if(id === undefined){
-            _this.GetCustomerIDFromFile(function(id){
+    this.GetCustomerIDFromStorage(function(id) {
+        if(id === undefined) {
+            _this.GetCustomerIDFromFile(function(id) {
                 _this.SaveCustomerIDToStorage(id);
                 Logger.userID = id;
                 waitForId = false;
                 callback(id);
-                return;
             });
-        }else{
-            Logger.userID = id;
-            waitForId = false;
-            callback(id);
+            return;
         }
+
+        Logger.userID = id;
+        waitForId = false;
+        callback(id);
     });
 };
 
-Logger.prototype.GetCustomerIDFromFile = function(callback){
+Logger.prototype.GetCustomerIDFromFile = function(callback) {
     callback = ValueOrDefault(callback, function() {});
     $.ajax({
         type: "GET",
         url:  "http://www.kdspy.com/kdspy-log/Logger.php",
         data: "f=getId"
     })
-    .success(function( id ) {
+    .success(function(id) {
         if (id == "fail") callback(undefined);
         else if (id === undefined) callback(undefined);
         callback(id);
