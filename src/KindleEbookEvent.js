@@ -234,25 +234,21 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
     var counter = 0;
     var result;
 
-    $(responseText).find(".results").each(function() {
-	    while( (result = $(this).find("#result_"+(startIndex+index))).length>0 ) {
+    $.merge($(responseText).find("#atfResults li"), $(responseText).find("#btfResults li")).each(function() {
+	    while( $(this).attr('id') === 'result_'+(startIndex+index) ) {
+            result = $(this);
             if(counter>=maxResults) break;
 		    No[index] = startIndex + index + 1;
-		    url[index] = $(result).find(".newaps a:first").attr("href");
+		    url[index] = $(result).find("a:first").attr("href");
 		    if(!url[index]) url[index] = "";
-            var kprice = $(result).find(".red.bld");
-
-            price[index] = SiteParser.CurrencySign + "0.00";
-            if($(kprice).next('span.sprKindleUnlimited').length>0 || ( $(kprice).length>0)){
-                $.each(kprice, function( ind, elprice ) {
-                    if($(elprice).next('span.sprKindleUnlimited').length>0) return;
-                    var kindleprice = $(elprice).text().trim();
-                    if(kindleprice!=undefined || kindleprice != null || kindleprice!=''){
-                        price[index] = kindleprice;
-                        return false;
-                    }
-                });
-            }
+            var kprice = $(result).find('div').filter(function () {
+                return $(this).text() == 'Kindle Edition';
+            }).parent();
+            price[index] = SiteParser.CurrencySign + "0" + SiteParser.DecimalSeparator + "00";
+            if($(kprice).length > 0)
+                price[index] = kprice.find('span.s-price').filter(function() {
+                    return $(this).parent().parent().has('span.s-icon-kindle-unlimited').length === 0;
+                }).text().trim();
 
 		    review[index] = undefined; 
 

@@ -11,6 +11,7 @@ function AmazonComParser(){
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.CurrencySign = "$";
     this.CurrencySignForExport = "$";
+    this.DecimalSeparator = ".";
     this.ThousandSeparator = ",";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 12;

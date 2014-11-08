@@ -12,6 +12,7 @@ function AmazonCoUkParser(){
     this.CurrencySign = "&pound;";
     this.CurrencySignForExport = "\u00A3";
     this.ThousandSeparator = ",";
+    this.DecimalSeparator = ".";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
     this.BestSellersUrl = "Best-Sellers-Kindle-Store";
@@ -85,7 +86,7 @@ AmazonCoUkParser.prototype.GetReviewsCountFromResult = function(resultItem) {
 
 AmazonCoUkParser.prototype.ParsePrice = function(price) {
     if(!price) return 0;
-    return price.substr(1);
+    return price.replace(/[^0-9\.]/g, '');
 };
 
 AmazonCoUkParser.prototype.FormatPrice = function(price) {
@@ -113,7 +114,7 @@ AmazonCoUkParser.prototype.GetImageUrlSrc = function(responseText) {
 AmazonCoUkParser.prototype.GetReviews = function(responseText) {
     var rl_reviews = $(responseText).find("#acr .acrCount a:first");
     if (rl_reviews.length)
-        return $(rl_reviews).text().replace('reviews','').trim();
+        return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
     else
         return  "0";
 }

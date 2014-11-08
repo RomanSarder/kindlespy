@@ -12,7 +12,8 @@ function AmazonDeParser(){
     this.CurrencySign = "&euro;";
     this.CurrencySignForExport = "\u20AC";
     this.ThousandSeparator = ".";
-    this.SearchResultsNumber = 48;
+    this.DecimalSeparator = ",";
+    this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
     this.BestSellersUrl = "gp/bestsellers";
     this.Publisher = "Verlag";
@@ -85,7 +86,7 @@ AmazonDeParser.prototype.GetReviewsCountFromResult = function(resultItem) {
 
 AmazonDeParser.prototype.ParsePrice = function(price) {
     if(!price) return 0;
-    return price.substr(4).replace(/\./g,'').replace(',', '.');
+    return price.replace(/\./g,'').replace(',', '.').replace(/[^0-9\.]/g, '');
 };
 
 AmazonDeParser.prototype.FormatPrice = function(price) {
@@ -102,7 +103,7 @@ AmazonDeParser.prototype.GetImageUrlSrc = function(responseText) {
 AmazonDeParser.prototype.GetReviews = function(responseText) {
     var rl_reviews = $(responseText).find("#acr .acrCount a:first");
     if (rl_reviews.length)
-        return $(rl_reviews).text().replace('Rezensionen','').trim();
+        return $(rl_reviews).text().replace('Rezensionen','').replace('Rezension','').trim();
     else
-        return  "0";
+        return "0";
 };

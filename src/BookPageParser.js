@@ -46,7 +46,7 @@ BookPageParser.prototype.GetGoogleImageSearchUrl = function(responseText, url, c
         return;
     }
     this._siteParser.GetGoogleImageSearchUrlRel(responseText, url, function(rel){
-        if (rel == 'undefined' || rel.length<1) callback(googleUrl);
+        if (rel === undefined || rel.length<1) callback(googleUrl);
         callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
     });
 };
@@ -56,7 +56,7 @@ BookPageParser.prototype.GetImageUrl = function(responseText){
         return;
     }
     var src = this._siteParser.GetImageUrlSrc(responseText);
-    if (src == 'undefined' || src.length<1) return;
+    if (src === undefined || src.length<1) return;
     return src;
 };
 
@@ -76,7 +76,7 @@ BookPageParser.prototype.GetReviews = function(responseText) {
 BookPageParser.prototype.GetPrice = function(responseText) {
     var priceBlock = $(responseText).find('#priceBlock b.priceLarge');
     if(priceBlock && priceBlock.text().trim() !== '') {
-        if(priceBlock.text().trim() == "Free") return this._siteParser.FormatPrice("0.00");
+        if(priceBlock.text().trim() == "Free") return this._siteParser.FormatPrice("0" + this._siteParser.DecimalSeparator + "00");
          return priceBlock.text().trim();
     }
     priceBlock = $(responseText).find('#kindle_meta_binding_winner .price');
