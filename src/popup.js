@@ -603,9 +603,9 @@ function UpdateRateTrackingTable(){
         addEventListenerForSingleResultBook();
 
         //Remove links
-        var RemoveRankTrackedBooks = document.getElementsByClassName('RankTrackingRemove');
+        var RemoveRankTrackedBooks = $('.RankTrackingRemove');
         for(var i = 0;i<RemoveRankTrackedBooks.length; i++) {
-            RemoveRankTrackedBooks[i].addEventListener("click", function () {
+            RemoveRankTrackedBooks[i].click(function () {
                 Storage.RemoveBookInStorage($(this).attr('bookUrl'), function(){
                     RankTrackingListShow();
                 });
@@ -700,6 +700,7 @@ function InsertDatas(PageNumber)
     }
 
     $("table[name='data']").find("tbody").html(html);
+
     addEventListenerForSingleResultBook();
 
     if (categoryKind.indexOf("Seller") >= 0)
@@ -881,28 +882,28 @@ function addCommas(nStr)
 }
 
 function SetupClickListeners(){
-    var linkTitleWord = document.getElementById('TitleWordCloud');
-    linkTitleWord.addEventListener('click', function() {
+    var linkTitleWord = $('#TitleWordCloud');
+    linkTitleWord.click(function() {
         WordsInfoUpdate();
         activeTab = WORD_CLOUD;
     });
 
-    var BestSellerLink = document.getElementById('BestSellerLink');
-    BestSellerLink.addEventListener('click', function() {
+    var BestSellerLink = $('#BestSellerLink');
+    BestSellerLink.click(function() {
         $('#data-body').css("overflow-y" , "auto");
         activeTab = BEST_SELLERS;
         frun();
     });
 
-    var linkRankTrackingResultList = document.getElementById('RankTrackingResultList');
-    linkRankTrackingResultList.addEventListener('click', function() {
+    var linkRankTrackingResultList = $('#RankTrackingResultList');
+    linkRankTrackingResultList.click(function() {
         RankTrackingListShow();
         activeTab = RANK_TRACKING;
     });
 
-    var link2 = document.getElementById('refresh');
+    var link2 = $('#refresh');
 
-    link2.addEventListener('click', function() {
+    link2.click(function() {
         PageNum = 1;
         chrome.runtime.sendMessage({type: "save-PageNum", PageNum: PageNum});
         SetActivePage(PageNum);
@@ -915,8 +916,8 @@ var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;
 
-    var link3 = document.getElementById('PullResult');
-    link3.addEventListener('click', function () {
+    var link3 = $('#PullResult');
+    link3.click(function () {
         if (PageNum > 1) {
             chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
                 chrome.tabs.sendMessage(tabs[0].id, { page: PageNum }, function (response) {
@@ -929,8 +930,8 @@ function SetupStaticClickListeners() {
         SetActivePage(PageNum);
     });
 
-    var link4 = document.getElementById('Export');
-    link4.addEventListener('click', function() {
+    var link4 = $('#Export');
+    link4.click(function() {
         switch(activeTab){
             case BEST_SELLERS:
                 ExportSellResult();
@@ -984,16 +985,16 @@ function UpdateTable(obj)
 
         LoadAdvertisementBanner();
 
-        var link2 = document.getElementById('ClickHere');
-        link2.addEventListener('click', function() {
+        var link2 = $('#ClickHere');
+        link2.click(function() {
             chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
                 chrome.tabs.update(response.ID, {url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html"});
                 window.close();
             });
         });
 
-		var link5 = document.getElementById('refresh');
-		link5.addEventListener('click', function() {
+		var link5 = $('#refresh');
+		link5.click(function() {
 			frun();
 		});
 
