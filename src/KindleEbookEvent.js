@@ -198,7 +198,7 @@ function ParseAuthorPage(startIndex, maxResults, responseText, parentUrl)
 
     if (typeof category === "undefined" || category.length < 1)
     {
-        category = ParseString(responseText, 'entityHeader', '>', '<');
+        category = $(responseText).find("#entityHeader").text().trim();
         var tmpSplit =category.split("by");
         if (tmpSplit.length > 1)
             category = tmpSplit[1];
