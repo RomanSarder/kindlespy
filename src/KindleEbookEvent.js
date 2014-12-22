@@ -247,11 +247,23 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
             }).parent();
             price[index] = SiteParser.CurrencySign + "0" + SiteParser.DecimalSeparator + "00";
             if($(kprice).length > 0)
-                price[index] = kprice.find('span.s-price').filter(function() {
-                    return $(this).parent().parent().has('span.s-icon-kindle-unlimited').length === 0;
-                }).text().trim();
+            var prices = kprice.find('span.s-price');
+            var el_price;
+            if (prices != undefined) {
+                if ((prices.parent().parent().has('span.s-icon-kindle-unlimited').length > 0)
+                    || (prices.parent().has("span:contains('" + SiteParser.searchKeys[1] + "')").length > 0)) {
+                    el_price = $.grep(kprice.find('span.s-price'), function (element) {
+                        return ($(element).parent().has("span:contains('" + SiteParser.searchKeys[0] + "')").length > 0);
+                    });
+                }
+                else {
+                    el_price = kprice.find('span.s-price');
+                }
 
-		    review[index] = undefined; 
+                if( el_price.length > 0) price[index] = $(el_price).text().trim();
+            }
+
+            review[index] = undefined;
 
 		    url[index] = url[index].replace("&amp;", "&");
 		    url[index] = url[index].replace(" ", "%20");

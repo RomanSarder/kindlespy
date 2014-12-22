@@ -17,6 +17,7 @@ function AmazonDeParser(){
     this.AuthorResultsNumber = 16;
     this.BestSellersUrl = "gp/bestsellers";
     this.Publisher = "Verlag";
+    this.searchKeys = new Array("kaufen","to rent");
     this.EstSalesScale = [
         {"min": 1, "max": 5, "EstSale": 40000},
         {"min": 6, "max": 10, "EstSale": 35000},

@@ -17,6 +17,7 @@ function AmazonCoUkParser(){
     this.AuthorResultsNumber = 16;
     this.BestSellersUrl = "Best-Sellers-Kindle-Store";
     this.Publisher = "Publisher";
+    this.searchKeys = new Array("to buy","to rent");
     this.EstSalesScale = [
         {"min": 1, "max": 5, "EstSale": 60000},
         {"min": 6, "max": 10, "EstSale": 52500},
