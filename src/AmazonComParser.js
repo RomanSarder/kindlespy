@@ -15,7 +15,7 @@ function AmazonComParser(){
     this.ThousandSeparator = ",";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 12;
-    this.BestSellersUrl = "Best-Sellers-Kindle-Store";
+    this.BestSellersUrls = new Array("Best-Sellers-Kindle-Store", "gp/bestsellers");
     this.Publisher = "Publisher";
     this.searchKeys = new Array("to buy","to rent");
     this.EstSalesScale = [

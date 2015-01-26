@@ -333,20 +333,24 @@ function scrapeSearchPage(Url) {
 }
 
 function scrapeBestSellersPage(Url){
+    var flag = false;
     $.get(Url, function(responseText){
-        if (responseText.indexOf("Kindle-Store-eBooks/") >= 0
-            || (Url.indexOf(SiteParser.MainUrl + "/" + SiteParser.BestSellersUrl) >= 0
-            && Url.indexOf("/digital-text/") >=0 ))
-        {
-            if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
+        for(var bestSellerUrlKey in SiteParser.BestSellersUrls ){
+            if (flag) break;
+            if ((responseText.indexOf("Kindle-Store-eBooks/") >= 0)
+                || (Url.indexOf(SiteParser.MainUrl + "/" + SiteParser.BestSellersUrls[bestSellerUrlKey]) >= 0 && Url.indexOf("/digital-text/") >=0 ))
             {
-                chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
-            }
+                flag = true;
+                if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
+                {
+                    chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
+                }
 
-            ParseBestSellersPage(responseText, ParentUrl, false);
-            for (var i = 2; i <= 2; i++)
-            {
-                LoadBestSellersPage(i, 3000*i);
+                ParseBestSellersPage(responseText, ParentUrl, false);
+                for (var i = 2; i <= 2; i++)
+                {
+                    LoadBestSellersPage(i, 3000*i);
+                }
             }
         }
     });

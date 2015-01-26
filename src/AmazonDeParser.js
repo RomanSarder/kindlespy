@@ -15,7 +15,7 @@ function AmazonDeParser(){
     this.DecimalSeparator = ",";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
-    this.BestSellersUrl = "gp/bestsellers";
+    this.BestSellersUrls = new Array("gp/bestsellers");
     this.Publisher = "Verlag";
     this.searchKeys = new Array("kaufen","to rent");
     this.EstSalesScale = [

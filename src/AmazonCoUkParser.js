@@ -15,7 +15,7 @@ function AmazonCoUkParser(){
     this.DecimalSeparator = ".";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
-    this.BestSellersUrl = "Best-Sellers-Kindle-Store";
+    this.BestSellersUrls = new Array("Best-Sellers-Kindle-Store");
     this.Publisher = "Publisher";
     this.searchKeys = new Array("to buy","to rent");
     this.EstSalesScale = [
