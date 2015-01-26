@@ -605,7 +605,7 @@ function UpdateRateTrackingTable(){
         //Remove links
         var RemoveRankTrackedBooks = $('.RankTrackingRemove');
         for(var i = 0;i<RemoveRankTrackedBooks.length; i++) {
-            RemoveRankTrackedBooks[i].click(function () {
+            $(RemoveRankTrackedBooks[i]).click(function () {
                 Storage.RemoveBookInStorage($(this).attr('bookUrl'), function(){
                     RankTrackingListShow();
                 });
