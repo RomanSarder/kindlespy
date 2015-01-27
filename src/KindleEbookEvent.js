@@ -46,7 +46,7 @@ $(window).ready(function () {
 });
 
 function IsAuthorPage(){
-    return document.documentElement.innerHTML.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0;
+    return document.documentElement.innerHTML.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0 && document.documentElement.innerHTML.indexOf("ap-author-name") >= 0;
 }
 
 function IsSearchPage(Url){
