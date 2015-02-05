@@ -255,8 +255,11 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
                     el_price = $.grep(kprice.find('span.s-price'), function (element) {
                         return ($(element).parent().has("span:contains('" + SiteParser.searchKeys[0] + "')").length > 0);
                     });
-                }
-                else {
+                }else if(prices.parent().parent().parent().has("h3:contains('Audible Audio Edition')").length > 0){ //Amazon Added Audible Audio Edition block
+                    el_price = $(prices[0]);
+                }else if($(prices).length > 1){
+                    el_price = $(prices[0]);
+                }else {
                     el_price = kprice.find('span.s-price');
                 }
 
