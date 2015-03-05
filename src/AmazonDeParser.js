@@ -60,7 +60,9 @@ AmazonDeParser.Region = "DE";
 AmazonDeParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
 };
-
+AmazonDeParser.prototype.GetDescription = function(responseText){
+    return $(responseText).find("#productDescription .content").text().trim();
+};
 AmazonDeParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
     $(resultItem).find("li").each(function() {

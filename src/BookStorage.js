@@ -3,6 +3,10 @@
  */
 
 function BookStorage() {
+    if ( BookStorage.prototype._singletonInstance )
+        return BookStorage.prototype._singletonInstance;
+    BookStorage.prototype._singletonInstance = this;
+
     this._storage = chrome.storage.local;
     this.logger = new Logger();
 }
@@ -11,6 +15,7 @@ var bookDataExample = {
     url: 'http://book.url',
     trackingEnabled: true,
     title: 'test title',
+    description: 'test description',
     author: 'A. Lastname',
     image: 'http://url.to/image.png', // not yet available
     currentSalesRank: 2233,
@@ -102,6 +107,7 @@ BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
             url: bookUrl,
             trackingEnabled: false,
             title: book.title,
+            description: book.description,
             author: book.author,
             image: book.imageUrl,
             currentSalesRank: book.salesRank,

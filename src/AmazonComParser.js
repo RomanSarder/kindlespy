@@ -61,6 +61,10 @@ AmazonComParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", '>', '<');
 };
 
+AmazonComParser.prototype.GetDescription = function(responseText){
+    return $(responseText).find("#outer_postBodyPS").text().trim();
+};
+
 AmazonComParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
     $(resultItem).find(".tp").find("tr").each(function() {

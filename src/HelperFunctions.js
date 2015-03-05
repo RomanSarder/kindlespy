@@ -62,3 +62,34 @@ function GetSiteParser(url){
     if(url.indexOf(AmazonDeParser.MainUrl)!=-1)
         return new AmazonDeParser();
 }
+
+/**
+ * Add decimal and thousand delimiters: commas and points
+ * @param str
+ * @returns {string}
+ */
+function AddCommas(str)
+{
+    str += '';
+    x = str.split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+    return x1 + x2;
+}
+
+/**
+ * Gets a category from the bookData array
+ * @param bookData
+ * @returns {string}
+ */
+function GetCategoryFromBookData(bookData){
+    bookData = ValueOrDefault(bookData, []);
+    if(bookData.length > 0)
+        return bookData[0].Category;
+
+    return '';
+}

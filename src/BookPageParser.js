@@ -67,6 +67,13 @@ BookPageParser.prototype.GetTitle = function(responseText) {
     }
 };
 
+BookPageParser.prototype.GetDescription = function(responseText) {
+    if (typeof responseText !== "undefined" && responseText.length > 1)
+    {
+        return this._siteParser.GetDescription(responseText);
+    }
+};
+
 BookPageParser.prototype.GetReviews = function(responseText) {
     if (typeof responseText !== "undefined" && responseText.length > 1) {
         return this._siteParser.GetReviews(responseText);
@@ -160,6 +167,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
         var entryTitle = _this.GetTitle(responseText);
         if (typeof entryTitle === "undefined" || entryTitle === "") entryTitle = _this.GetAuthorTitle(responseText);
         if (typeof entryTitle === "undefined") return;
+        var entryDescription = _this.GetDescription(responseText);//@TODO: check on empty value
         if (!reviews) reviews = _this.GetReviews(responseText);
         if (!price) price = _this.GetPrice(responseText);
 
@@ -185,6 +193,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
 
                 callback({
                     title: entryTitle,
+                    description: entryDescription,
                     price: _this._siteParser.FormatPrice(realPrice),
                     estSale: entryEstSale,
                     salesRecv: entrySalesRecv,

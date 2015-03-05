@@ -1,13 +1,8 @@
-var Category;
 var obj = [];
 var clouds = [];
-var PageNum = 1;
 var CurrentPageUrl = "";
 var refreshed = false;
-var BEST_SELLERS = "best-sellers";
-var WORD_CLOUD = "word-cloud";
-var RANK_TRACKING = "rank-tracking";
-var activeTab = BEST_SELLERS;
+var ActiveTab = new MainTab();
 var IsErrorWindow = false;
 var SiteParser;
 var Storage = new BookStorage();
@@ -30,7 +25,7 @@ var currentSortDirection = 1; //1 = ask, -1 = desc
 $(window).ready(function () {
     $('#LinkBackTo').click(function () {
         $('#data-body').css("overflow-y", "auto");
-        activeTab = BEST_SELLERS;
+        ActiveTab = new MainTab();
         chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
         frun();
     });
@@ -120,7 +115,7 @@ function AutoAddFunc()
                 {
                     if (settings.Book[i].Price.indexOf("Free") >= 0)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl };
+                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl };
                         obj.push(settingTmp);
                     }
                 }
@@ -128,7 +123,7 @@ function AutoAddFunc()
                 {
                     if (settings.Book[i].Price.indexOf("Free") < 0)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl };
+                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl };
                         obj.push(settingTmp);
                     }
                 }
@@ -137,20 +132,15 @@ function AutoAddFunc()
 
         obj.sort(compare);
 
-        if (IsErrorWindow && obj.length > 0)
-        {
+        if (obj.length <= 0) return;
+        if (!IsErrorWindow) {
+            if (!refreshed && (ActiveTab.IsPaged)) {
+                ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
+            }
+        } else {
             frun();
         }
-        else if (!refreshed && (activeTab == BEST_SELLERS))
-        {	
-			if (obj.length > 0)
-			{
-				if (PageNum > 1)
-					InsertDatas(PageNum-1);
-	            else if (obj.length > 0)
-					InsertDatas(0);
-			}
-        }
+
     });
 
     if (!refreshed)
@@ -190,64 +180,6 @@ function shuffle(array) {
     return array;
 }
 
-function ExportWordCloudResult()
-{
-    var x = new Array(clouds.length + 1);
-
-    for (var i = 0; i < clouds.length + 1; i++) {
-        x[i] = new Array(2);
-    }
-
-    x[0][0] = "Words";
-    x[0][1] = "Count";
-
-    var nArrayIndex = 1;
-    for(var index = clouds.length-1; index >= 0 ; index --) {
-        x[nArrayIndex][0] = clouds[index].Word;
-        x[nArrayIndex][1] = clouds[index].Len.toString();
-        nArrayIndex++;
-    }
-
-    var csvContent = "data:text/csv;charset=utf-8,";
-    x.forEach(function(infoArray, index){
-        var dataString = [];
-        for (var i = 0; i < infoArray.length; i++)
-        {
-            var quotesRequired = false;
-            if (infoArray[i].indexOf(",") >= 0)
-                quotesRequired = true;
-            var escapeQuotes = false;
-            if (infoArray[i].indexOf("\"") >= 0)
-                escapeQuotes = true;
-
-            var fieldValue = (escapeQuotes ? infoArray[i].replace("\"", "\"\"") : infoArray[i]);
-
-            if (fieldValue.indexOf("\r") >= 0 || fieldValue.indexOf("\n") >= 0)
-            {
-                quotesRequired = true;
-                fieldValue = fieldValue.replace("\r\n", "");
-                fieldValue = fieldValue.replace("\r", "");
-                fieldValue = fieldValue.replace("\n", "");
-            }
-
-            dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
-        }
-		
-        for (var i = 0; i < dataString.length; i ++)
-            csvContent += dataString[i];
-    });
-
-    var encodedUri = encodeURI(csvContent);
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1;
-    var yyyy = today.getFullYear();
-    var link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "wc-"+Category+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
-    link.click();
-}
-
 function WordsInfoUpdate()
 {
     var xPathRes = document.evaluate ( "/html/body/div/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -257,7 +189,7 @@ function WordsInfoUpdate()
         return;
 
     for (var i = 0; i < xPathRes.snapshotLength; i++) {
-        if (i > PageNum * 20)
+        if (i > ActiveTab.PageNum * 20)
             break;
 
         InnerTexts += xPathRes.snapshotItem (i).innerText + " ";
@@ -453,7 +385,37 @@ function RankTrackingListShow() {
 
     UpdateRateTrackingTable();
 }
+function KwdAnalysisListShow() {
+    Storage.GetNumberOfBooks(function(num){
+        num = (num === undefined)?0:num;
+        var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Keyword: </div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"KeywordAnalysis\" href=\"#\">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
+        $('#main-header').html(HeaderHtml);
+        SetupClickListeners();
+    });
 
+    var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
+    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:175px;\"> </label><label class=\"sort-column\" id=\"searchf\" style=\"padding-right:25px;\">Page(s)</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:8px;\">KWT</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">KWD</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Rating</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Reviews</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Sales Rank</label>"
+    var InfoHtml = "<div class=\"info-item\"><span style=\"font-size:11px\">Results:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Price:</span><div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">$7.95</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rank:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">4,233</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Pages:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">112</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Rating:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">4.1</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Reviews:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">31</div></div>";
+
+    resetCss();
+    $('#main-content').html(ContentHtml);
+    $('.info.list_books').html(InfoHtml);
+    $('#main-content').show();
+    $('#main-header').show();
+    $('#BestSellersRankingFooter').show();
+    $('#ExportBtn').show();
+    $('.info.list_books').show();
+
+    LoadAdvertisementBanner();
+
+    $('#data-body').css("overflow-y" , "hidden");
+    $('.table-head').html(tableHead);
+    $('.table-head').css("background-color" , "#333333");
+
+    $('#TitleWordCloud').text("Titles: Word Cloud (20)");
+
+    ActiveTab.InsertData(0, obj, SiteParser);
+}
 var prevBookUrl;
 function resetTrackingBookPage(bookUrl) {
     if(prevBookUrl === bookUrl) return;
@@ -530,8 +492,8 @@ function UpdateTrackedBookView(bookData){
     $('#singleResult1').html(bookData.currentSalesRank);
     $('#singleResult2').html(bookData.price);
     $('#singleResult3').html(bookData.pages);
-    $('#singleResult4').html(addCommas(bookData.estSales));
-    $('#singleResult5').html(SiteParser.FormatPrice(addCommas(Math.round(bookData.estSalesRev))));
+    $('#singleResult4').html(AddCommas(bookData.estSales));
+    $('#singleResult5').html(SiteParser.FormatPrice(AddCommas(Math.round(bookData.estSalesRev))));
     $('#singleResult6').html(bookData.numberOfReviews);
     var sumRank=0;
     var points = bookData.salesRankData.length;
@@ -546,8 +508,8 @@ function UpdateTrackedBookView(bookData){
     var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
 
     $('#days').html(points);
-    $('#AvgSalesRank').html(addCommas(Math.floor(avgSalesRank)));
-    $('#EstDailyRev').html(SiteParser.FormatPrice(addCommas(EstDailyRev)));
+    $('#AvgSalesRank').html(AddCommas(Math.floor(avgSalesRank)));
+    $('#EstDailyRev').html(SiteParser.FormatPrice(AddCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
     $('#ExportBtn').attr('book-url', bookData.url);
@@ -614,109 +576,6 @@ function UpdateRateTrackingTable(){
   });
 }
 
-function InsertDatas(PageNumber)
-{
-    var category = "";
-    var categoryKind = "";
-    var averageSalesRank = 0;
-    var averageSalesRecv = 0;
-    var averagePrice = 0;
-    var averageReview = 0;
-    var html = "";
-    var nTotalCnt = 0;
-    var cellCnt = 0;
-
-    for(var i = obj.length - 1; i >= 0 ; i --)
-    {
-        if (typeof obj[i].SalesRank === "undefined" || obj[i].SalesRank.length < 1)
-        {
-            obj.splice(i, 1);
-            continue;
-        }
-
-        if (typeof obj[i].Title === "undefined" || obj[i].Title.length < 1)
-        {
-            obj.splice(i, 1);
-            continue;
-        }
-    }
-
-    for(var i = 0; i < obj.length; i ++) {
-        if (Math.floor(i / 20) <= PageNumber)
-        {
-            html += "<tr>" +
-                "<td>"+(i + 1)+"</td>" +
-                "<td class='wow'>" + obj[i].Title + "</td>" +
-                "<td style='width:50px;'><a class='RankTrackingResultSingle' href='" + "#" + "' bookUrl='" + obj[i].Url + "'>T</a> " + " | " +
-                    "<a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " +
-                    "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
-                "<td style='padding-left:15px; width:30px;'>" +obj[i].PrintLength + "</td>" +
-                "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
-                "<td style='padding-left:15px; width:60px;' align='right'>" + addCommas(obj[i].EstSales) +"</td>" +
-                "<td style='width:80px;'><div style='float:left'> "+ SiteParser.CurrencySign +" </div> <div style='float:right'>"+ addCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
-                "<td style='width:50px;' align='right'>"+ obj[i].Reviews +"</td>" +
-                "<td style='width:80px;padding-right : 10px;' align='right'>"+ obj[i].SalesRank +"</td>"+
-                "</tr>";
-
-            var price = "" + obj[i].Price;
-            var review = "" + obj[i].Reviews;
-
-            averageSalesRank += parseInt(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim());
-            averageSalesRecv += parseInt(obj[i].SalesRecv);
-            if (price.indexOf("Free") >= 0)
-                averagePrice = 0;
-            else
-                averagePrice += parseFloat(price.replace(/[^0-9\.]/g, ''));
-
-            averageReview += parseInt(review.replace(SiteParser.ThousandSeparator, "").trim());
-            nTotalCnt ++;
-
-            if (category == "")
-            {
-                categoryKind = obj[i].CategoryKind;
-                category = obj[i].Category;
-                Category = category;
-            }
-        }
-    }
-
-    if ((activeTab == BEST_SELLERS) && PageNumber * 20 >= 20)
-    {
-        $('#data-body').css("overflow-y" , "scroll");
-    }
-
-    var min = (PageNumber + 1) * 20 - 19;
-    var max = (PageNumber + 1) * 20;
-
-    if (PageNumber >= 4)
-    {
-        $('#result1').html(1 + "-" + (obj.length));
-        $('#PullResult').html("");
-    }
-    else
-    {
-        $('#result1').html(1 + "-" + max);
-        $('#PullResult').html("Pull Results " + (min + 20) + "-" + (max + 20));
-    }
-
-    $("table[name='data']").find("tbody").html(html);
-
-    addEventListenerForSingleResultBook();
-
-    if (categoryKind.indexOf("Seller") >= 0)
-        $("#CategoryKind").html("Best Sellers in");
-    else if(categoryKind.indexOf("Search")>=0) 
-	$("#CategoryKind").html("Search Results");
-    else
-        $("#CategoryKind").html("Author Status");
-
-    $("#title").html(category + ":");
-    $('#result2').html(addCommas(Math.floor(averageSalesRank / nTotalCnt)));
-    $('#result3').html(SiteParser.FormatPrice(addCommas(Math.floor(averageSalesRecv / nTotalCnt))));
-    $('#result4').html(SiteParser.FormatPrice(addCommas((averagePrice/nTotalCnt).toFixed(2))));
-    $('#result5').html(addCommas(Math.floor(averageReview / nTotalCnt)));
-    $('#totalReSalesRecv').html(SiteParser.FormatPrice(addCommas(averageSalesRecv)));/**/
-}
 function addEventListenerForSingleResultBook(){
     var RankTrackingResultSingle = document.getElementsByClassName('RankTrackingResultSingle');
     for(var i = 0;i<RankTrackingResultSingle.length; i++) {
@@ -725,191 +584,38 @@ function addEventListenerForSingleResultBook(){
         });
     }
 }
-function ExportSellResult()
-{
-    var x = new Array(PageNum * 20 + 1);
-    for (var i = 0; i < PageNum * 20 + 1; i++) {
-        x[i] = new Array(11);
-    }
-
-    x[0][0] = "#";
-    x[0][1] = "Kindle Book Title";
-    x[0][2] = "Author";
-    x[0][3] = "Date of publication";
-    x[0][4] = "Price";
-    x[0][5] = "Est. Sales";
-    x[0][6] = "Sales Rev.";
-    x[0][7] = "Reviews";
-    x[0][8] = "Sales Rank";
-	x[0][9] = "Page No(s)";
-	x[0][10] = "Book URL";
-
-    for(var index = 0; index < obj.length; index ++) {
-        if (Math.floor(index / 20) <= (PageNum - 1))
-        {
-            x[index + 1][0] = (index + 1).toString();
-            x[index + 1][1] = obj[index].Title;
-            x[index + 1][2] = obj[index].Author;
-            x[index + 1][3] = obj[index].DateOfPublication;
-            x[index + 1][4] = obj[index].Price.replace(SiteParser.CurrencySign, SiteParser.CurrencySignForExport);
-            x[index + 1][5] = addCommas(obj[index].EstSales);
-            x[index + 1][6] = SiteParser.CurrencySignForExport + " " + addCommas(Math.round(obj[index].SalesRecv));
-            x[index + 1][7] = obj[index].Reviews;
-            x[index + 1][8] = obj[index].SalesRank;
-			x[index + 1][9] = obj[index].PrintLength;
-			x[index + 1][10] = obj[index].Url;
-        }
-    }
-
-    var csvContent = "\uFEFF";
-    x.forEach(function(infoArray, index){
-        if (index <= obj.length)
-        {
-            var dataString = [];
-            for (var i = 0; i < infoArray.length; i++)
-            {
-                var quotesRequired = false;
-                if (infoArray[i].indexOf(",") >= 0)
-                    quotesRequired = true;
-                var escapeQuotes = false;
-                if (infoArray[i].indexOf("\"") >= 0)
-                    escapeQuotes = true;
-
-                var fieldValue = (escapeQuotes ? infoArray[i].replace("\"", "\"\"") : infoArray[i]);
-
-                if (fieldValue.indexOf("\r") >= 0 || fieldValue.indexOf("\n") >= 0)
-                {
-                    quotesRequired = true;
-                    fieldValue = fieldValue.replace("\r\n", "");
-                    fieldValue = fieldValue.replace("\r", "");
-                    fieldValue = fieldValue.replace("\n", "");
-                }
-
-				if(i == 10 && index > 0)
-					fieldValue =  "=HYPERLINK(\"" + fieldValue + "\")";
-                dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
-            }
-            for (var i = 0; i < dataString.length; i ++)
-                csvContent += dataString[i];
-        }
-    });
-
-    var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
-    var url = URL.createObjectURL(blob);
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1;
-    var yyyy = today.getFullYear();
-    var link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "bs-"+Category+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
-    link.click();
-}
-
-function ExportRankTrackedResult(){
-    var bookUrl = $('#ExportBtn').attr('book-url');
-    Storage.GetBook(bookUrl, function(bookData) {
-        if(bookData) {
-            var x = new Array(bookData.salesRankData.length+1);
-
-            for (var i = 0; i < bookData.salesRankData.length+1; i++) {
-                x[i] = new Array(2);
-            }
-
-            x[0][0] = "Date";
-            x[0][1] = "Sales Rank";
-
-            for(var index = 0; index < bookData.salesRankData.length; index ++) {
-                x[index + 1][0] = new Date(bookData.salesRankData[index].date).toDateString();
-                x[index + 1][1] = addCommas(bookData.salesRankData[index].salesRank);
-            }
-
-            var csvContent = "\uFEFF";
-            x.forEach(function(infoArray, index){
-                if (index <= bookData.salesRankData.length)
-                {
-                    var dataString = [];
-                    for (var i = 0; i < infoArray.length; i++)
-                    {
-                        var quotesRequired = false;
-                        if (infoArray[i].indexOf(",") >= 0)
-                            quotesRequired = true;
-                        var escapeQuotes = false;
-                        if (infoArray[i].indexOf("\"") >= 0)
-                            escapeQuotes = true;
-
-                        var fieldValue = (escapeQuotes ? infoArray[i].replace("\"", "\"\"") : infoArray[i]);
-
-                        if (fieldValue.indexOf("\r") >= 0 || fieldValue.indexOf("\n") >= 0)
-                        {
-                            quotesRequired = true;
-                            fieldValue = fieldValue.replace("\r\n", "");
-                            fieldValue = fieldValue.replace("\r", "");
-                            fieldValue = fieldValue.replace("\n", "");
-                        }
-                    dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
-                    }
-                    for (var i = 0; i < dataString.length; i ++)
-                        csvContent += dataString[i];
-                }
-            });
-
-            var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
-            var url = URL.createObjectURL(blob);
-            var today = new Date();
-            var dd = today.getDate();
-            var mm = today.getMonth()+1;
-            var yyyy = today.getFullYear();
-            var link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "rs-" + bookData.title + "-" + mm + "-" + dd + "-" + yyyy + ".csv");
-            link.click();
-        }
-    });
-}
-
-function addCommas(nStr)
-{
-    nStr += '';
-    x = nStr.split('.');
-    x1 = x[0];
-    x2 = x.length > 1 ? '.' + x[1] : '';
-    var rgx = /(\d+)(\d{3})/;
-    while (rgx.test(x1)) {
-        x1 = x1.replace(rgx, '$1' + ',' + '$2');
-    }
-    return x1 + x2;
-}
 
 function SetupClickListeners(){
     var linkTitleWord = $('#TitleWordCloud');
     linkTitleWord.click(function() {
+        ActiveTab = new WordCloudTab();
         WordsInfoUpdate();
-        activeTab = WORD_CLOUD;
     });
 
     var BestSellerLink = $('#BestSellerLink');
     BestSellerLink.click(function() {
         $('#data-body').css("overflow-y" , "auto");
-        activeTab = BEST_SELLERS;
+        ActiveTab = new MainTab();
         frun();
     });
 
     var linkRankTrackingResultList = $('#RankTrackingResultList');
     linkRankTrackingResultList.click(function() {
+        ActiveTab = new RankTrackingTab();
         RankTrackingListShow();
-        activeTab = RANK_TRACKING;
     });
 
     var link2 = $('#refresh');
 
     link2.click(function() {
-        PageNum = 1;
-        chrome.runtime.sendMessage({type: "save-PageNum", PageNum: PageNum});
-        SetActivePage(PageNum);
+        SetActivePage(1);
         location.reload();
     });
-
+    var linkKwdAnalysis = $("#KeywordAnalysis");
+    linkKwdAnalysis.click(function() {
+        ActiveTab = new KeywordAnalysisTab();
+        KwdAnalysisListShow();
+    });
 }
 
 var isStaticLinkInitialized = false;
@@ -918,31 +624,19 @@ function SetupStaticClickListeners() {
 
     var link3 = $('#PullResult');
     link3.click(function () {
-        if (PageNum > 1) {
+        if (ActiveTab.PageNum > 1) {
             chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, { page: PageNum }, function (response) {
+                chrome.tabs.sendMessage(tabs[0].id, { page: ActiveTab.PageNum }, function (response) {
                 });
             });
         }
 
-        PageNum++;
-        chrome.runtime.sendMessage({ type: "save-PageNum", PageNum: PageNum });
-        SetActivePage(PageNum);
+        SetActivePage(ActiveTab.PageNum + 1);
     });
 
     var link4 = $('#Export');
     link4.click(function() {
-        switch(activeTab){
-            case BEST_SELLERS:
-                ExportSellResult();
-                break;
-            case WORD_CLOUD:
-                ExportWordCloudResult();
-                break;
-            case RANK_TRACKING:
-                ExportRankTrackedResult();
-                break;
-        }
+        ActiveTab.ExportToCsv({ bookData: obj, cloudData: clouds });
     });
 	
     isStaticLinkInitialized = true;
@@ -1005,7 +699,7 @@ function UpdateTable(obj)
     IsErrorWindow = false;
     Storage.GetNumberOfBooks(function(num){
         num = (num === undefined)?0:num;
-        var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
+        var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"KeywordAnalysis\" href=\"#\">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
         $('#main-header').html(HeaderHtml);
         SetupClickListeners();
     });
@@ -1042,13 +736,15 @@ function UpdateTable(obj)
     });
 
     $('#TitleWordCloud').text("Titles: Word Cloud (20)");
-    InsertDatas(0);
+    ActiveTab.InsertData(0, obj, SiteParser);
 }
 
 function SetActivePage(pageNum)
 {
     $('#TitleWordCloud').text("Titles: Word Cloud (" + (pageNum) * 20 + ")");
-    InsertDatas(pageNum-1);
+    ActiveTab.PageNum = pageNum;
+    ActiveTab.SavePageNum();
+    ActiveTab.InsertData(pageNum-1, obj, SiteParser);
 }
 
 function frun()
@@ -1108,42 +804,45 @@ function LoadInfos()
         var _Pos = url.lastIndexOf('/ref=');
         currentUrl = url.substr(0, _Pos);
     }
-    
-    chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
-        settings = response.settings;
+    new MainTab().LoadPageNum(function(){
+        console.log("LoadPageNum enter" + ActiveTab.PageNum);
+        new KeywordAnalysisTab().LoadPageNum(function(){
+            chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
+                settings = response.settings;
 
-        var settingLen = settings.Book.length;
-        while(obj.length > 0) {
-            obj.pop();
-        }
+                var settingLen = settings.Book.length;
+                while(obj.length > 0) {
+                    obj.pop();
+                }
 
-        PageNum = settings.PageNum;
-        for (var i = 0; i < settingLen; i++)
-        {
-            if (settings.Book[i].ParentUrl === currentUrl)
-            {
-                if (IsFreeUrl)
+                for (var i = 0; i < settingLen; i++)
                 {
-                    if (settings.Book[i].Price.indexOf("Free") >= 0)
+                    if (settings.Book[i].ParentUrl === currentUrl)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl};
-                        obj.push(settingTmp);
+                        if (IsFreeUrl)
+                        {
+                            if (settings.Book[i].Price.indexOf("Free") >= 0)
+                            {
+                                var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl};
+                                obj.push(settingTmp);
+                            }
+                        }
+                        else
+                        {
+                            if (settings.Book[i].Price.indexOf("Free") < 0)
+                            {
+                                var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl};
+                                obj.push(settingTmp);
+                            }
+                        }
                     }
                 }
-                else
-                {
-                    if (settings.Book[i].Price.indexOf("Free") < 0)
-                    {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl};
-                        obj.push(settingTmp);
-                    }
-                }
-            }
-        }
 
-        obj.sort(compare);
-        LoadData(obj);
-        LoadAdvertisementBanner();
+                obj.sort(compare);
+                LoadData(obj);
+                LoadAdvertisementBanner();
+            });
+        });
     });
 
     if (!isRefreshStarted) {

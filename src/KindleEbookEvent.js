@@ -390,6 +390,7 @@ function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, revie
                     ParentURL: parenturl,
                     NextUrl: nextUrl,
                     Title: pageData.title,
+                    Description: pageData.description,
                     Price: pageData.price,
                     EstSales: pageData.estSale,
                     SalesRecv: pageData.salesRecv,

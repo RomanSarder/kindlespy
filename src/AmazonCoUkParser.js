@@ -60,7 +60,9 @@ AmazonCoUkParser.Region = "UK";
 AmazonCoUkParser.prototype.GetTitle = function(responseText){
     return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
 };
-
+AmazonCoUkParser.prototype.GetDescription = function(responseText){
+    return $(responseText).find("#outer_postBodyPS").text().trim();
+};
 AmazonCoUkParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
     $(resultItem).find("li").each(function() {

@@ -3,13 +3,13 @@ var defaultSetting = {
     "version": "0.0.0",
     "PullStatus": true,
     "CurrentUrl" : "",
-    "PageNum" : "1",
+    "PageNum" : {MainTab: "1", KeywordAnalysisTab: "1"},
     "MainUrl": "http://www.amazon.com/",
     "ParamUrlBestSellers" : "154606011",
     "TYPE" : "",
     "Book":
         [
-            {"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":""}
+            {"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":""}
         ]
 };
 
@@ -50,7 +50,7 @@ function RemoveSettings(url, parentUrl, IsFree)
     localStorage.settings = JSON.stringify(setting);
 }
 
-function SaveSettings(num, url, parentUrl, nextUrl, title, price, estsales, salesRecv, Reviews, salesRank, category, categoryKind, printLength, author, dateOfPublication, googleSearchUrl, googleImageSearchUrl)
+function SaveSettings(num, url, parentUrl, nextUrl, title, description, price, estsales, salesRecv, Reviews, salesRank, category, categoryKind, printLength, author, dateOfPublication, googleSearchUrl, googleImageSearchUrl)
 {
 	var setting = getSetting();
 
@@ -66,6 +66,7 @@ function SaveSettings(num, url, parentUrl, nextUrl, title, price, estsales, sale
         {
             setting.Book[i].No = num;
             setting.Book[i].Title = title;
+            setting.Book[i].Description = description;
             setting.Book[i].Price = price;
             setting.Book[i].EstSales = estsales;
             setting.Book[i].SalesRecv = salesRecv;
@@ -87,7 +88,7 @@ function SaveSettings(num, url, parentUrl, nextUrl, title, price, estsales, sale
 
     if (!bIsFind)
     {
-        var settingTmp = {"No": num, "Url": url, "ParentUrl": parentUrl, "NextUrl": nextUrl,  "Title": title, "Price": price, "EstSales": estsales, "SalesRecv": salesRecv, "Reviews": Reviews, "SalesRank": salesRank, "Category": category, "CategoryKind": categoryKind, "PrintLength": printLength, "Author":author, "DateOfPublication":dateOfPublication, "GoogleSearchUrl":googleSearchUrl, "GoogleImageSearchUrl":googleImageSearchUrl};
+        var settingTmp = {"No": num, "Url": url, "ParentUrl": parentUrl, "NextUrl": nextUrl,  "Title": title, "Description": description, "Price": price, "EstSales": estsales, "SalesRecv": salesRecv, "Reviews": Reviews, "SalesRank": salesRank, "Category": category, "CategoryKind": categoryKind, "PrintLength": printLength, "Author":author, "DateOfPublication":dateOfPublication, "GoogleSearchUrl":googleSearchUrl, "GoogleImageSearchUrl":googleImageSearchUrl};
 
         setting.Book.push(settingTmp);
     }
@@ -95,10 +96,10 @@ function SaveSettings(num, url, parentUrl, nextUrl, title, price, estsales, sale
     localStorage.settings = JSON.stringify(setting);
 }
 
-function SavePageNum(pageNum)
+function SavePageNum(pageNum, tabName)
 {
     var setting = getSetting();
-    setting.PageNum = pageNum;
+    setting.PageNum[tabName] = pageNum;
     localStorage.settings = JSON.stringify(setting);
 }
 function SaveUrlParams(url, urlParamBestSellers)
@@ -131,11 +132,16 @@ function onMessageReceived(b, a, d){
 
     else if ("save-settings" === b.type)
     {
-        SaveSettings(b.No, b.URL, b.ParentURL, b.NextUrl, b.Title, b.Price, b.EstSales, b.SalesRecv, b.Reviews, b.SalesRank, b.Category, b.CategoryKind, b.PrintLength, b.Author, b.DateOfPublication, b.GoogleSearchUrl, b.GoogleImageSearchUrl);
+        SaveSettings(b.No, b.URL, b.ParentURL, b.NextUrl, b.Title, b.Description, b.Price, b.EstSales, b.SalesRecv, b.Reviews, b.SalesRank, b.Category, b.CategoryKind, b.PrintLength, b.Author, b.DateOfPublication, b.GoogleSearchUrl, b.GoogleImageSearchUrl);
     }
     else if ("save-PageNum" === b.type)
     {
-        SavePageNum(b.PageNum);
+        SavePageNum(b.PageNum, b.tab);
+    }
+    else if ("get-PageNum" === b.type)
+    {
+        var setting = getSetting();
+        d({PageNum:setting.PageNum[b.tab]});
     }
     else if ("save-UrlParams" === b.type)
     {
