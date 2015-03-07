@@ -78,6 +78,8 @@ function resetCss(){
     $('#ExportBtn').hide();
     $('#TrackedPanelFooter').hide();
     $('#BookTracked').hide();
+    $('#totalReSalesRecvBlock').hide();
+    $('#KWDConclusion').hide();
 }
 
 function AutoAddFunc()
@@ -115,7 +117,7 @@ function AutoAddFunc()
                 {
                     if (settings.Book[i].Price.indexOf("Free") >= 0)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl };
+                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating };
                         obj.push(settingTmp);
                     }
                 }
@@ -123,7 +125,7 @@ function AutoAddFunc()
                 {
                     if (settings.Book[i].Price.indexOf("Free") < 0)
                     {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl };
+                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating };
                         obj.push(settingTmp);
                     }
                 }
@@ -364,6 +366,7 @@ function WordsInfoUpdate()
 
     LoadAdvertisementBanner();
 }
+
 function RankTrackingListShow() {
     var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:350px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"daysTracked\" style=\"padding-right:30px;\">Days Tracked</label><label class=\"sort-column\" id=\"resTracking\" style=\"padding-right:45px;\">Tracking</label><label class=\"sort-column\" id=\"removeTracking\" style=\"padding-right:5px;\">Action</label>";
@@ -385,16 +388,16 @@ function RankTrackingListShow() {
 
     UpdateRateTrackingTable();
 }
+
 function KwdAnalysisListShow() {
-    Storage.GetNumberOfBooks(function(num){
-        num = (num === undefined)?0:num;
-        var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Keyword: </div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"KeywordAnalysis\" href=\"#\">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
-        $('#main-header').html(HeaderHtml);
-        SetupClickListeners();
-    });
+//    Storage.GetNumberOfBooks(function(num){
+//        num = (num === undefined)?0:num;
+//        $('#main-header').html(BuildHeaderHtml(num));
+//        SetupClickListeners();
+//    });
 
     var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
-    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:175px;\"> </label><label class=\"sort-column\" id=\"searchf\" style=\"padding-right:25px;\">Page(s)</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:8px;\">KWT</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">KWD</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Rating</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Reviews</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Sales Rank</label>"
+    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:300px;\"> </label><label class=\"sort-column\" id=\"price\" style=\"padding-right:20px;\" >Price</label><label class=\"sort-column\" id=\"pages\" style=\"padding-right:15px;\">Page(s)</label><label class=\"sort-column\" id=\"kwt\" style=\"padding-right:15px;\">KWT</label><label class=\"sort-column\" id=\"kwd\" style=\"padding-right:20px;\">KWD</label><label class=\"sort-column\" id=\"rating\" style=\"padding-right:25px;\" >Rating</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:40px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" style=\"padding-right:10px;\" >Sales Rank</label>"
     var InfoHtml = "<div class=\"info-item\"><span style=\"font-size:11px\">Results:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Price:</span><div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">$7.95</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rank:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">4,233</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Pages:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">112</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Rating:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">4.1</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Reviews:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">31</div></div>";
 
     resetCss();
@@ -405,14 +408,15 @@ function KwdAnalysisListShow() {
     $('#BestSellersRankingFooter').show();
     $('#ExportBtn').show();
     $('.info.list_books').show();
+    $('#KWDConclusion').show();
+
 
     LoadAdvertisementBanner();
 
+    $(".info-item").css("width","16.6%");
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(tableHead);
     $('.table-head').css("background-color" , "#333333");
-
-    $('#TitleWordCloud').text("Titles: Word Cloud (20)");
 
     ActiveTab.InsertData(0, obj, SiteParser);
 }
@@ -699,8 +703,15 @@ function UpdateTable(obj)
     IsErrorWindow = false;
     Storage.GetNumberOfBooks(function(num){
         num = (num === undefined)?0:num;
-        var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Best Sellers in</div><div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\">Kindle eBooks:</div><div style=\"float:right\"><a id=\"BestSellerLink\" href=\"#\">Best Seller Rankings</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"KeywordAnalysis\" href=\"#\">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"TitleWordCloud\" href=\"#\">Titles: Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
-        $('#main-header').html(HeaderHtml);
+
+        $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');
+        $('#main-header').html(BuildHeaderHtml(num));
+        if(obj.length>0){
+            var categoryKind = obj[0].CategoryKind;
+            var category = obj[0].Category;
+            SetupHeader(category, categoryKind);
+        }
+
         SetupClickListeners();
     });
 
@@ -716,6 +727,7 @@ function UpdateTable(obj)
     $('#BestSellersRankingFooter').show();
     $('#ExportBtn').show();
     $('.info.list_books').show();
+    $('#totalReSalesRecvBlock').show();
 
     LoadAdvertisementBanner();
 
@@ -735,13 +747,13 @@ function UpdateTable(obj)
         });
     });
 
-    $('#TitleWordCloud').text("Titles: Word Cloud (20)");
+    //$('#TitleWordCloud').text("Word Cloud (20)");
     ActiveTab.InsertData(0, obj, SiteParser);
 }
 
 function SetActivePage(pageNum)
 {
-    $('#TitleWordCloud').text("Titles: Word Cloud (" + (pageNum) * 20 + ")");
+    $('#TitleWordCloud').text("Word Cloud (" + (pageNum) * 20 + ")");
     ActiveTab.PageNum = pageNum;
     ActiveTab.SavePageNum();
     ActiveTab.InsertData(pageNum-1, obj, SiteParser);
@@ -805,7 +817,6 @@ function LoadInfos()
         currentUrl = url.substr(0, _Pos);
     }
     new MainTab().LoadPageNum(function(){
-        console.log("LoadPageNum enter" + ActiveTab.PageNum);
         new KeywordAnalysisTab().LoadPageNum(function(){
             chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
                 settings = response.settings;
@@ -823,7 +834,7 @@ function LoadInfos()
                         {
                             if (settings.Book[i].Price.indexOf("Free") >= 0)
                             {
-                                var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl};
+                                var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating};
                                 obj.push(settingTmp);
                             }
                         }
@@ -831,7 +842,7 @@ function LoadInfos()
                         {
                             if (settings.Book[i].Price.indexOf("Free") < 0)
                             {
-                                var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl};
+                                var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating};
                                 obj.push(settingTmp);
                             }
                         }

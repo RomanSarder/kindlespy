@@ -9,7 +9,7 @@ var defaultSetting = {
     "TYPE" : "",
     "Book":
         [
-            {"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":""}
+            {"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":"", "Rating":""}
         ]
 };
 
@@ -50,7 +50,7 @@ function RemoveSettings(url, parentUrl, IsFree)
     localStorage.settings = JSON.stringify(setting);
 }
 
-function SaveSettings(num, url, parentUrl, nextUrl, title, description, price, estsales, salesRecv, Reviews, salesRank, category, categoryKind, printLength, author, dateOfPublication, googleSearchUrl, googleImageSearchUrl)
+function SaveSettings(num, url, parentUrl, nextUrl, title, description, price, estsales, salesRecv, Reviews, salesRank, category, categoryKind, printLength, author, dateOfPublication, googleSearchUrl, googleImageSearchUrl, rating)
 {
 	var setting = getSetting();
 
@@ -79,6 +79,7 @@ function SaveSettings(num, url, parentUrl, nextUrl, title, description, price, e
             setting.Book[i].DateOfPublication = dateOfPublication;
             setting.Book[i].GoogleSearchUrl = googleSearchUrl;
             setting.Book[i].GoogleImageSearchUrl = googleImageSearchUrl;
+            setting.Book[i].Rating = rating;
 
             bIsFind = true;
             //break;
@@ -88,7 +89,7 @@ function SaveSettings(num, url, parentUrl, nextUrl, title, description, price, e
 
     if (!bIsFind)
     {
-        var settingTmp = {"No": num, "Url": url, "ParentUrl": parentUrl, "NextUrl": nextUrl,  "Title": title, "Description": description, "Price": price, "EstSales": estsales, "SalesRecv": salesRecv, "Reviews": Reviews, "SalesRank": salesRank, "Category": category, "CategoryKind": categoryKind, "PrintLength": printLength, "Author":author, "DateOfPublication":dateOfPublication, "GoogleSearchUrl":googleSearchUrl, "GoogleImageSearchUrl":googleImageSearchUrl};
+        var settingTmp = {"No": num, "Url": url, "ParentUrl": parentUrl, "NextUrl": nextUrl,  "Title": title, "Description": description, "Price": price, "EstSales": estsales, "SalesRecv": salesRecv, "Reviews": Reviews, "SalesRank": salesRank, "Category": category, "CategoryKind": categoryKind, "PrintLength": printLength, "Author":author, "DateOfPublication":dateOfPublication, "GoogleSearchUrl":googleSearchUrl, "GoogleImageSearchUrl":googleImageSearchUrl, "Rating":rating};
 
         setting.Book.push(settingTmp);
     }
@@ -132,7 +133,7 @@ function onMessageReceived(b, a, d){
 
     else if ("save-settings" === b.type)
     {
-        SaveSettings(b.No, b.URL, b.ParentURL, b.NextUrl, b.Title, b.Description, b.Price, b.EstSales, b.SalesRecv, b.Reviews, b.SalesRank, b.Category, b.CategoryKind, b.PrintLength, b.Author, b.DateOfPublication, b.GoogleSearchUrl, b.GoogleImageSearchUrl);
+        SaveSettings(b.No, b.URL, b.ParentURL, b.NextUrl, b.Title, b.Description, b.Price, b.EstSales, b.SalesRecv, b.Reviews, b.SalesRank, b.Category, b.CategoryKind, b.PrintLength, b.Author, b.DateOfPublication, b.GoogleSearchUrl, b.GoogleImageSearchUrl, b.Rating);
     }
     else if ("save-PageNum" === b.type)
     {

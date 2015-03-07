@@ -121,3 +121,8 @@ AmazonCoUkParser.prototype.GetReviews = function(responseText) {
     else
         return  "0";
 }
+AmazonCoUkParser.prototype.GetRating = function(responseText){
+    var ratingString = $(responseText).find("#revSum .acrRating:contains('out of')");
+    if(ratingString === undefined && ratingString =='') return undefined;
+    return ratingString.text().split("out of")[0].trim();
+};

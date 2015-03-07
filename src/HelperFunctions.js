@@ -93,3 +93,81 @@ function GetCategoryFromBookData(bookData){
 
     return '';
 }
+/**
+ * Return bool value page is best sellers.
+ * @param Url
+ * @returns {boolean}
+ */
+function IsBestSellersPage(Url){
+    return (Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store") >= 0 && Url.indexOf("digital-text") > 0)
+        || (Url.indexOf(SiteParser.MainUrl +"/gp/bestsellers") >= 0 && Url.indexOf("digital-text") > 0);
+}
+function IsBestSellersPageFromCategoryKind(categoryKind){
+    return categoryKind.indexOf("Seller") != -1;
+}/**
+ * Return bool value page is search page.
+ * @param Url
+ * @returns {boolean}
+ */
+function IsSearchPage(Url){
+    return Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text") > 0;
+}
+function IsSearchPageFromCategoryKind(categoryKind){
+    return categoryKind.indexOf("Search") != -1;
+}/**
+ * Return bool value page is author page.
+ * @param Url
+ * @returns {boolean}
+ */
+function IsAuthorPage(){
+    return document.documentElement.innerHTML.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0 && document.documentElement.innerHTML.indexOf("ap-author-name") >= 0;
+}
+/**
+ * Return bool value page is single page.
+ * @param Url
+ * @returns {boolean}
+ */
+function IsSingleBookPage(Url){
+    var fullUrl = Url.split("/");
+    var mainUrl = fullUrl[0] +"//"+ fullUrl[2];
+    return (mainUrl.indexOf(SiteParser.MainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
+}
+
+function SetupHeader(category, categoryKind){
+    $('#KeywordAnalysisMenu').hide();
+    if (IsBestSellersPageFromCategoryKind(categoryKind)){
+        $("#CategoryKind").html("Best Sellers in");
+        $("#title").html(category + ':');
+        $('#BestSellerLink').html('Best Seller Rankings');
+        return;
+    }
+    if(IsSearchPageFromCategoryKind(categoryKind)){
+        $("#CategoryKind").html("Keyword:");
+        $("#title").html(category);
+        $('#KeywordAnalysisMenu').show();
+        $('#BestSellerLink').html('Search Results');
+        return;
+    }
+    //TODO: test author page
+    $("#CategoryKind").html("Author Status");
+}
+
+function BuildHeaderHtml(rankTrackingNum){
+    var headerHtml = '<div style="float:left;font-size:14px;padding-left:11px;" id="CategoryKind"></div>' +
+        '<div style="float:left;font-size:14px;padding-left:6px;font-weight:bold" id="title"></div>' +
+        '<div style="float:right">' +
+        '<a id="BestSellerLink" href="#"></a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
+        '<span style="display: none;" id="KeywordAnalysisMenu"><a id="KeywordAnalysis" href="#">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span>' +
+        '<a id="TitleWordCloud" href="#">Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
+        '<a id="RankTrackingResultList" href="#">Rank Tracking (' + rankTrackingNum + ')</a>' +
+        '</div>';
+//    var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Keyword: </div>" +
+//        "<div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\"></div>" +
+//        "<div style=\"float:right\">" +
+//        "<a id=\"BestSellerLink\" href=\"#\">Search Results</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
+//        "<a id=\"KeywordAnalysis\" href=\"#\">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
+//        "<a id=\"TitleWordCloud\" href=\"#\">Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
+//        "<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
+
+    return headerHtml;
+}

@@ -110,3 +110,8 @@ AmazonDeParser.prototype.GetReviews = function(responseText) {
     else
         return "0";
 };
+AmazonDeParser.prototype.GetRating = function(responseText){
+    var ratingString = $(responseText).find("#revSum .acrRating:contains('von')");
+    if(ratingString === undefined && ratingString =='') return undefined;
+    return ratingString.text().split("von")[0].trim();
+};

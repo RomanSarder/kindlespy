@@ -45,25 +45,6 @@ $(window).ready(function () {
     }
 });
 
-function IsAuthorPage(){
-    return document.documentElement.innerHTML.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0 && document.documentElement.innerHTML.indexOf("ap-author-name") >= 0;
-}
-
-function IsSearchPage(Url){
-    return Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text") > 0;
-}
-
-function IsBestSellersPage(Url){
-    return (Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store") >= 0 && Url.indexOf("digital-text") > 0)
-        || (Url.indexOf(SiteParser.MainUrl +"/gp/bestsellers") >= 0 && Url.indexOf("digital-text") > 0);
-}
-
-function IsSingleBookPage(Url){
-    var fullUrl = Url.split("/");
-    var mainUrl = fullUrl[0] +"//"+ fullUrl[2];
-    return (mainUrl.indexOf(SiteParser.MainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
-}
-
 function GetNoInfo(responseText)
 {
     return ParseString(responseText, 'class="zg_rankNumber"', ">", ".");
@@ -402,7 +383,8 @@ function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, revie
                     Author: pageData.author,
                     DateOfPublication: pageData.dateOfPublication,
                     GoogleSearchUrl: pageData.googleSearchUrl,
-                    GoogleImageSearchUrl: pageData.googleImageSearchUrl
+                    GoogleImageSearchUrl: pageData.googleImageSearchUrl,
+                    Rating: pageData.rating
                 });
             }
         });

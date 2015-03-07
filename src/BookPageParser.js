@@ -74,6 +74,13 @@ BookPageParser.prototype.GetDescription = function(responseText) {
     }
 };
 
+BookPageParser.prototype.GetRating = function(responseText) {
+    if (typeof responseText !== "undefined" && responseText.length > 1)
+    {
+        return this._siteParser.GetRating(responseText);
+    }
+};
+
 BookPageParser.prototype.GetReviews = function(responseText) {
     if (typeof responseText !== "undefined" && responseText.length > 1) {
         return this._siteParser.GetReviews(responseText);
@@ -180,6 +187,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
         var entryAuthor = _this.GetAuthor(responseText);
         var entryGoogleSearchUrl = _this.GetGoogleSearchUrlByTitleAndAuthor(entryTitle, entryAuthor);
         var entryImageUrl = _this.GetImageUrl(responseText);
+        var entryRating = _this.GetRating(responseText);
         _this.GetGoogleImageSearchUrl(responseText, url, function (entryGoogleImageSearchUrl) {
             _this.GetDateOfPublication(responseText, function (entryDateOfPublication) {
                 if (typeof entryPrice === "undefined") entryPrice = "0";
@@ -190,6 +198,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                 if (typeof entryPrintLength === "undefined" || entryPrintLength == '' || entryPrintLength == "NaN") entryPrintLength = "n/a";
                 if (typeof entryAuthor === "undefined" || entryAuthor.length < 1) entryAuthor = "n/a";
                 if (typeof entryImageUrl === "undefined")entryImageUrl = '';
+                if (typeof entryRating === "undefined") entryRating = '';
 
                 callback({
                     title: entryTitle,
@@ -204,7 +213,8 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                     dateOfPublication: entryDateOfPublication,
                     googleSearchUrl: entryGoogleSearchUrl,
                     googleImageSearchUrl: entryGoogleImageSearchUrl,
-                    imageUrl: entryImageUrl
+                    imageUrl: entryImageUrl,
+                    rating: entryRating
                 });
             });
         });

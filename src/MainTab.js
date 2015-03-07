@@ -108,10 +108,10 @@ MainTab.prototype.ExportToCsv = function(data){
 MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     var category = "";
     var categoryKind = "";
-    var averageSalesRank = 0;
-    var averageSalesRecv = 0;
-    var averagePrice = 0;
-    var averageReview = 0;
+    var salesRankSum = 0;
+    var salesRecvSum = 0;
+    var priceSum = 0;
+    var reviewSum = 0;
     var html = "";
     var nTotalCnt = 0;
     var cellCnt = 0;
@@ -151,14 +151,14 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            averageSalesRank += parseInt(obj[i].SalesRank.replace(siteParser.ThousandSeparator, "").trim());
-            averageSalesRecv += parseInt(obj[i].SalesRecv);
+            salesRankSum += parseInt(obj[i].SalesRank.replace(siteParser.ThousandSeparator, "").trim());
+            salesRecvSum += parseInt(obj[i].SalesRecv);
             if (price.indexOf("Free") >= 0)
-                averagePrice = 0;
+                priceSum = 0;
             else
-                averagePrice += parseFloat(price.replace(/[^0-9\.]/g, ''));
+                priceSum += parseFloat(price.replace(/[^0-9\.]/g, ''));
 
-            averageReview += parseInt(review.replace(siteParser.ThousandSeparator, "").trim());
+            reviewSum += parseInt(review.replace(siteParser.ThousandSeparator, "").trim());
             nTotalCnt ++;
 
             if (category == "")
@@ -192,17 +192,9 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
     addEventListenerForSingleResultBook();
 
-    if (categoryKind.indexOf("Seller") >= 0)
-        $("#CategoryKind").html("Best Sellers in");
-    else if(categoryKind.indexOf("Search")>=0)
-        $("#CategoryKind").html("Search Results");
-    else
-        $("#CategoryKind").html("Author Status");
-
-    $("#title").html(category + ":");
-    $('#result2').html(AddCommas(Math.floor(averageSalesRank / nTotalCnt)));
-    $('#result3').html(siteParser.FormatPrice(AddCommas(Math.floor(averageSalesRecv / nTotalCnt))));
-    $('#result4').html(siteParser.FormatPrice(AddCommas((averagePrice/nTotalCnt).toFixed(2))));
-    $('#result5').html(AddCommas(Math.floor(averageReview / nTotalCnt)));
-    $('#totalReSalesRecv').html(siteParser.FormatPrice(AddCommas(averageSalesRecv)));
+    $('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
+    $('#result3').html(siteParser.FormatPrice(AddCommas(Math.floor(salesRecvSum / nTotalCnt))));
+    $('#result4').html(siteParser.FormatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
+    $('#result5').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
+    $('#totalReSalesRecv').html(siteParser.FormatPrice(AddCommas(salesRecvSum)));
 }

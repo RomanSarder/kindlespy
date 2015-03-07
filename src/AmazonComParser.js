@@ -108,3 +108,8 @@ AmazonComParser.prototype.GetReviews = function(responseText) {
     var rl_reviews = $(responseText).find("#acr .acrCount a:first");
     return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
 };
+AmazonComParser.prototype.GetRating = function(responseText){
+    var ratingString = $(responseText).find("#revSum .acrRating:contains('out of')");
+    if(ratingString === undefined && ratingString =='') return undefined;
+    return ratingString.text().split("out of")[0].trim();
+};
