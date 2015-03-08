@@ -198,7 +198,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                 if (typeof entryPrintLength === "undefined" || entryPrintLength == '' || entryPrintLength == "NaN") entryPrintLength = "n/a";
                 if (typeof entryAuthor === "undefined" || entryAuthor.length < 1) entryAuthor = "n/a";
                 if (typeof entryImageUrl === "undefined")entryImageUrl = '';
-                if (typeof entryRating === "undefined") entryRating = '';
+                if (typeof entryRating === "undefined" || entryRating.length < 1) entryRating = '0';
 
                 callback({
                     title: entryTitle,

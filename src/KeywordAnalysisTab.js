@@ -25,7 +25,78 @@ KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
 }
 
 KeywordAnalysisTab.prototype.ExportToCsv = function(data){
-    alert("TODO");
+    var bookData = data.bookData;
+    var x = new Array(this.PageNum * 20 + 1);
+    for (var i = 0; i < this.PageNum * 20 + 1; i++) {
+        x[i] = new Array(9);
+    }
+
+    x[0][0] = "#";
+    x[0][1] = "Kindle Book Title";
+    x[0][2] = "Price";
+    x[0][3] = "Page No(s)";
+    x[0][4] = "KWT";
+    x[0][5] = "KWD";
+    x[0][6] = "Rating";
+    x[0][7] = "Reviews";
+    x[0][8] = "Sales Rank";
+
+    for(var index = 0; index < bookData.length; index ++) {
+        if (Math.floor(index / 20) <= (this.PageNum - 1))
+        {
+            x[index + 1][0] = (index + 1).toString();
+            x[index + 1][1] = bookData[index].Title;
+            x[index + 1][2] = bookData[index].Price.replace(SiteParser.CurrencySign, SiteParser.CurrencySignForExport);
+            x[index + 1][3] = bookData[index].PrintLength;
+            x[index + 1][4] = this.IsKeywordInText(bookData[index].Category, bookData[index].Title);
+            x[index + 1][5] = this.IsKeywordInText(bookData[index].Category, bookData[index].Description);
+            x[index + 1][6] = bookData[index].Rating;
+            x[index + 1][7] = bookData[index].Reviews;
+            x[index + 1][8] = bookData[index].SalesRank;
+        }
+    }
+
+    var csvContent = "\uFEFF";
+    x.forEach(function(infoArray, index){
+        if (index <= bookData.length)
+        {
+            var dataString = [];
+            for (var i = 0; i < infoArray.length; i++)
+            {
+                var quotesRequired = false;
+                if (infoArray[i].indexOf(",") >= 0)
+                    quotesRequired = true;
+                var escapeQuotes = false;
+                if (infoArray[i].indexOf("\"") >= 0)
+                    escapeQuotes = true;
+
+                var fieldValue = (escapeQuotes ? infoArray[i].replace("\"", "\"\"") : infoArray[i]);
+
+                if (fieldValue.indexOf("\r") >= 0 || fieldValue.indexOf("\n") >= 0)
+                {
+                    quotesRequired = true;
+                    fieldValue = fieldValue.replace("\r\n", "");
+                    fieldValue = fieldValue.replace("\r", "");
+                    fieldValue = fieldValue.replace("\n", "");
+                }
+
+                dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
+            }
+            for (var i = 0; i < dataString.length; i ++)
+                csvContent += dataString[i];
+        }
+    });
+
+    var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
+    var url = URL.createObjectURL(blob);
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1;
+    var yyyy = today.getFullYear();
+    var link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "ka-"+GetCategoryFromBookData(bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
+    link.click();
 }
 
 KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
@@ -62,14 +133,14 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
             var kwd = this.IsKeywordInText(obj[i].Category, obj[i].Description);
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
-                "<td class='wow' style='width:320px;'>" + obj[i].Title + "</td>" +
-                "<td style='width:50px;padding-left: 15px;'>"+ obj[i].Price +"</td>" +
-                "<td class='bg-" + this.GetPagesColor(obj[i].PrintLength) + "' style='padding-left:15px; width:30px;'>" +obj[i].PrintLength + "</td>" +
-                "<td class='bg-" + this.GetKWColor(kwt) + "' style='padding-left:20px; width:30px;'>" + kwt + "</td>" +
-                "<td class='bg-" + this.GetKWColor(kwd) + "' style='padding-left:15px; width:30px;'>" + kwd + "</td>" +
-                "<td class='bg-" + this.GetRatingColor(obj[i].Rating) + "' style='padding-left:25px;'>" + obj[i].Rating +"</td>" +
-                "<td class='bg-" + this.GetReviewColor(obj[i].Reviews) + "' style='width:50px;padding-left: 30px;' align='right'>"+ obj[i].Reviews +"</td>" +
-                "<td class='bg-" + this.GetSalesRankColor(obj[i].SalesRank) + "' align='right' style='padding-left: 85px;'>"+ obj[i].SalesRank +"</td>"+
+                "<td class='wow' style='min-width:290px;max-width:290px;'>" + obj[i].Title + "</td>" +
+                "<td style='min-width:40px;max-width:40px;padding-left:5px;padding-right:5px;'>"+ obj[i].Price +"</td>" +
+                "<td class='bg-" + this.GetPagesColor(obj[i].PrintLength) + "' style='padding-left:18px;min-width:22px;max-width:22px;padding-right:18px;'>" +obj[i].PrintLength + "</td>" +
+                "<td class='bg-" + this.GetKWColor(kwt) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwt + "</td>" +
+                "<td class='bg-" + this.GetKWColor(kwd) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwd + "</td>" +
+                "<td class='bg-" + this.GetRatingColor(obj[i].Rating) + "' style='padding-left:20px;min-width:20px;max-width:20px;padding-right:20px;'>" + Number(obj[i].Rating).toFixed(1) +"</td>" +
+                "<td class='bg-" + this.GetReviewColor(obj[i].Reviews) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ obj[i].Reviews +"</td>" +
+                "<td class='bg-" + this.GetSalesRankColor(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim()) + "' align='right' style='padding-left:31px;width:70px;'>"+ obj[i].SalesRank +"</td>"+
                 "</tr>";
 
             var price = "" + obj[i].Price;
@@ -83,7 +154,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
 
             reviewSum += parseInt(review.replace(SiteParser.ThousandSeparator, "").trim());
             pagesSum += $.isNumeric(obj[i].PrintLength) ? parseInt(obj[i].PrintLength) : 0;
-            ratingSum += $.isNumeric(obj[i].Rating) ? parseFloat(obj[i].Rating) : 0;
+            ratingSum += parseFloat(obj[i].Rating);
             nTotalCnt ++;
 
             if (category == "")
@@ -118,7 +189,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     $('#result2').html(SiteParser.FormatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result3').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
     $('#result4').html(AddCommas(Math.floor(pagesSum/ nTotalCnt)));
-    $('#result5').html(AddCommas(Math.floor(ratingSum/ nTotalCnt)));
+    $('#result5').html(AddCommas((ratingSum/ nTotalCnt).toFixed(1)));
     $('#result6').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
 
     var keywordConclusion = this.GetKeywordConclusion(salesRankSum / nTotalCnt);
@@ -149,7 +220,7 @@ KeywordAnalysisTab.prototype.GetRatingColor = function(rating){
 
 KeywordAnalysisTab.prototype.GetReviewColor = function(reviewString){
     var review = parseInt(reviewString.replace(/,/g,''));
-    if (review == '') return 'grey';
+    if (review == '' || review == 0) return 'grey';
     if (review < 21) return 'green';
     if (review < 76) return 'orange';
     return 'red';
@@ -161,6 +232,7 @@ KeywordAnalysisTab.prototype.GetKWColor = function(keyword){
 }
 
 KeywordAnalysisTab.prototype.GetPagesColor = function(pages){
+    if (!$.isNumeric(pages)) return 'grey';
     if (pages < 66) return 'green';
     if (pages < 150) return 'orange';
     return 'red';

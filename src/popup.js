@@ -609,10 +609,15 @@ function SetupClickListeners(){
         RankTrackingListShow();
     });
 
-    var link2 = $('#refresh');
+    var refreshButton = $('#refresh');
 
-    link2.click(function() {
-        SetActivePage(1);
+    refreshButton.click(function() {
+        var mainTab = new MainTab();
+        mainTab.PageNum = 1;
+        mainTab.SavePageNum();
+        var keywordAnalysisTab = new KeywordAnalysisTab();
+        keywordAnalysisTab.PageNum = 1;
+        keywordAnalysisTab.SavePageNum();
         location.reload();
     });
     var linkKwdAnalysis = $("#KeywordAnalysis");
