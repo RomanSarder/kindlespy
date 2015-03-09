@@ -61,6 +61,8 @@ function GetSiteParser(url){
         return new AmazonCoUkParser();
     if(url.indexOf(AmazonDeParser.MainUrl)!=-1)
         return new AmazonDeParser();
+    if(url.indexOf(AmazonFrParser.MainUrl)!=-1)
+        return new AmazonFrParser();
 }
 
 /**
@@ -161,13 +163,5 @@ function BuildHeaderHtml(rankTrackingNum){
         '<a id="TitleWordCloud" href="#">Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
         '<a id="RankTrackingResultList" href="#">Rank Tracking (' + rankTrackingNum + ')</a>' +
         '</div>';
-//    var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Keyword: </div>" +
-//        "<div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\"></div>" +
-//        "<div style=\"float:right\">" +
-//        "<a id=\"BestSellerLink\" href=\"#\">Search Results</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
-//        "<a id=\"KeywordAnalysis\" href=\"#\">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
-//        "<a id=\"TitleWordCloud\" href=\"#\">Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
-//        "<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
-
     return headerHtml;
 }

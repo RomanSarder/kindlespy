@@ -885,6 +885,9 @@ function InitRegionSelector(){
             case AmazonDeParser.Region:
                 url = "http://www.amazon.de/gp/bestsellers/digital-text/530886031/ref=zg_bs_nav_kinc_1_kinc";
                 break;
+            case AmazonFrParser.Region:
+                url = "http://www.amazon.fr/gp/bestsellers/digital-text/695398031/";
+                break;
         }
 
         chrome.tabs.create({url: url, active:true});

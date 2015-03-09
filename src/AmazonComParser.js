@@ -18,6 +18,8 @@ function AmazonComParser(){
     this.BestSellersUrls = new Array("Best-Sellers-Kindle-Store", "gp/bestsellers");
     this.Publisher = "Publisher";
     this.searchKeys = new Array("to buy","to rent");
+    this.NumberSign = "#";
+    this.SearchPattern = "Kindle Edition";
     this.EstSalesScale = [
         {"min": 1, "max": 5, "EstSale": 120000},
         {"min": 6, "max": 10, "EstSale": 105000},

@@ -224,7 +224,7 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
 		    url[index] = $(result).find("a:first").attr("href");
 		    if(!url[index]) url[index] = "";
             var kprice = $(result).find('div').filter(function () {
-                return $(this).text() == 'Kindle Edition' || $(this).children("a:contains('Kindle Edition')").length > 0;
+                return $(this).text() == SiteParser.SearchPattern || $(this).children("a:contains(" + SiteParser.SearchPattern+ ")").length > 0;
             }).parent();
             price[index] = SiteParser.CurrencySign + "0" + SiteParser.DecimalSeparator + "00";
             if($(kprice).length > 0)
