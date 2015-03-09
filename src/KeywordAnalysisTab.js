@@ -110,6 +110,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     var reviewSum = 0;
     var html = "";
     var nTotalCnt = 0;
+    var salesRank20 = 0;
 
     for(var i = obj.length - 1; i >= 0 ; i --)
     {
@@ -192,7 +193,11 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     $('#result5').html(AddCommas((ratingSum/ nTotalCnt).toFixed(1)));
     $('#result6').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
 
-    var keywordConclusion = this.GetKeywordConclusion(salesRankSum / nTotalCnt);
+    for (var i = 0; i < 20 && i < obj.length; i++) {
+        salesRank20 += parseInt(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim() || 0);
+    }
+
+    var keywordConclusion = this.GetKeywordConclusion(salesRank20 / 20);
     $('#KWDConclusionValue').html(this.GetKeywordConclusionValue(keywordConclusion));
     $('#KWDConclusionImage').removeClass().addClass('information-' + this.GetKeywordConclusionColor(keywordConclusion));
     $('#KWDConclusionImage').tooltipster('content', this.GetKeywordConclusionTooltip(keywordConclusion));
