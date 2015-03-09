@@ -70,6 +70,9 @@ function resetCss(){
     $('.info.single_book .info-item').css('width', '');
     $('#infoPages').hide();
 
+    //table
+    $('.table-head').hide();
+
     // content
     $('#word-cloud-content').hide();
     $('#no-data-found-content').hide();
@@ -386,23 +389,17 @@ function RankTrackingListShow() {
     $('#main-content').show();
     $('#TrackedPanelFooter').show();
     $('.info.list_books').show();
+    $('.table-head').show();
 
     LoadAdvertisementBanner();
 
     $('#data-body').css("overflow-y", "auto");
     $('.table-head').html(tableHead);
-    $('.table-head').css("background-color", "#333333");
 
     UpdateRateTrackingTable();
 }
 
 function KwdAnalysisListShow() {
-//    Storage.GetNumberOfBooks(function(num){
-//        num = (num === undefined)?0:num;
-//        $('#main-header').html(BuildHeaderHtml(num));
-//        SetupClickListeners();
-//    });
-
     var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:300px;\"> </label><label class=\"sort-column\" id=\"price\" style=\"padding-right:20px;\" >Price</label><label class=\"sort-column\" id=\"pages\" style=\"padding-right:15px;\">Page(s)</label><label class=\"sort-column\" id=\"kwt\" style=\"padding-right:15px;\">KWT</label><label class=\"sort-column\" id=\"kwd\" style=\"padding-right:20px;\">KWD</label><label class=\"sort-column\" id=\"rating\" style=\"padding-right:25px;\" >Rating</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:40px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" style=\"padding-right:10px;\" >Sales Rank</label>"
     var InfoHtml = "<div class=\"info-item\"><span style=\"font-size:11px\">Results:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Price:</span><div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">$7.95</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rank:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">4,233</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Pages:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">112</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Rating:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">4.1</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Reviews:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">31</div></div>";
@@ -415,15 +412,14 @@ function KwdAnalysisListShow() {
     $('#BestSellersRankingFooter').show();
     $('#ExportBtn').show();
     $('.info.list_books').show();
+    $('.table-head').show();
     $('#KWDConclusion').show();
-
 
     LoadAdvertisementBanner();
 
     $(".info-item").css("width","16.6%");
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(tableHead);
-    $('.table-head').css("background-color" , "#333333");
 
     ActiveTab.InsertData(0, obj, SiteParser);
 }
@@ -458,6 +454,7 @@ function RankTrackingSingleShow(bookUrl){
     $('#TrackedPanelFooter').show();
     $('.info.single_book').show();
     $('.right-panel').show();
+    $('.table-head').show();
     $(".table-head").html("<label>Bestseller rank tracking(30 days)<label>");
 
     LoadAdvertisementBanner();
@@ -739,13 +736,13 @@ function UpdateTable(obj)
     $('#BestSellersRankingFooter').show();
     $('#ExportBtn').show();
     $('.info.list_books').show();
+    $('.table-head').show();
     $('#totalReSalesRecvBlock').show();
 
     LoadAdvertisementBanner();
 
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(tableHead);
-    $('.table-head').css("background-color" , "#333333");
 
     $('.sort-column').each(function( index ){
         $(this).click(function() {
