@@ -12,7 +12,7 @@ body, div, a, p, table, tr, td, th {
     margin: 0px;
 }
 .top {
-    background: #d3d3d3;
+    background: #EAEDE9;
     width: 100%;
     height: 70px;
     border: 1px solid #999999;
@@ -338,7 +338,7 @@ td.wow
     white-space: nowrap;
 }
 .table-head{
-    background-color: #d3d3d3;
+    background-color: #EAEDE9;
     margin-right: 5px;
     margin-left : 15px;
     border-bottom: 1px solid #000000;
@@ -374,13 +374,13 @@ td.wow
     font-weight: lighter;
 }
 .bg-red{
-    background-color: #FF3333;
+    background-color: #ff3232;
 }
 .bg-green{
-    background-color: #669933;
+    background-color: #00b300;
 }
 .bg-orange{
-    background-color: #FF6633;
+    background-color: #fd9214;
 }
 .bg-grey{
     background-color: #CCCCCC;
@@ -397,7 +397,7 @@ td.wow
 .information-grey{
     background-image: url("../icons/information-grey.png");
 }
-/*Tootip*/
+/*Tooltip*/
 .tooltip-theme {
     border-radius: 5px;
     background: #CCCCCC;
