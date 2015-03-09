@@ -149,7 +149,9 @@ function SetupHeader(category, categoryKind){
         return;
     }
     //TODO: test author page
-    $("#CategoryKind").html("Author Status");
+    $("#CategoryKind").html("Author:");
+    $("#title").html(category);
+    $('#BestSellerLink').html('Author Titles');
 }
 
 function BuildHeaderHtml(rankTrackingNum){
