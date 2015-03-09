@@ -400,9 +400,24 @@ td.wow
 .information-grey{
     background-image: url("../icons/information-grey.png");
 }
-
-
+/*Tootip*/
+.tooltip-theme {
+    border-radius: 5px;
+    background: #CCCCCC;
+    left: 190px !important;
+}
+.tooltip-theme .tooltipster-content {
+    font-size: 11px;
+    line-height: 13px;
+    padding: 8px 10px;
+    color: #000000;
+    font-weight: bold;
+}
+.tooltipster-arrow-top span{
+    right:170px !important;
+}
 </style>
+<link rel="stylesheet" href="../css/tooltipster.css">
 <body style="margin: 0 auto; height: 591px;">
     <div style="width:770px; height: 591px;">
         <div class="top">
@@ -554,7 +569,7 @@ td.wow
                 </div>
                 <div id="KWDConclusion" style="float:left;width:20%;margin-top: 10px;">
                     <div style="margin: 0 auto;text-align: left;padding-top: 5px;">
-                        <div title="test" id="KWDConclusionImage" style="float:left;width:29px;height:29px;margin-right:5px;"></div>
+                        <div  title="" id="KWDConclusionImage" style="float:left;width:29px;height:29px;margin-right:5px;"></div>
                         <div>
                             <span style="font-size:11px">Keyword Conclusion:</span>
                             <div style="font-size:16px;font-weight:bold" id="KWDConclusionValue">Poor</div>
@@ -604,6 +619,7 @@ td.wow
 <script src="../libs/jquery-2.0.3.min.js" language="javascript"></script>
 <script src="../libs/xpathjs.min.js" language="javascript"></script>
 <script src="../libs/jquery.number.min.js" language="javascript"></script>
+<script src="../libs/jquery.tooltipster.min.js" language="javascript"></script>
 <script src="../libs/Chart.js" language="javascript"></script>
 <script src="HelperFunctions.js" language="javascript"></script>
 <script src="BookStorage.js" language="javascript"></script>

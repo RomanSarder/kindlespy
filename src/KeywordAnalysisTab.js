@@ -195,8 +195,8 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     var keywordConclusion = this.GetKeywordConclusion(salesRankSum / nTotalCnt);
     $('#KWDConclusionValue').html(this.GetKeywordConclusionValue(keywordConclusion));
     $('#KWDConclusionImage').removeClass().addClass('information-' + this.GetKeywordConclusionColor(keywordConclusion));
-    //TODO: tooltip
-    //$('KWDConclusionTooltip').html(this.GetKeywordConclusionTooltip(keywordConclusion));
+    $('#KWDConclusionImage').tooltipster('content', this.GetKeywordConclusionTooltip(keywordConclusion));
+
 }
 
 KeywordAnalysisTab.prototype.IsKeywordInText = function(keyWord, text){

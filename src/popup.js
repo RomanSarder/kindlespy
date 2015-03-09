@@ -50,6 +50,13 @@ $(window).ready(function () {
             alert("Your user id: " + result);
         });
     });
+    $('#KWDConclusionImage').tooltipster({
+        animation: 'fade',
+        theme: 'tooltip-theme',
+        maxWidth:200,
+        updateAnimation: false,
+        position: 'top'
+    });
 });
 
 function resetCss(){
