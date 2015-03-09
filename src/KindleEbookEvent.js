@@ -293,9 +293,7 @@ function scrapeAuthorPage(Url){
         {
             chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
 
-            LoadAuthorResultPage(function(){
-                LoadAuthorResultPage();
-            });
+            LoadAuthorResultPage(function(){});
         }
     });
 }
@@ -311,9 +309,7 @@ function scrapeSearchPage(Url) {
 
 	chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: false});
 
-    LoadSearchResultsPage(function(){
-        LoadSearchResultsPage();
-    });
+    LoadSearchResultsPage(function(){});
 }
 
 function scrapeBestSellersPage(Url){
@@ -331,10 +327,6 @@ function scrapeBestSellersPage(Url){
                 }
 
                 ParseBestSellersPage(responseText, ParentUrl, false);
-                for (var i = 2; i <= 2; i++)
-                {
-                    LoadBestSellersPage(i, 3000*i);
-                }
             }
         }
     });

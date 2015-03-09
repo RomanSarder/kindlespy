@@ -635,14 +635,12 @@ var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;
 
-    var link3 = $('#PullResult');
-    link3.click(function () {
-        if (ActiveTab.PageNum > 1) {
-            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, { page: ActiveTab.PageNum }, function (response) {
-                });
+    var pullResultsButton = $('#PullResult');
+    pullResultsButton.click(function () {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, { page: ActiveTab.PageNum }, function (response) {
             });
-        }
+        });
 
         SetActivePage(ActiveTab.PageNum + 1);
     });
