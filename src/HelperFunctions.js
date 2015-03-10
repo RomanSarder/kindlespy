@@ -145,10 +145,9 @@ function SetupHeader(category, categoryKind){
         $("#CategoryKind").html("Keyword:");
         $("#title").html(category);
         $('#KeywordAnalysisMenu').show();
-        $('#BestSellerLink').html('Search Results');
+        $('#BestSellerLink').html('Keyword Results');
         return;
     }
-    //TODO: test author page
     $("#CategoryKind").html("Author:");
     $("#title").html(category);
     $('#BestSellerLink').html('Author Titles');
@@ -160,7 +159,7 @@ function BuildHeaderHtml(rankTrackingNum){
         '<div style="float:right">' +
         '<a id="BestSellerLink" href="#"></a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
         '<span style="display: none;" id="KeywordAnalysisMenu"><a id="KeywordAnalysis" href="#">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span>' +
-        '<a id="TitleWordCloud" href="#">Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
+        '<a id="TitleWordCloud" href="#">Titles Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
         '<a id="RankTrackingResultList" href="#">Rank Tracking (' + rankTrackingNum + ')</a>' +
         '</div>';
 //    var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Keyword: </div>" +
