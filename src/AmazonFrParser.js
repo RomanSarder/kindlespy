@@ -18,7 +18,7 @@ function AmazonFrParser(){
     this.BestSellersUrls = new Array("gp/bestsellers");
     this.Publisher = "Editeur";
     this.searchKeys = new Array("à acheter","louer");
-    this.NumberSign = "n°";
+    this.NumberSign = "n%C2%B0";
     this.SearchPattern = "Format Kindle";
     this.EstSalesScale = [
         {"min": 1, "max": 5, "EstSale": 32800},
@@ -66,9 +66,10 @@ AmazonFrParser.prototype.GetDescription = function(responseText){
     return $(responseText).find("#productDescription .content").text().trim();
 };
 AmazonFrParser.prototype.GetKindleEditionRow = function(resultItem) {
+    var _this = this;
     var retval;
     $(resultItem).find("li").each(function() {
-        if($(this).text().indexOf("Kindle Format")>0)
+        if($(this).text().indexOf(_this.SearchPattern)>0)
             retval= $(this);
     });
 
@@ -80,7 +81,7 @@ AmazonFrParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow)
 };
 
 AmazonFrParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
-    return kindleEditionRow.find("span.bld"); //??
+    return kindleEditionRow.find("span.bld");
 };
 
 AmazonFrParser.prototype.GetReviewsCountFromResult = function(resultItem) {
