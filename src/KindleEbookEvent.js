@@ -216,44 +216,48 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
     var counter = 0;
     var result;
 
-    $.merge($(responseText).find("#atfResults li"), $(responseText).find("#btfResults li")).each(function() {
-	    while( $(this).attr('id') === 'result_'+(startIndex+index) ) {
-            result = $(this);
-            if(counter>=maxResults) break;
-		    No[index] = startIndex + index + 1;
-		    url[index] = $(result).find("a:first").attr("href");
-		    if(!url[index]) url[index] = "";
-            var kprice = $(result).find('div').filter(function () {
-                return $(this).text() == 'Kindle Edition' || $(this).children("a:contains('Kindle Edition')").length > 0;
-            }).parent();
-            price[index] = SiteParser.CurrencySign + "0" + SiteParser.DecimalSeparator + "00";
-            if($(kprice).length > 0)
-            var prices = kprice.find('span.s-price');
-            var el_price;
-            if (prices != undefined) {
-                if ((prices.parent().parent().has('span.s-icon-kindle-unlimited').length > 0)
-                    || (prices.parent().has("span:contains('" + SiteParser.searchKeys[1] + "')").length > 0)) {
-                    el_price = $.grep(kprice.find('span.s-price'), function (element) {
-                        return ($(element).parent().has("span:contains('" + SiteParser.searchKeys[0] + "')").length > 0);
-                    });
-                }else if(prices.parent().parent().parent().has("h3:contains('Audible Audio Edition')").length > 0){ //Amazon Added Audible Audio Edition block
-                    el_price = $(prices[0]);
-                }else if($(prices).length > 1){
-                    el_price = $(prices[0]);
-                }else {
-                    el_price = kprice.find('span.s-price');
-                }
+    var listItems = $.merge($(responseText).find("#centerPlus").has('.a-fixed-left-grid-inner'),
+        $(responseText).find("#atfResults li").has('.a-fixed-left-grid-inner'));
+    listItems = $.merge(listItems, $(responseText).find("#btfResults li").has('.a-fixed-left-grid-inner'));
 
-                if( el_price.length > 0) price[index] = $(el_price).text().trim();
+    listItems.each(function() {
+        if($(this).attr('id') !== 'result_'+(startIndex+index)
+            && $(this).attr('id') !== 'centerPlus') return;
+        result = $(this).find('.a-fixed-left-grid-inner');
+        if(counter>=maxResults) return;
+        No[index] = startIndex + index + 1;
+        url[index] = $(result).find("a:first").attr("href");
+        if(!url[index]) url[index] = "";
+        var kprice = $(result).find('div').filter(function () {
+            return $(this).text() == 'Kindle Edition' || $(this).children("a:contains('Kindle Edition')").length > 0;
+        }).parent();
+        price[index] = SiteParser.CurrencySign + "0" + SiteParser.DecimalSeparator + "00";
+        if($(kprice).length > 0)
+        var prices = kprice.find('span.s-price');
+        var el_price;
+        if (prices != undefined) {
+            if ((prices.parent().parent().has('span.s-icon-kindle-unlimited').length > 0)
+                || (prices.parent().has("span:contains('" + SiteParser.searchKeys[1] + "')").length > 0)) {
+                el_price = $.grep(kprice.find('span.s-price'), function (element) {
+                    return ($(element).parent().has("span:contains('" + SiteParser.searchKeys[0] + "')").length > 0);
+                });
+            }else if(prices.parent().parent().parent().has("h3:contains('Audible Audio Edition')").length > 0){ //Amazon Added Audible Audio Edition block
+                el_price = $(prices[0]);
+            }else if($(prices).length > 1){
+                el_price = $(prices[0]);
+            }else {
+                el_price = kprice.find('span.s-price');
             }
 
-            review[index] = undefined;
+            if( el_price.length > 0) price[index] = $(el_price).text().trim();
+        }
 
-		    url[index] = url[index].replace("&amp;", "&");
-		    url[index] = url[index].replace(" ", "%20");
-		    index++;
-            counter++;
-	    }
+        review[index] = undefined;
+
+        url[index] = url[index].replace("&amp;", "&");
+        url[index] = url[index].replace(" ", "%20");
+        index++;
+        counter++;
     });
     if(counter == 0) return undefined;
 
