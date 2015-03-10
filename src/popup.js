@@ -519,7 +519,7 @@ function UpdateTrackedBookView(bookData){
     $('#AvgSalesRank').html(AddCommas(Math.floor(avgSalesRank)));
     $('#EstDailyRev').html(SiteParser.FormatPrice(AddCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
-    $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
+    $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', ''));
     $('#ExportBtn').attr('book-url', bookData.url);
 
     var chartData = bookData.salesRankData;
