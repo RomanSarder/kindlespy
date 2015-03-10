@@ -18,7 +18,7 @@ function AmazonFrParser(){
     this.BestSellersUrls = new Array("gp/bestsellers");
     this.Publisher = "Editeur";
     this.searchKeys = new Array("à acheter","louer");
-    this.NumberSign = "n%C2%B0";
+    this.NumberSign = decodeURI("n%C2%B0");
     this.SearchPattern = "Format Kindle";
     this.EstSalesScale = [
         {"min": 1, "max": 5, "EstSale": 32800},

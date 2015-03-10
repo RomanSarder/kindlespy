@@ -115,8 +115,8 @@ BookPageParser.prototype.GetSalesRank = function(responseText) {
     szSalesRank = szSalesRank.trim();
     var szTmp = szSalesRank.split(' ');
     for (var i = 0; i < szTmp.length; i++) {
-        if (szTmp[i].indexOf(decodeURI(this._siteParser.NumberSign)) >= 0) {
-            szSalesRank = szTmp[i].substr(szTmp[i].indexOf(decodeURI(this._siteParser.NumberSign)) + decodeURI(this._siteParser.NumberSign).length);
+        if (szTmp[i].indexOf(this._siteParser.NumberSign) >= 0) {
+            szSalesRank = szTmp[i].substr(szTmp[i].indexOf(this._siteParser.NumberSign) + this._siteParser.NumberSign.length);
             return szSalesRank;
         }
     }
