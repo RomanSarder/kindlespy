@@ -136,7 +136,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
         {
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
-                "<td class='wow'>" + obj[i].Title + "</td>" +
+                "<td class='wow'><a href="+obj[i].Url+" target='_blank'>" + obj[i].Title + "</a></td>" +
                 "<td style='width:50px;'><a class='RankTrackingResultSingle' href='" + "#" + "' bookUrl='" + obj[i].Url + "'>T</a> " + " | " +
                 "<a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " +
                 "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +

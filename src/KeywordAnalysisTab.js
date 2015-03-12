@@ -134,7 +134,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
             var kwd = this.IsKeywordInText(obj[i].Category, obj[i].Description);
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
-                "<td class='wow' style='min-width:290px;max-width:290px;'>" + obj[i].Title + "</td>" +
+                "<td class='wow' style='min-width:290px;max-width:290px;'><a href="+obj[i].Url+" target='_blank'>" + obj[i].Title + "</a></td>" +
                 "<td style='min-width:40px;max-width:40px;padding-left:5px;padding-right:5px;'>"+ obj[i].Price +"</td>" +
                 "<td class='bg-" + this.GetPagesColor(obj[i].PrintLength) + "' style='padding-left:18px;min-width:22px;max-width:22px;padding-right:18px;'>" +obj[i].PrintLength + "</td>" +
                 "<td class='bg-" + this.GetKWColor(kwt) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwt + "</td>" +

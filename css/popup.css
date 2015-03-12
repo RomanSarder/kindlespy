@@ -337,6 +337,15 @@ td.wow
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+td.wow a
+{
+    color:black;
+    text-decoration: none;
+}
+td.wow a:hover
+{
+    color:darkgray;
+}
 .table-head{
     background-color: #EAEDE9;
     margin-right: 5px;
