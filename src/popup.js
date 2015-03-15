@@ -508,7 +508,7 @@ function UpdateTrackedBookView(bookData){
     $('#AvgSalesRank').html(AddCommas(Math.floor(avgSalesRank)));
     $('#EstDailyRev').html(SiteParser.FormatPrice(AddCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
-    $('#bookImage').attr('src',bookData.image.replace('AA300', ''));
+    $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', ''));
     $('#ExportBtn').attr('book-url', bookData.url);
 
     var chartData = bookData.salesRankData;
@@ -874,6 +874,9 @@ function InitRegionSelector(){
                 break;
             case AmazonDeParser.Region:
                 url = "http://www.amazon.de/gp/bestsellers/digital-text/530886031/ref=zg_bs_nav_kinc_1_kinc";
+                break;
+            case AmazonFrParser.Region:
+                url = "http://www.amazon.fr/gp/bestsellers/digital-text/695398031/";
                 break;
         }
 

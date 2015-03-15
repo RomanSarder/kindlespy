@@ -61,6 +61,8 @@ function GetSiteParser(url){
         return new AmazonCoUkParser();
     if(url.indexOf(AmazonDeParser.MainUrl)!=-1)
         return new AmazonDeParser();
+    if(url.indexOf(AmazonFrParser.MainUrl)!=-1)
+        return new AmazonFrParser();
 }
 
 /**

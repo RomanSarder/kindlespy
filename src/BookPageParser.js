@@ -123,8 +123,8 @@ BookPageParser.prototype.GetSalesRank = function(responseText) {
     szSalesRank = szSalesRank.trim();
     var szTmp = szSalesRank.split(' ');
     for (var i = 0; i < szTmp.length; i++) {
-        if (szTmp[i].indexOf('#') >= 0) {
-            szSalesRank = szTmp[i].substr(szTmp[i].indexOf('#') + 1);
+        if (szTmp[i].indexOf(this._siteParser.NumberSign) >= 0) {
+            szSalesRank = szTmp[i].substr(szTmp[i].indexOf(this._siteParser.NumberSign) + this._siteParser.NumberSign.length);
             return szSalesRank;
         }
     }
