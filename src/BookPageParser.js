@@ -6,14 +6,17 @@ function BookPageParser(url){
     this._siteParser = GetSiteParser(url);
 }
 
+BookPageParser.prototype.isNotValid = function (){
+    return this._siteParser === undefined;
+};
+
 BookPageParser.prototype.GetDateOfPublication = function(responseText, callback) {
     var pubdate = $(responseText).find('#pubdate').val();
     if(pubdate === undefined){
         var publisherElement = $(responseText).find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
         var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
 
-        callback(dateOfPublication);
-        return;
+        return callback(dateOfPublication);
     }
 
     $.ajax({
@@ -22,7 +25,10 @@ BookPageParser.prototype.GetDateOfPublication = function(responseText, callback)
         dataType: "json",
         success: function (responseJson) {
             var dateOfPublication = responseJson.value;
-            if(dateOfPublication != null) callback(dateOfPublication.toString());
+            if(dateOfPublication != null) return callback(dateOfPublication.toString());
+        },
+        error: function (){
+            return callback();
         }
     });
 };
@@ -42,12 +48,12 @@ BookPageParser.prototype.GetGoogleSearchUrlByTitleAndAuthor = function(title, au
 BookPageParser.prototype.GetGoogleImageSearchUrl = function(responseText, url, callback){
     var googleUrl = "https://www.google.com/";
     if (typeof responseText === "undefined" || responseText.length <= 1){
-        callback(googleUrl);
-        return;
+        return callback(googleUrl);
     }
     this._siteParser.GetGoogleImageSearchUrlRel(responseText, url, function(rel){
-        if (rel === undefined || rel.length<1) callback(googleUrl);
-        callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
+        if (rel === undefined || rel.length<1)
+            return callback(googleUrl);
+        return callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
     });
 };
 
@@ -100,6 +106,8 @@ BookPageParser.prototype.GetPrice = function(responseText) {
 BookPageParser.prototype.GetSalesRank = function(responseText) {
     if (typeof responseText === "undefined" || responseText === "") return '0';
 
+    // when page refreshed it can be undefined
+    if (this._siteParser === undefined) return '0';
     var szPattern = this._siteParser.AmazonBestSellersPattern;
     var pos = responseText.indexOf(szPattern);
 
@@ -200,7 +208,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                 if (typeof entryImageUrl === "undefined")entryImageUrl = '';
                 if (typeof entryRating === "undefined" || entryRating.length < 1) entryRating = '0';
 
-                callback({
+                return callback({
                     title: entryTitle,
                     description: entryDescription,
                     price: _this._siteParser.FormatPrice(realPrice),

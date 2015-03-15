@@ -72,6 +72,7 @@ function resetCss(){
 
     //table
     $('.table-head').hide();
+    $('.img-load').hide();
 
     // content
     $('#word-cloud-content').hide();
@@ -94,31 +95,16 @@ function resetCss(){
 
 function AutoAddFunc()
 {
-    var url = CurrentPageUrl;
     var IsFreeUrl = false;
-    var currentUrl = url;
+    var currentUrl = trimCurrentUrl(CurrentPageUrl);
 
-    if (currentUrl.indexOf("ref=zg_bs_fvp_p_f") >= 0 || currentUrl.indexOf("&tf=") >= 0)
-        IsFreeUrl = true;
-
-    if(url.indexOf("/s/")>=0)
-    {
-       currentUrl = url.replace(/\&page=[0-9]+/, "");	
-    }
-    else if (url.indexOf("/ref=") >= 0)
-    {
-        var _Pos = url.lastIndexOf('/ref=');
-        currentUrl = url.substr(0, _Pos);
-    }
     chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
-        settings = response.settings;
+        var settings = response.settings;
 
         var settingLen = settings.Book.length;
 
         var settingInfo;
-        while(obj.length > 0) {
-            obj.pop();
-        }
+        obj = [];
         for (var i = 0; i < settingLen; i++)
         {
             if (settings.Book[i].ParentUrl === currentUrl)
@@ -148,6 +134,10 @@ function AutoAddFunc()
         if (!IsErrorWindow) {
             if (!refreshed && (ActiveTab.IsPaged)) {
                 ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
+                if(settings.IsPulling) $('.img-load').show();
+                else {
+                    $('.img-load').hide();
+                }
             }
         } else {
             frun();
@@ -244,9 +234,7 @@ function WordsInfoUpdate()
 
     var words = InnerTexts.split(" ");
 
-    while(clouds.length > 0) {
-        clouds.pop();
-    }
+    clouds = [];
 
     for (var i = 0; i < words.length; i++)
     {
@@ -414,6 +402,7 @@ function KwdAnalysisListShow() {
     $('.info.list_books').show();
     $('.table-head').show();
     $('#KWDConclusion').show();
+    $('.img-load').show();
 
     LoadAdvertisementBanner();
 
@@ -645,8 +634,8 @@ function SetupStaticClickListeners() {
         SetActivePage(ActiveTab.PageNum + 1);
     });
 
-    var link4 = $('#Export');
-    link4.click(function() {
+    var exportButton = $('#Export');
+    exportButton.click(function() {
         ActiveTab.ExportToCsv({ bookData: obj, cloudData: clouds });
     });
 	
@@ -658,6 +647,7 @@ function LoadData(obj) {
 
     if (typeof obj === undefined || obj.length < 1)
     {
+        IsErrorWindow = true;
         resetCss();
         $('#main-header').html('');
         $('.info.list_books').html("");
@@ -670,43 +660,50 @@ function LoadData(obj) {
         $('#main-content').show();
         $('#main-header').show();
 
-        setTimeout(UpdateTable.bind(null,obj), 6000);
+        setTimeout(checkIsDataLoaded, 6000);
     }else{
         UpdateTable(obj);
     }
 }
+
+function checkIsDataLoaded(){
+    chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
+        var settings = response.settings;
+
+        if(settings.Book.length == 0
+            || settings.Book[0].ParentUrl !== trimCurrentUrl(CurrentPageUrl)){
+            IsErrorWindow = true;
+            resetCss();
+            $('#main-header').html('');
+            $('.info.list_books').html('');
+            $('.info.list_books').show();
+            $('.table-head').html('');
+            $('#no-data-found-content').show();
+            $('#ExportBtn').show();
+            $('#NoDataFooter').show();
+
+            LoadAdvertisementBanner();
+
+            var link2 = $('#ClickHere');
+            link2.click(function() {
+                chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
+                    chrome.tabs.update(response.ID, {url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html"});
+                    window.close();
+                });
+            });
+
+            var link5 = $('#refresh');
+            link5.click(function() {
+                frun();
+            });
+
+            return;
+        }
+    });
+}
+
 function UpdateTable(obj)
 {
-    if (typeof obj === undefined || obj.length < 1)
-    {
-        resetCss();
-        $('#main-header').html('');
-        $('.info.list_books').html('');
-        $('.info.list_books').show();
-        $('.table-head').html('');
-        $('#no-data-found-content').show();
-        $('#NoDataFooter').show();
-        $('#ExportBtn').show();
-
-        LoadAdvertisementBanner();
-
-        var link2 = $('#ClickHere');
-        link2.click(function() {
-            chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
-                chrome.tabs.update(response.ID, {url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html"});
-                window.close();
-            });
-        });
-
-		var link5 = $('#refresh');
-		link5.click(function() {
-			frun();
-		});
-
-        IsErrorWindow = true;
-        return;
-    }
-
     IsErrorWindow = false;
     Storage.GetNumberOfBooks(function(num){
         num = (num === undefined)?0:num;
@@ -754,7 +751,6 @@ function UpdateTable(obj)
         });
     });
 
-    //$('#TitleWordCloud').text("Word Cloud (20)");
     ActiveTab.InsertData(0, obj, SiteParser);
 }
 
@@ -789,8 +785,6 @@ function frun()
                 }
                 LoadInfos();
             });
-
-
         }
     });
 }
@@ -826,12 +820,10 @@ function LoadInfos()
     new MainTab().LoadPageNum(function(){
         new KeywordAnalysisTab().LoadPageNum(function(){
             chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
-                settings = response.settings;
+                var settings = response.settings;
 
                 var settingLen = settings.Book.length;
-                while(obj.length > 0) {
-                    obj.pop();
-                }
+                obj = [];
 
                 for (var i = 0; i < settingLen; i++)
                 {

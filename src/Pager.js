@@ -15,7 +15,7 @@ function Pager(itemsPerPage, pullItemsFunction, getPageUrlFunction){
 
 Pager.prototype.LoadNextPage = function(callback){
     if (this.alreadyPulled === undefined) return;
-    if (this.isInProgress) setTimeout(this.LoadNextPage.bind(this, callback), 1000);
+    if (this.isInProgress) return setTimeout(this.LoadNextPage.bind(this, callback), 1000);
 
     this.isInProgress = true;
 
@@ -39,7 +39,7 @@ Pager.prototype.LoadNextPage = function(callback){
             _this.alreadyPulled = 0;
             i++;
             if(totalItemsLoaded<_this.itemsInResult) {
-                setTimeout(PullOnePage.bind(_this), 1000);
+                setTimeout(PullOnePage.bind(_this), 100);
             } else {
                 _this.pagesLoaded++;
                 _this.lastPage = i-1;

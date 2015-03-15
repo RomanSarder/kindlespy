@@ -15,7 +15,6 @@ function AmazonDeParser(){
     this.DecimalSeparator = ",";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
-    this.BestSellersUrls = new Array("gp/bestsellers");
     this.Publisher = "Verlag";
     this.searchKeys = new Array("kaufen","to rent");
     this.EstSalesScale = [
@@ -97,7 +96,7 @@ AmazonDeParser.prototype.FormatPrice = function(price) {
 };
 
 AmazonDeParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    callback($(responseText).find('#main-image').attr('rel'));
+    return callback($(responseText).find('#main-image').attr('rel'));
 };
 
 AmazonDeParser.prototype.GetImageUrlSrc = function(responseText) {

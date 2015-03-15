@@ -15,7 +15,6 @@ function AmazonCoUkParser(){
     this.DecimalSeparator = ".";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
-    this.BestSellersUrls = new Array("Best-Sellers-Kindle-Store");
     this.Publisher = "Publisher";
     this.searchKeys = new Array("to buy","to rent");
     this.EstSalesScale = [
@@ -98,11 +97,14 @@ AmazonCoUkParser.prototype.FormatPrice = function(price) {
 
 AmazonCoUkParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
     var path = url.split("/");
-    if(path.length > 5)
-         this.GetResponseTextFromAmazonComParser(path[5], function(responseText){
-             callback((responseText!==null)?$(responseText).find('#main-image').attr('rel'):"");
+    if(path.length > 5){
+        this.GetResponseTextFromAmazonComParser(path[5], function(responseText){
+             return callback((responseText!==null)?$(responseText).find('#main-image').attr('rel'):"");
         });
-    callback("");
+        return;
+    }
+
+    return callback("");
 };
 
 AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCode, callback) {

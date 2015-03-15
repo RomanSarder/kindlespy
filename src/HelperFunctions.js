@@ -110,6 +110,7 @@ function IsBestSellersPageFromCategoryKind(categoryKind){
  * @returns {boolean}
  */
 function IsSearchPage(Url){
+    console.log(Url);
     return Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text") > 0;
 }
 function IsSearchPageFromCategoryKind(categoryKind){
@@ -162,13 +163,20 @@ function BuildHeaderHtml(rankTrackingNum){
         '<a id="TitleWordCloud" href="#">Titles Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
         '<a id="RankTrackingResultList" href="#">Rank Tracking (' + rankTrackingNum + ')</a>' +
         '</div>';
-//    var HeaderHtml = "<div style=\"float:left;font-size:14px;padding-left:11px;\" id=\"CategoryKind\">Keyword: </div>" +
-//        "<div style=\"float:left;font-size:14px;padding-left:6px;font-weight:bold\" id=\"title\"></div>" +
-//        "<div style=\"float:right\">" +
-//        "<a id=\"BestSellerLink\" href=\"#\">Search Results</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
-//        "<a id=\"KeywordAnalysis\" href=\"#\">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
-//        "<a id=\"TitleWordCloud\" href=\"#\">Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
-//        "<a id=\"RankTrackingResultList\" href=\"#\">Rank Tracking (" + num + ")</a></div>";
-
     return headerHtml;
+}
+
+function trimCurrentUrl(currentPageUrl){
+    var currentUrl = currentPageUrl;
+    if(currentPageUrl.indexOf('/s/') >= 0)
+    {
+        currentUrl = currentPageUrl.replace(/\&page=[0-9]+/, '');
+    }
+    else if (currentPageUrl.indexOf('/ref=') >= 0)
+    {
+        var _Pos = currentPageUrl.lastIndexOf('/ref=');
+        currentUrl = currentPageUrl.substr(0, _Pos);
+    }
+
+    return currentUrl;
 }

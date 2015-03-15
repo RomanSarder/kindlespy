@@ -62,9 +62,9 @@ body, div, a, p, table, tr, td, th {
 .content {
     overflow: auto;
     margin-right: 5px;
-    height: 340px;
+    height: 320px;
     display: block;
-    max-height: 340px;
+    max-height: 320px;
     line-height: 55px;
 }
 #tracking-content {

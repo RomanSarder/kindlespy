@@ -1,15 +1,16 @@
 
 var defaultSetting = {
     "version": "0.0.0",
-    "PullStatus": true,
+    "PullStatus": true, // unknown usage
+    "IsPulling" : false,
     "CurrentUrl" : "",
     "PageNum" : {MainTab: "1", KeywordAnalysisTab: "1"},
     "MainUrl": "http://www.amazon.com/",
     "ParamUrlBestSellers" : "154606011",
-    "TYPE" : "",
+    "TYPE" : "", // can be 'single' or empty
     "Book":
         [
-            {"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":"", "Rating":""}
+            //{"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":"", "Rating":""}
         ]
 };
 
@@ -18,17 +19,6 @@ function getSetting()
 	var a = localStorage.settings;
     return a = a ? JSON.parse(a) : defaultSetting
 }
-
-// Called when the user clicks on the browser action.
-chrome.browserAction.onClicked.addListener(function(tab) {
-    // No tabs or host permissions needed!
-    chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT},
-        function(tabs){
-            //alert(tabs[0].url);
-        }
-    );
-});
-
 
 function RemoveSettings(url, parentUrl, IsFree)
 {
@@ -117,105 +107,103 @@ var CurrentTabID;
 
 chrome.runtime.onMessage.addListener(onMessageReceived);
 
-function onMessageReceived(b, a, d){
+function onMessageReceived(b, a, callback){
 
     if ("remove-settings" === b.type)
     {
         RemoveSettings(b.Url, b.ParentUrl, b.IsFree);
+        return callback({});
     }
 
-    else if ("get-settings" === b.type)
+    if ("get-settings" === b.type)
     {
-        d({
+        return callback({
             settings: getSetting()
         });
     }
 
-    else if ("save-settings" === b.type)
+    if ("save-settings" === b.type)
     {
         SaveSettings(b.No, b.URL, b.ParentURL, b.NextUrl, b.Title, b.Description, b.Price, b.EstSales, b.SalesRecv, b.Reviews, b.SalesRank, b.Category, b.CategoryKind, b.PrintLength, b.Author, b.DateOfPublication, b.GoogleSearchUrl, b.GoogleImageSearchUrl, b.Rating);
+        return callback({});
     }
-    else if ("save-PageNum" === b.type)
+
+    if ("save-PageNum" === b.type)
     {
         SavePageNum(b.PageNum, b.tab);
+        return callback({});
     }
-    else if ("get-PageNum" === b.type)
+
+    if ("get-PageNum" === b.type)
     {
         var setting = getSetting();
-        d({PageNum:setting.PageNum[b.tab]});
+        return callback({PageNum:setting.PageNum[b.tab]});
     }
-    else if ("save-UrlParams" === b.type)
+
+    if ("save-UrlParams" === b.type)
     {
         SaveUrlParams(b.MainUrl, b.ParamUrlBestSellers);
+        return callback({});
     }
-    else if ("set-current-Tab" === b.type)
+
+    if ("set-current-Tab" === b.type)
     {
-        //CurrentUrl = undefined;
         var tabURL = "Not set yet";
         chrome.tabs.query({active:true, lastFocusedWindow: true},function(tabs){
             if(tabs.length === 0) {
-                d({});
+                callback({});
                 return;
             }
             tabURL = tabs[0].url;
 
             CurrentTabUrl = tabURL;
             CurrentTabID = tabs[0].id;
-            //alert("Getting :" + CurrentTabUrl);
         });
 
-        d({});
+        return callback({});
     }
-    else if ("get-current-Tab" === b.type)
+
+    if ("get-current-Tab" === b.type)
     {
-        d({URL: CurrentTabUrl, ID: CurrentTabID});
+        return callback({URL: CurrentTabUrl, ID: CurrentTabID});
     }
-    else if ("save-pull-setting" === b.type)
+
+    if ("save-pull-setting" === b.type)
     {
         var setting = getSetting();
         setting.PullStatus = b.PullStatus;
         localStorage.settings = JSON.stringify(setting);
-        d({});
+        return callback({});
     }
-    else if ("set-type-page" === b.type)
+
+    if ("set-type-page" === b.type)
     {
         var setting = getSetting();
         setting.TYPE = b.TYPE;
         localStorage.settings = JSON.stringify(setting);
+        return callback({});
     }
-    else if ("get-type-page" === b.type)
+
+    if ("get-type-page" === b.type)
     {
         var setting = getSetting();
-        d({TYPE:setting.TYPE});
+        return callback({TYPE:setting.TYPE});
     }
-}
 
-function ParseEngine()
-{
-    if (MainUrlContent == undefined)
+    if ("set-IsPulling" === b.type)
+    {
+        console.log('Set IsPulling:' + b.IsPulling);
+        var setting = getSetting();
+        setting.IsPulling = b.IsPulling;
+        localStorage.settings = JSON.stringify(setting);
+        return callback({});
+    }
+
+    if ("get-IsPulling" === b.type)
     {
         var setting = getSetting();
-        LoadAmazoneUrl(setting.MainUrl + "/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/" + setting.ParamUrlBestSellers);
+        return callback({IsPulling: setting.IsPulling});
     }
-
-}
-
-function LoadAmazoneUrl(Url)
-{
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", Url);
-
-    xhr.onreadystatechange = function(){
-        if (xhr.readyState == 4){
-            if (xhr.status == 200)
-            {
-                MainUrlContent = xhr.responseText;
-                return xhr.responseText;
-            }
-        }
-    };
-
-    xhr.send();
 }
 
 function getVersion() {
