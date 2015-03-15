@@ -188,7 +188,6 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
 
         var entrySalesRank = _this.GetSalesRank(responseText);
         var entryEstSale = _this.GetEstSale(entrySalesRank);
-        var entryPrice = price;
         var realPrice = _this._siteParser.ParsePrice(price);
         var entrySalesRecv = _this.GetSalesRecv(entryEstSale, realPrice);
         var entryPrintLength = _this.GetPrintLength(responseText);
@@ -198,8 +197,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
         var entryRating = _this.GetRating(responseText);
         _this.GetGoogleImageSearchUrl(responseText, url, function (entryGoogleImageSearchUrl) {
             _this.GetDateOfPublication(responseText, function (entryDateOfPublication) {
-                if (typeof entryPrice === "undefined") entryPrice = "0";
-                if (typeof entryEstSale === "undefined") entryPrice = "0";
+                if (typeof entryEstSale === "undefined") entryEstSale = "0";
                 if (typeof entrySalesRecv == "undefined") entrySalesRecv = "0";
                 if (typeof reviews === "undefined") reviews = "0";
                 if (typeof entrySalesRank === "undefined" || entrySalesRank.length < 1) entrySalesRank = "1";
@@ -211,7 +209,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                 return callback({
                     title: entryTitle,
                     description: entryDescription,
-                    price: _this._siteParser.FormatPrice(realPrice),
+                    price: (price == _this._siteParser.Free) ? _this._siteParser.Free : _this._siteParser.FormatPrice(realPrice),
                     estSale: entryEstSale,
                     salesRecv: entrySalesRecv,
                     reviews: reviews,

@@ -181,3 +181,7 @@ function trimCurrentUrl(currentPageUrl){
 
     return currentUrl;
 }
+
+function isTop100Free(){
+    return location.href.indexOf('tf=1') != -1;
+}

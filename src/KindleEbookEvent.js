@@ -26,11 +26,7 @@ $(window).ready(function () {
         setTimeout("processWhenDone()", 1500);
     });
     chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
-
-    if (Url.indexOf("ref=zg_bs_fvp_p_f") < 0 && Url.indexOf("&tf=") < 0)
-    {
-        chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
-    }
+    chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
 
     startPulling(1);
 });
@@ -356,6 +352,8 @@ function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, revie
 
 function LoadBestSellersPage(pageNumber){
     var pageUrl = ParentUrl + "?pg=" + pageNumber;
+    if(isTop100Free())
+        pageUrl += '&tf=1';
     $.get(pageUrl, function(responseText){
         ParseBestSellersPage(responseText, ParentUrl, false);
     });

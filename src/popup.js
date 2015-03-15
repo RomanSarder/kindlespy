@@ -95,37 +95,15 @@ function resetCss(){
 
 function AutoAddFunc()
 {
-    var IsFreeUrl = false;
-    var currentUrl = trimCurrentUrl(CurrentPageUrl);
-
     chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
         var settings = response.settings;
-
         var settingLen = settings.Book.length;
 
-        var settingInfo;
         obj = [];
         for (var i = 0; i < settingLen; i++)
         {
-            if (settings.Book[i].ParentUrl === currentUrl)
-            {
-                if (IsFreeUrl)
-                {
-                    if (settings.Book[i].Price.indexOf("Free") >= 0)
-                    {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating };
-                        obj.push(settingTmp);
-                    }
-                }
-                else
-                {
-                    if (settings.Book[i].Price.indexOf("Free") < 0)
-                    {
-                        var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating };
-                        obj.push(settingTmp);
-                    }
-                }
-            }
+            var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating };
+            obj.push(settingTmp);
         }
 
         obj.sort(compare);
@@ -142,7 +120,6 @@ function AutoAddFunc()
         } else {
             frun();
         }
-
     });
 
     if (!refreshed)
@@ -643,8 +620,7 @@ function SetupStaticClickListeners() {
 
 function LoadData(obj) {
     SetupStaticClickListeners();
-
-    if (typeof obj === undefined || obj.length < 1)
+    if (obj === undefined || obj.length < 1)
     {
         IsErrorWindow = true;
         resetCss();
@@ -695,8 +671,6 @@ function checkIsDataLoaded(){
             link5.click(function() {
                 frun();
             });
-
-            return;
         }
     });
 }
@@ -800,57 +774,10 @@ function compare(a,b) {
 var isRefreshStarted = false;
 function LoadInfos()
 {
-    var url = CurrentPageUrl;
-    var IsFreeUrl = false;
-    var currentUrl = url;
-
-    if (currentUrl.indexOf("ref=zg_bs_fvp_p_f") >= 0 || currentUrl.indexOf("&tf=") >= 0)
-        IsFreeUrl = true;
-
-    if(url.indexOf("/s/")>=0)
-    {
-       currentUrl = url.replace(/\&page=[0-9]+/, "");	
-    }
-    else if (url.indexOf("/ref=") >= 0)
-    {
-        var _Pos = url.lastIndexOf('/ref=');
-        currentUrl = url.substr(0, _Pos);
-    }
     new MainTab().LoadPageNum(function(){
         new KeywordAnalysisTab().LoadPageNum(function(){
-            chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
-                var settings = response.settings;
-
-                var settingLen = settings.Book.length;
-                obj = [];
-
-                for (var i = 0; i < settingLen; i++)
-                {
-                    if (settings.Book[i].ParentUrl === currentUrl)
-                    {
-                        if (IsFreeUrl)
-                        {
-                            if (settings.Book[i].Price.indexOf("Free") >= 0)
-                            {
-                                var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating};
-                                obj.push(settingTmp);
-                            }
-                        }
-                        else
-                        {
-                            if (settings.Book[i].Price.indexOf("Free") < 0)
-                            {
-                                var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating};
-                                obj.push(settingTmp);
-                            }
-                        }
-                    }
-                }
-
-                obj.sort(compare);
-                LoadData(obj);
-                LoadAdvertisementBanner();
-            });
+            LoadData(obj);
+            LoadAdvertisementBanner();
         });
     });
 

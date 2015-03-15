@@ -9,6 +9,7 @@ function AmazonDeParser(){
     this.ParamUrlBestSellers = "530886031";
     this.AmazonBestSellersPattern = "Amazon Bestseller-Rang";
     this.AreYouAnAuthorPattern = "Sind Sie ein Autor";
+    this.Free = 'Gratis';
     this.CurrencySign = "&euro;";
     this.CurrencySignForExport = "\u20AC";
     this.ThousandSeparator = ".";
@@ -89,6 +90,7 @@ AmazonDeParser.prototype.GetReviewsCountFromResult = function(resultItem) {
 };
 
 AmazonDeParser.prototype.ParsePrice = function(price) {
+    if(price == this.Free) return 0;
     if(!price) return 0;
     return price.replace(/\./g,'').replace(',', '.').replace(/[^0-9\.]/g, '');
 };

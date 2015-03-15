@@ -9,6 +9,7 @@ function AmazonComParser(){
     this.ParamUrlBestSellers = "341689031";
     this.AmazonBestSellersPattern = "Amazon Best Sellers Rank";
     this.AreYouAnAuthorPattern = "Are You an Author";
+    this.Free = 'Free';
     this.CurrencySign = "$";
     this.CurrencySignForExport = "$";
     this.DecimalSeparator = ".";
@@ -91,6 +92,7 @@ AmazonComParser.prototype.GetReviewsCountFromResult = function(resultItem) {
 };
 
 AmazonComParser.prototype.ParsePrice = function(price) {
+    if(price == this.Free) return 0;
     if(!price) return 0;
     return price.substr(1);
 };
