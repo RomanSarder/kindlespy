@@ -422,3 +422,9 @@ td.wow a:hover
 .tooltipster-arrow-top span{
     right:170px !important;
 }
+.img-load {
+    margin-top: 5px;
+}
+.img-load img {
+    height: 15px;
+}
