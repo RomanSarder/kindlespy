@@ -192,7 +192,6 @@ function onMessageReceived(b, a, callback){
 
     if ("set-IsPulling" === b.type)
     {
-        console.log('Set IsPulling:' + b.IsPulling);
         var setting = getSetting();
         setting.IsPulling = b.IsPulling;
         localStorage.settings = JSON.stringify(setting);

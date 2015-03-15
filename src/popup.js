@@ -402,7 +402,6 @@ function KwdAnalysisListShow() {
     $('.info.list_books').show();
     $('.table-head').show();
     $('#KWDConclusion').show();
-    $('.img-load').show();
 
     LoadAdvertisementBanner();
 

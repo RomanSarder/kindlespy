@@ -112,7 +112,6 @@ function IsBestSellersPageFromCategoryKind(categoryKind){
  * @returns {boolean}
  */
 function IsSearchPage(Url){
-    console.log(Url);
     return Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text") > 0;
 }
 function IsSearchPageFromCategoryKind(categoryKind){

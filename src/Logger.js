@@ -81,7 +81,6 @@ Logger.prototype.SaveLogDataToFile = function(text){
             url: "http://www.kdspy.com/kdspy-log/Logger.php"
         })
             .success(function( status ) {
-                //console.log("Save log-data to file.");
             })
             .error(function(XMLHttpRequest, textStatus, errorThrown) {
                 console.error(textStatus)

@@ -85,12 +85,9 @@ var AsyncRunner = {
     start: function(worker){
         var _this = this;
         _this.itemsInProgress++;
-        console.log(this.itemsInProgress);
         worker(function(){
             _this.itemsInProgress--;
-            console.log('in progress ' + _this.itemsInProgress);
             if(_this.itemsInProgress == 0) {
-                console.log('pulling finished');
                 _this.finished();
             }
         });
@@ -216,7 +213,6 @@ function ParseAuthorPage(startIndex, maxResults, responseText, parentUrl)
 
 function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search)
 {
-    console.log('parse search start:' + startIndex + ' max:' + maxResults);
     var No = [];
     var url = [];
     var price = [];
@@ -366,13 +362,11 @@ var SearchResultsPager;
 function LoadSearchResultsPage(callback){
     var itemsPerPage = SiteParser.SearchResultsNumber;
     var search = GetParameterByName(location.href, "field-keywords");
-    console.log('LoadSearchResultsPage');
 
     if(SearchResultsPager === undefined) {
         SearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, ParentUrl){
             return ParseSearchPage(startFromIndex, maxResults, responseText, ParentUrl, search);
         }, function(url, page){
-            console.log('url:' + url + '&page=' + page);
             return url + '&page=' + page;
         });
     }
@@ -383,7 +377,6 @@ function LoadSearchResultsPage(callback){
 var AuthorPager;
 function LoadAuthorResultPage(callback){
     var itemsPerPage = SiteParser.AuthorResultsNumber;
-    console.log('Author page');
 
     if(AuthorPager === undefined) {
         AuthorPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, ParentUrl){
@@ -396,9 +389,11 @@ function LoadAuthorResultPage(callback){
     AuthorPager.LoadNextPage(callback);
 }
 
+var PagesPulled = 0;
 function startPulling(pageNumber){
+    if (pageNumber <= PagesPulled) return;
+    PagesPulled = pageNumber;
     chrome.runtime.sendMessage({type:"set-IsPulling", IsPulling: true});
-    console.log('start pulling');
 
     if(IsAuthorPage()){
         LoadAuthorResultPage();
@@ -416,8 +411,5 @@ function startPulling(pageNumber){
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        console.log('start pulling message received');
         startPulling(request.page);
     });
-
-
