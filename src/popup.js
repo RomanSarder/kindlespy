@@ -91,6 +91,8 @@ function resetCss(){
     $('#BookTracked').hide();
     $('#totalReSalesRecvBlock').hide();
     $('#Conclusion').hide();
+    $('#ExportBtnWordCloud').hide();
+    $('#AdPanel').hide();
 }
 
 function AutoAddFunc()
@@ -337,7 +339,8 @@ function WordsInfoUpdate()
     $('#word-cloud-content').show();
     $('.info.list_books').show();
     $('#WordCloudFooter').show();
-    $('#ExportBtn').show();
+    $('#ExportBtnWordCloud').show();
+    $('#AdPanel').show();
 
     LoadAdvertisementBanner();
 }
@@ -355,6 +358,7 @@ function RankTrackingListShow() {
     $('#TrackedPanelFooter').show();
     $('.info.list_books').show();
     $('.table-head').show();
+    $('#AdPanel').show();
 
     LoadAdvertisementBanner();
 
@@ -457,6 +461,8 @@ function UpdateTrackedBookView(bookData){
     }
     $('#tracking-header').show();
     $('#LinkBackTo').show();
+    $('#ExportBtnWordCloud').show();
+    $('#AdPanel').show();
     $('#tracking-content').html(contentHtml);
     $('#enableTracking').toggle(!bookData.trackingEnabled);
     $('#disableTracking').toggle(bookData.trackingEnabled);
@@ -616,6 +622,10 @@ function SetupStaticClickListeners() {
         ActiveTab.ExportToCsv({ bookData: obj, cloudData: clouds });
     });
 
+    $('#ExportBtnWordCloud').click(function(){
+        ActiveTab.ExportToCsv({bookData: obj, cloudData: clouds });
+    });
+
     var helpButton = $('#Help');
     helpButton.click(function(){
         chrome.tabs.create({ url: 'http://www.kdspy.com/help/' });
@@ -633,8 +643,8 @@ function LoadData(obj) {
         $('#main-header').html('');
         $('.info.list_books').html("");
         $('.info.list_books').show();
-        $('#ExportBtn').show();
         $('#NoDataFooter').show();
+        $('#AdPanel').show();
 
         $('.table-head').html("");
         $('#main-content').html("<div><img style=\"width:100%\" src=\"loading.gif\"//></div>");
