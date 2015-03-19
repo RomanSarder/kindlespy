@@ -106,6 +106,7 @@ AmazonDeParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url
 AmazonDeParser.prototype.GetImageUrlSrc = function(responseText) {
     return $(responseText).find('#main-image').attr('src');
 };
+
 AmazonDeParser.prototype.GetReviews = function(responseText) {
     var rl_reviews = $(responseText).find("#acr .acrCount a:first");
     if (rl_reviews.length)
@@ -113,8 +114,16 @@ AmazonDeParser.prototype.GetReviews = function(responseText) {
     else
         return "0";
 };
+
 AmazonDeParser.prototype.GetRating = function(responseText){
     var ratingString = $(responseText).find("#revSum .acrRating:contains('von')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("von")[0].trim();
+};
+
+AmazonDeParser.prototype.GetTotalSearchResult = function(responseText){
+    var totalSearchResult = $(responseText).find("#s-result-count").text();
+    var result = totalSearchResult.substring(totalSearchResult.indexOf("von")+4, totalSearchResult.indexOf("Ergebnissen")-1).replace(/[^0-9]/g,'');
+    console.log('"' + result + '"');
+    return result;
 };

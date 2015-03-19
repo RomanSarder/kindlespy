@@ -394,18 +394,48 @@ td.wow a:hover
 .bg-grey{
     background-color: #CCCCCC;
 }
-.information-green{
-    background-image: url("../icons/information-green.png");
+.bullet-green{
+    background: url("../icons/bullet-green.png") no-repeat;
 }
-.information-red{
-    background-image: url("../icons/information-red.png");
+.bullet-red{
+    background: url("../icons/bullet-red.png")no-repeat;
 }
-.information-orange{
-    background-image: url("../icons/information-orange.png");
+.bullet-yellow{
+    background: url("../icons/bullet-yellow.png")no-repeat;
 }
-.information-grey{
-    background-image: url("../icons/information-grey.png");
+.status{
+    width:50px;
+    text-align:center;
+    float:left;
 }
+.status-text{
+    font-size: 11px;
+}
+.status-img{
+    margin-left: 10px;
+}
+.status-img div{
+    width: 32px;
+    height: 32px;
+}
+/*#KWDConclusion div{*/
+    /*float: left;*/
+/*}*/
+/*#KWDConclusion div > div{*/
+   /*height: 32px;*/
+/*}*/
+/*.information-green{*/
+    /*background-image: url("../icons/information-green.png");*/
+/*}*/
+/*.information-red{*/
+    /*background-image: url("../icons/information-red.png");*/
+/*}*/
+/*.information-orange{*/
+    /*background-image: url("../icons/information-orange.png");*/
+/*}*/
+/*.information-grey{*/
+    /*background-image: url("../icons/information-grey.png");*/
+/*}*/
 /*Tooltip*/
 .tooltip-theme {
     border-radius: 5px;

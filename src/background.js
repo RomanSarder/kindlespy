@@ -8,6 +8,7 @@ var defaultSetting = {
     "MainUrl": "http://www.amazon.com/",
     "ParamUrlBestSellers" : "154606011",
     "TYPE" : "", // can be 'single' or empty
+    "TotalResults":"",
     "Book":
         [
             //{"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":"", "Rating":""}
@@ -98,6 +99,13 @@ function SaveUrlParams(url, urlParamBestSellers)
     var setting = getSetting();
     setting.MainUrl = url;
     setting.ParamUrlBestSellers = urlParamBestSellers;
+    localStorage.settings = JSON.stringify(setting);
+}
+
+function SaveTotalResults(totalResults)
+{
+    var setting = getSetting();
+    setting.TotalResults = totalResults;
     localStorage.settings = JSON.stringify(setting);
 }
 
@@ -202,6 +210,18 @@ function onMessageReceived(b, a, callback){
     {
         var setting = getSetting();
         return callback({IsPulling: setting.IsPulling});
+    }
+
+    if ("save-TotalResults" === b.type)
+    {
+        SaveTotalResults(b.TotalResults);
+        return callback({});
+    }
+
+    if ("get-TotalResults" === b.type)
+    {
+        var setting = getSetting();
+        return callback({TotalResults:setting.TotalResults});
     }
 }
 

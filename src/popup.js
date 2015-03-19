@@ -50,13 +50,13 @@ $(window).ready(function () {
             alert("Your user id: " + result);
         });
     });
-    $('#KWDConclusionImage').tooltipster({
-        animation: 'fade',
-        theme: 'tooltip-theme',
-        maxWidth:200,
-        updateAnimation: false,
-        position: 'top'
-    });
+//    $('#KWDConclusionImage').tooltipster({
+//        animation: 'fade',
+//        theme: 'tooltip-theme',
+//        maxWidth:200,
+//        updateAnimation: false,
+//        position: 'top'
+//    });
 });
 
 function resetCss(){
@@ -90,7 +90,7 @@ function resetCss(){
     $('#TrackedPanelFooter').hide();
     $('#BookTracked').hide();
     $('#totalReSalesRecvBlock').hide();
-    $('#KWDConclusion').hide();
+    $('#Conclusion').hide();
 }
 
 function AutoAddFunc()
@@ -378,7 +378,8 @@ function KwdAnalysisListShow() {
     $('#ExportBtn').show();
     $('.info.list_books').show();
     $('.table-head').show();
-    $('#KWDConclusion').show();
+    $('#totalReSalesRecvBlock').show();
+    $('#Conclusion').show();
 
     LoadAdvertisementBanner();
 
@@ -614,7 +615,12 @@ function SetupStaticClickListeners() {
     exportButton.click(function() {
         ActiveTab.ExportToCsv({ bookData: obj, cloudData: clouds });
     });
-	
+
+    var helpButton = $('#Help');
+    helpButton.click(function(){
+        chrome.tabs.create({ url: 'http://www.kdspy.com/help/' });
+    });
+
     isStaticLinkInitialized = true;
 }
 
@@ -706,6 +712,7 @@ function UpdateTable(obj)
     $('.info.list_books').show();
     $('.table-head').show();
     $('#totalReSalesRecvBlock').show();
+    $('#Conclusion').show();
 
     LoadAdvertisementBanner();
 

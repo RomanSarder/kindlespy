@@ -104,15 +104,25 @@ AmazonComParser.prototype.FormatPrice = function(price) {
 AmazonComParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
     return callback($(responseText).find('#main-image').attr('rel'));
 };
+
 AmazonComParser.prototype.GetImageUrlSrc = function(responseText) {
     return ParseString($(responseText).find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
+
 AmazonComParser.prototype.GetReviews = function(responseText) {
     var rl_reviews = $(responseText).find("#acr .acrCount a:first");
     return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
 };
+
 AmazonComParser.prototype.GetRating = function(responseText){
     var ratingString = $(responseText).find("#revSum .acrRating:contains('out of')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
+};
+
+AmazonComParser.prototype.GetTotalSearchResult = function(responseText){
+    var totalSearchResult = $(responseText).find("#s-result-count").text();
+    var result = totalSearchResult.substring(totalSearchResult.indexOf("of")+3, totalSearchResult.indexOf("results")-1).replace(/[^0-9]/g,'');
+    console.log('"' + result + '"');
+    return result;
 };

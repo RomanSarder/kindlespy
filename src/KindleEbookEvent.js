@@ -274,6 +274,8 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
         if (tmpSplit.length > 1)
             category = tmpSplit[1];
     }
+    var totalResults = parseInt(SiteParser.GetTotalSearchResult(responseText).replace(/,/g,''));
+    chrome.runtime.sendMessage({type:"save-TotalResults", TotalResults: totalResults});
 
     chrome.runtime.sendMessage({type:"get-settings"}, function(response){
         var purl = location.href.replace(/\&page=[0-9]+/, '');

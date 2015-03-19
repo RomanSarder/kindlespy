@@ -13,7 +13,7 @@ function KeywordAnalysisTab(){
 
 KeywordAnalysisTab.prototype.SavePageNum = function(){
     chrome.runtime.sendMessage({type: "save-PageNum", tab: 'KeywordAnalysisTab', PageNum: this.PageNum});
-}
+};
 
 KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
     var _this = this;
@@ -22,7 +22,7 @@ KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
         _this.PageNum = parseInt(response.PageNum);
         callback();
     });
-}
+};
 
 KeywordAnalysisTab.prototype.ExportToCsv = function(data){
     var bookData = data.bookData;
@@ -110,7 +110,10 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     var reviewSum = 0;
     var html = "";
     var nTotalCnt = 0;
-    var salesRank20 = 0;
+    var salesRankConclusion = 0;
+    var salesRankConclusionValue = 0;
+    var monthlyRevBook = 0;
+    var monthlyRevSum = 0;
 
     for(var i = obj.length - 1; i >= 0 ; i --)
     {
@@ -132,6 +135,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
         {
             var kwt = this.IsKeywordInText(obj[i].Category, obj[i].Title);
             var kwd = this.IsKeywordInText(obj[i].Category, obj[i].Description);
+            salesRankConclusion = this.GetSalesRankConclusion(obj[i].SalesRank);
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow' style='min-width:290px;max-width:290px;'><a href="+obj[i].Url+" target='_blank'>" + obj[i].Title + "</a></td>" +
@@ -141,21 +145,24 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
                 "<td class='bg-" + this.GetKWColor(kwd) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwd + "</td>" +
                 "<td class='bg-" + this.GetRatingColor(obj[i].Rating) + "' style='padding-left:20px;min-width:20px;max-width:20px;padding-right:20px;'>" + Number(obj[i].Rating).toFixed(1) +"</td>" +
                 "<td class='bg-" + this.GetReviewColor(obj[i].Reviews) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ obj[i].Reviews +"</td>" +
-                "<td class='bg-" + this.GetSalesRankColor(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim()) + "' align='right' style='padding-left:31px;width:70px;'>"+ obj[i].SalesRank +"</td>"+
+                "<td class='bg-" + this.GetSalesRankColor(salesRankConclusion) + "' align='right' style='padding-left:31px;width:70px;'>"+ obj[i].SalesRank +"</td>"+
                 "</tr>";
 
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            salesRankSum += parseInt(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim());
+            salesRankSum += parseInt(obj[i].SalesRank.replace(/[^0-9]/g, ''));
             if (price.indexOf("Free") >= 0)
                 priceSum = 0;
             else
                 priceSum += parseFloat(price.replace(/[^0-9\.]/g, ''));
 
-            reviewSum += parseInt(review.replace(SiteParser.ThousandSeparator, "").trim());
+            reviewSum += parseInt(review.replace(/[^0-9\.]/g, ''));
             pagesSum += $.isNumeric(obj[i].PrintLength) ? parseInt(obj[i].PrintLength) : 0;
             ratingSum += parseFloat(obj[i].Rating);
+            if(salesRankConclusion == 3) salesRankConclusionValue ++;
+            monthlyRevSum += obj[i].SalesRecv;
+            if (monthlyRevSum < 500) monthlyRevBook ++;
             nTotalCnt ++;
 
             if (category == "")
@@ -193,85 +200,77 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     $('#result5').html(AddCommas((ratingSum/ nTotalCnt).toFixed(1)));
     $('#result6').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
 
-    for (var i = 0; i < 20 && i < obj.length; i++) {
-        salesRank20 += parseInt(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim() || 0);
-    }
+    $('#bullet-1').removeClass().addClass('bullet-' + this.GetPopularityColor(salesRankConclusionValue));
+    $('#bullet-2').removeClass().addClass('bullet-' + this.GetPotentialColor(monthlyRevBook));
+    this.GetCompetitionColor(function(color){
+        $('#bullet-3').removeClass().addClass('bullet-' + color);
+    });
+};
 
-    var keywordConclusion = this.GetKeywordConclusion(salesRank20 / 20);
-    $('#KWDConclusionValue').html(this.GetKeywordConclusionValue(keywordConclusion));
-    $('#KWDConclusionImage').removeClass().addClass('information-' + this.GetKeywordConclusionColor(keywordConclusion));
-    $('#KWDConclusionImage').tooltipster('content', this.GetKeywordConclusionTooltip(keywordConclusion));
-
-}
+KeywordAnalysisTab.prototype.GetCompetitionColor = function(callback){
+    chrome.runtime.sendMessage({type: "get-TotalResults"}, function(response){
+        var totalResults = parseInt(response.TotalResults);
+        if (totalResults < 500) return callback('green');
+        if (totalResults < 1500) return callback('yellow');
+        return callback('red');
+    });
+};
 
 KeywordAnalysisTab.prototype.IsKeywordInText = function(keyWord, text){
     return text.toLowerCase().indexOf(keyWord.toLowerCase())!=-1 ? "Yes" : "No";
-}
+};
 
-KeywordAnalysisTab.prototype.GetSalesRankColor = function(salesRankString){
-    var salesRank = parseInt(salesRankString.replace(/,/g,''));
-    if (salesRank < 10000) return 'red';
-    if (salesRank < 20000) return 'orange';
-    if (salesRank < 50000) return 'green';
+KeywordAnalysisTab.prototype.GetSalesRankConclusion = function(salesRankString){
+    var salesRank = parseInt(salesRankString.replace(/[^0-9]/g, ''));
+    if (salesRank < 10000) return 1;
+    if (salesRank < 20000) return 2;
+    if (salesRank < 50000) return 3;
+    return 0;
+};
+
+KeywordAnalysisTab.prototype.GetSalesRankColor = function(salesRankConclusion){
+    if (salesRankConclusion == 1) return 'red';
+    if (salesRankConclusion == 2) return 'orange';
+    if (salesRankConclusion == 3) return 'green';
     return 'grey';
-}
+};
 
 KeywordAnalysisTab.prototype.GetRatingColor = function(rating){
     if (rating == '') return 'grey';
     if (rating < 4) return 'green';
     if (rating < 4.5) return 'orange';
     return 'red';
-}
+};
 
 KeywordAnalysisTab.prototype.GetReviewColor = function(reviewString){
-    var review = parseInt(reviewString.replace(/,/g,''));
+    var review = parseInt(reviewString.replace(/[^0-9]/g, ''));
     if (review == '' || review == 0) return 'grey';
     if (review < 21) return 'green';
     if (review < 76) return 'orange';
     return 'red';
-}
+};
 
 KeywordAnalysisTab.prototype.GetKWColor = function(keyword){
     if (keyword.toLowerCase() == 'yes') return 'red';
     return 'green';
-}
+};
 
 KeywordAnalysisTab.prototype.GetPagesColor = function(pages){
     if (!$.isNumeric(pages)) return 'grey';
     if (pages < 66) return 'green';
     if (pages < 150) return 'orange';
     return 'red';
-}
+};
 
-KeywordAnalysisTab.prototype.GetKeywordConclusion = function(salesRank){
-    if (salesRank < 2000) return 6;
-    if (salesRank < 5000) return 5;
-    if (salesRank < 10000) return 4;
-    if (salesRank < 25000) return 3;
-    if (salesRank < 50000) return 2;
-    if (salesRank < 100000) return 1;
-    return 0;
-}
+KeywordAnalysisTab.prototype.GetPopularityColor = function(salesRankConclusionValue){
+    var salesRankConclusion = parseInt(salesRankConclusionValue);
+    if (salesRankConclusion < 3) return 'red';
+    if (salesRankConclusion < 8) return 'yellow';
+    return 'green';
+};
 
-KeywordAnalysisTab.prototype.GetKeywordConclusionValue = function(keywordConclusion){
-    if(keywordConclusion == 0) return 'Very Poor';
-    if(keywordConclusion == 1) return 'Poor';
-    if(keywordConclusion == 2 || keywordConclusion == 3) return 'Good';
-    if(keywordConclusion == 4 || keywordConclusion == 5) return 'Difficult';
-    return 'Very Difficult'; // keywordConclusion == 6
-}
-
-KeywordAnalysisTab.prototype.GetKeywordConclusionColor = function(keywordConclusion){
-    if(keywordConclusion == 0 || keywordConclusion == 1) return 'grey';
-    if(keywordConclusion == 2 || keywordConclusion == 3) return 'green';
-    if(keywordConclusion == 4 || keywordConclusion == 5) return 'orange';
-    return 'red'; // keywordConclusion == 6
-}
-
-KeywordAnalysisTab.prototype.GetKeywordConclusionTooltip = function(keywordConclusion){
-    if(keywordConclusion == 0) return 'This keyword get no traffic and all the books here are selling very poorly.';
-    if(keywordConclusion == 1) return 'This keyword get little traffic and the majority of the books here are selling poorly.';
-    if(keywordConclusion == 2 || keywordConclusion == 3) return 'This keyword gets traffic and has little competition making this a good keyword to target.';
-    if(keywordConclusion == 4 || keywordConclusion == 5) return 'This keyword gets traffic but the competition here makes this a difficult choice.';
-    return 'This keyword gets a lot of traffic but the competition here is very tough.'; // keywordConclusion == 6
-}
+KeywordAnalysisTab.prototype.GetPotentialColor = function(monthlyRevBook){
+    if (monthlyRevBook < 3) return 'red';
+    if (monthlyRevBook < 8) return 'yellow';
+    return 'green';
+};

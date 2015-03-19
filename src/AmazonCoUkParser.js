@@ -126,9 +126,17 @@ AmazonCoUkParser.prototype.GetReviews = function(responseText) {
         return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
     else
         return  "0";
-}
+};
+
 AmazonCoUkParser.prototype.GetRating = function(responseText){
     var ratingString = $(responseText).find("#revSum .acrRating:contains('out of')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
+};
+
+AmazonCoUkParser.prototype.GetTotalSearchResult = function(responseText){
+    var totalSearchResult = $(responseText).find("#s-result-count").text();
+    var result = totalSearchResult.substring(totalSearchResult.indexOf("of")+3, totalSearchResult.indexOf("results")-1).replace(/[^0-9]/g,'');
+    console.log('"' + result + '"');
+    return result;
 };

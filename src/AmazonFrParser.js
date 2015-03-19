@@ -12,11 +12,10 @@ function AmazonFrParser(){
     this.Free = 'Gratuit';
     this.CurrencySign = "&euro;";
     this.CurrencySignForExport = "\u20AC";
-    this.ThousandSeparator = ".";
+    this.ThousandSeparator = " ";
     this.DecimalSeparator = ",";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
-    this.BestSellersUrls = new Array("gp/bestsellers");
     this.Publisher = "Editeur";
     this.searchKeys = new Array("à acheter","louer");
     this.NumberSign = decodeURI("n%C2%B0");
@@ -114,8 +113,16 @@ AmazonFrParser.prototype.GetReviews = function(responseText) {
     else
         return "0";
 };
+
 AmazonFrParser.prototype.GetRating = function(responseText){
     var ratingString = $(responseText).find("#revSum span:contains('étoiles sur')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("étoiles sur")[0].trim();
+};
+
+AmazonFrParser.prototype.GetTotalSearchResult = function(responseText){
+    var totalSearchResult = $(responseText).find("#s-result-count").text();
+    var result = totalSearchResult.substring(totalSearchResult.indexOf("sur")+4, totalSearchResult.indexOf("résultats")-1).replace(/[^0-9]/g,'');
+    console.log('"' + result + '"');
+    return result;
 };

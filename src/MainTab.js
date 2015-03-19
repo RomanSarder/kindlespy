@@ -115,6 +115,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     var html = "";
     var nTotalCnt = 0;
     var cellCnt = 0;
+    var salesRank20 = 0;
 
     for(var i = obj.length - 1; i >= 0 ; i --)
     {
@@ -192,9 +193,37 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
     addEventListenerForSingleResultBook();
 
+    for (var i = 0; i < 20 && i < obj.length; i++) {
+        salesRank20 += parseInt(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim() || 0);
+    }
+
+    var avgMonthlyRev = Math.floor(salesRecvSum / nTotalCnt);
+
     $('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
-    $('#result3').html(siteParser.FormatPrice(AddCommas(Math.floor(salesRecvSum / nTotalCnt))));
+    $('#result3').html( siteParser.FormatPrice(AddCommas(avgMonthlyRev)));
     $('#result4').html(siteParser.FormatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result5').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
     $('#totalReSalesRecv').html(siteParser.FormatPrice(AddCommas(salesRecvSum)));
+    $('#bullet-1').removeClass().addClass('bullet-' + this.GetPopularityColor(salesRank20));
+    $('#bullet-2').removeClass().addClass('bullet-' + this.GetPotentialColor(avgMonthlyRev));
+    $('#bullet-3').removeClass().addClass('bullet-' + this.GetCompetitionColor(salesRank20));
+}
+
+MainTab.prototype.GetPopularityColor = function(salesRank20String){
+    var salesRank = parseInt(salesRank20String);
+    if (salesRank < 24999) return 'green';
+    if (salesRank < 60000) return 'yellow';
+    return 'red';
+}
+MainTab.prototype.GetPotentialColor = function(avgMonthlyRevString){
+    var avgMonthlyRev = parseInt(avgMonthlyRevString);
+    if (avgMonthlyRev < 200) return 'red';
+    if (avgMonthlyRev < 1000) return 'yellow';
+    return 'green';
+}
+MainTab.prototype.GetCompetitionColor = function(salesRank20String){
+    var salesRank = parseInt(salesRank20String);
+    if (salesRank < 4600) return 'red';
+    if (salesRank < 14000) return 'yellow';
+    return 'green';
 }
