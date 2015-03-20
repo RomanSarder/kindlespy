@@ -672,6 +672,7 @@ function checkIsDataLoaded(){
             $('#no-data-found-content').show();
             $('#ExportBtn').show();
             $('#NoDataFooter').show();
+            $('#AdPanel').show();
 
             LoadAdvertisementBanner();
 
