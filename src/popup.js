@@ -50,13 +50,7 @@ $(window).ready(function () {
             alert("Your user id: " + result);
         });
     });
-//    $('#KWDConclusionImage').tooltipster({
-//        animation: 'fade',
-//        theme: 'tooltip-theme',
-//        maxWidth:200,
-//        updateAnimation: false,
-//        position: 'top'
-//    });
+    SetupStaticClickListeners()
 });
 
 function resetCss(){
@@ -411,9 +405,10 @@ function resetTrackingBookPage(bookUrl) {
     $('#enableTracking').show();
     $('#enableTracking').prop('disabled', true);
     $('#disableTracking').hide();
-    $('#ExportBtn').hide();
     $('#BookTracked').hide();
-    $('#ExportBtn').attr('book-url','');
+    $('#ExportBtn').hide();
+    $('#ExportBtnWordCloud').show();
+    $('#ExportBtnWordCloud').attr('book-url','');
 }
 
 function RankTrackingSingleShow(bookUrl){
@@ -452,7 +447,7 @@ function UpdateTrackedBookView(bookData){
         contentHtml = '<div><canvas id="canvas" height="290" width="520"></canvas></div>';
         $('#infoPages').show();
         $('.info.single_book .info-item').css('width', '16%');
-        $('#ExportBtn').show();
+        $('#ExportBtnWordCloud').show();
         $('#BookTracked').show();
     }
     else {
@@ -492,7 +487,7 @@ function UpdateTrackedBookView(bookData){
     $('#EstDailyRev').html(SiteParser.FormatPrice(AddCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', ''));
-    $('#ExportBtn').attr('book-url', bookData.url);
+    $('#ExportBtnWordCloud').attr('book-url', bookData.url);
 
     var chartData = bookData.salesRankData;
     var labels = [];
@@ -606,6 +601,7 @@ function SetupClickListeners(){
 var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;
+    console.log('setup click listeners');
 
     var pullResultsButton = $('#PullResult');
     pullResultsButton.click(function () {
@@ -622,7 +618,7 @@ function SetupStaticClickListeners() {
         ActiveTab.ExportToCsv({ bookData: obj, cloudData: clouds });
     });
 
-    $('#ExportBtnWordCloud').click(function(){
+    $('#ExportWordCloud').click(function(){
         ActiveTab.ExportToCsv({bookData: obj, cloudData: clouds });
     });
 
@@ -771,6 +767,7 @@ function frun()
             InitRegionSelector();
             chrome.runtime.sendMessage({type: "get-type-page"}, function(result) {
                 if(result.TYPE == 'single') {
+                    ActiveTab = new RankTrackingTab();
                     RankTrackingSingleShow(CurrentPageUrl);
                     return;
                 }

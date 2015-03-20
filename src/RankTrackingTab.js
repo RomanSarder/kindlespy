@@ -11,7 +11,7 @@ function RankTrackingTab(){
 }
 
 RankTrackingTab.prototype.ExportToCsv = function(data){
-    var bookUrl = $('#ExportBtn').attr('book-url');
+    var bookUrl = $('#ExportBtnWordCloud').attr('book-url');
 
     new BookStorage().GetBook(bookUrl, function(bookData) {
         if(bookData) {
