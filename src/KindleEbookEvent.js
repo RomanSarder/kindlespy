@@ -23,6 +23,7 @@ $(window).ready(function () {
         chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: false});
         chrome.runtime.sendMessage({type: "remove-settings", ParentUrl: ParentUrl});
         SearchResultsPager = undefined;
+        PagesPulled = 0;
         setTimeout("processWhenDone()", 1500);
     });
     chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
