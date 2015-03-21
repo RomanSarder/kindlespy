@@ -116,6 +116,9 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     var nTotalCnt = 0;
     var cellCnt = 0;
     var salesRank20 = 0;
+    var salesRankConclusion = 0;
+    var salesRankConclusionValue = 0;
+    var monthlyRevBook = 0;
 
     for(var i = obj.length - 1; i >= 0 ; i --)
     {
@@ -160,6 +163,11 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
                 priceSum += parseFloat(price.replace(/[^0-9\.]/g, ''));
 
             reviewSum += parseInt(review.replace(siteParser.ThousandSeparator, "").trim());
+
+            salesRankConclusion = this.GetSalesRankConclusion(obj[i].SalesRank);
+            if(salesRankConclusion == 3) salesRankConclusionValue ++;
+            if (salesRecvSum < 500) monthlyRevBook ++;
+
             nTotalCnt ++;
 
             if (category == "")
@@ -204,26 +212,17 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     $('#result4').html(siteParser.FormatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result5').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
     $('#totalReSalesRecv').html(siteParser.FormatPrice(AddCommas(salesRecvSum)));
-    $('#bullet-1').removeClass().addClass('bullet-' + this.GetPopularityColor(salesRank20));
-    $('#bullet-2').removeClass().addClass('bullet-' + this.GetPotentialColor(avgMonthlyRev));
-    $('#bullet-3').removeClass().addClass('bullet-' + this.GetCompetitionColor(salesRank20));
+    this.Analysis = IsSearchPageFromCategoryKind(categoryKind)? new SearchAnalysisAlgorithm() : new CategoryAnalysisAlgorithm();
+    this.Analysis.SetBulletColor({salesRank20: salesRank20,
+        avgMonthlyRev:avgMonthlyRev,
+        salesRankConclusionValue: salesRankConclusionValue,
+        monthlyRevBook:monthlyRevBook});
 }
 
-MainTab.prototype.GetPopularityColor = function(salesRank20String){
-    var salesRank = parseInt(salesRank20String);
-    if (salesRank < 24999) return 'green';
-    if (salesRank < 60000) return 'yellow';
-    return 'red';
-}
-MainTab.prototype.GetPotentialColor = function(avgMonthlyRevString){
-    var avgMonthlyRev = parseInt(avgMonthlyRevString);
-    if (avgMonthlyRev < 200) return 'red';
-    if (avgMonthlyRev < 1000) return 'yellow';
-    return 'green';
-}
-MainTab.prototype.GetCompetitionColor = function(salesRank20String){
-    var salesRank = parseInt(salesRank20String);
-    if (salesRank < 4600) return 'red';
-    if (salesRank < 14000) return 'yellow';
-    return 'green';
-}
+MainTab.prototype.GetSalesRankConclusion = function(salesRankString){
+    var salesRank = parseInt(salesRankString.replace(/[^0-9]/g, ''));
+    if (salesRank < 10000) return 1;
+    if (salesRank < 20000) return 2;
+    if (salesRank < 50000) return 3;
+    return 0;
+};

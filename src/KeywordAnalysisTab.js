@@ -9,6 +9,7 @@ function KeywordAnalysisTab(){
 
     this.PageNum = 1;
     this.IsPaged = true;
+    this.Analysis = new SearchAnalysisAlgorithm();
 }
 
 KeywordAnalysisTab.prototype.SavePageNum = function(){
@@ -200,20 +201,11 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     $('#result5').html(AddCommas((ratingSum/ nTotalCnt).toFixed(1)));
     $('#result6').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
 
-    $('#bullet-1').removeClass().addClass('bullet-' + this.GetPopularityColor(salesRankConclusionValue));
-    $('#bullet-2').removeClass().addClass('bullet-' + this.GetPotentialColor(monthlyRevBook));
-    this.GetCompetitionColor(function(color){
-        $('#bullet-3').removeClass().addClass('bullet-' + color);
+    this.Analysis.SetBulletColor({
+        salesRankConclusionValue: salesRankConclusionValue,
+        monthlyRevBook: monthlyRevBook
     });
-};
 
-KeywordAnalysisTab.prototype.GetCompetitionColor = function(callback){
-    chrome.runtime.sendMessage({type: "get-TotalResults"}, function(response){
-        var totalResults = parseInt(response.TotalResults);
-        if (totalResults < 500) return callback('green');
-        if (totalResults < 1500) return callback('yellow');
-        return callback('red');
-    });
 };
 
 KeywordAnalysisTab.prototype.IsKeywordInText = function(keyWord, text){
@@ -262,15 +254,15 @@ KeywordAnalysisTab.prototype.GetPagesColor = function(pages){
     return 'red';
 };
 
-KeywordAnalysisTab.prototype.GetPopularityColor = function(salesRankConclusionValue){
-    var salesRankConclusion = parseInt(salesRankConclusionValue);
-    if (salesRankConclusion < 3) return 'red';
-    if (salesRankConclusion < 8) return 'yellow';
-    return 'green';
-};
-
-KeywordAnalysisTab.prototype.GetPotentialColor = function(monthlyRevBook){
-    if (monthlyRevBook < 3) return 'red';
-    if (monthlyRevBook < 8) return 'yellow';
-    return 'green';
-};
+//KeywordAnalysisTab.prototype.GetPopularityColor = function(salesRankConclusionValue){
+//    var salesRankConclusion = parseInt(salesRankConclusionValue);
+//    if (salesRankConclusion < 3) return 'red';
+//    if (salesRankConclusion < 8) return 'yellow';
+//    return 'green';
+//};
+//
+//KeywordAnalysisTab.prototype.GetPotentialColor = function(monthlyRevBook){
+//    if (monthlyRevBook < 3) return 'red';
+//    if (monthlyRevBook < 8) return 'yellow';
+//    return 'green';
+//};

@@ -601,7 +601,6 @@ function SetupClickListeners(){
 var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;
-    console.log('setup click listeners');
 
     var pullResultsButton = $('#PullResult');
     pullResultsButton.click(function () {
