@@ -253,16 +253,3 @@ KeywordAnalysisTab.prototype.GetPagesColor = function(pages){
     if (pages < 150) return 'orange';
     return 'red';
 };
-
-//KeywordAnalysisTab.prototype.GetPopularityColor = function(salesRankConclusionValue){
-//    var salesRankConclusion = parseInt(salesRankConclusionValue);
-//    if (salesRankConclusion < 3) return 'red';
-//    if (salesRankConclusion < 8) return 'yellow';
-//    return 'green';
-//};
-//
-//KeywordAnalysisTab.prototype.GetPotentialColor = function(monthlyRevBook){
-//    if (monthlyRevBook < 3) return 'red';
-//    if (monthlyRevBook < 8) return 'yellow';
-//    return 'green';
-//};
