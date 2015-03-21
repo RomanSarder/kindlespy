@@ -114,7 +114,6 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     var salesRankConclusion = 0;
     var salesRankConclusionValue = 0;
     var monthlyRevBook = 0;
-    var monthlyRevSum = 0;
 
     for(var i = obj.length - 1; i >= 0 ; i --)
     {
@@ -161,9 +160,8 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
             reviewSum += parseInt(review.replace(/[^0-9\.]/g, ''));
             pagesSum += $.isNumeric(obj[i].PrintLength) ? parseInt(obj[i].PrintLength) : 0;
             ratingSum += parseFloat(obj[i].Rating);
-            if(salesRankConclusion == 3) salesRankConclusionValue ++;
-            monthlyRevSum += obj[i].SalesRecv;
-            if (monthlyRevSum < 500) monthlyRevBook ++;
+            if(salesRankConclusion == 3) salesRankConclusionValue++;
+            if (obj[i].SalesRecv > 500) monthlyRevBook++;
             nTotalCnt ++;
 
             if (category == "")

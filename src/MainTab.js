@@ -166,7 +166,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
             salesRankConclusion = this.GetSalesRankConclusion(obj[i].SalesRank);
             if(salesRankConclusion == 3) salesRankConclusionValue ++;
-            if (salesRecvSum < 500) monthlyRevBook ++;
+            if (obj[i].SalesRecv > 500) monthlyRevBook ++;
 
             nTotalCnt ++;
 
