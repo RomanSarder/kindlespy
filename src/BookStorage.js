@@ -8,7 +8,6 @@ function BookStorage() {
     BookStorage.prototype._singletonInstance = this;
 
     this._storage = chrome.storage.local;
-    this.logger = new Logger();
 }
 
 var bookDataExample = {
@@ -158,7 +157,6 @@ BookStorage.prototype.FindUrlIndex = function(trackingData, url) {
  * @param callback function(integer bytesInUse) {...};
  */
 BookStorage.prototype.UpdateBookInStorage = function(bookUrl, bookData, callback) {
-    this.logger.SaveLogDataToFile("BookStorage.UpdateBookInStorage start for book: " + bookUrl);
     var _this = this;
     this._storage.get('trackingData', function(items) {
         if(items === undefined) items = {};
@@ -179,18 +177,15 @@ BookStorage.prototype.UpdateBookInStorage = function(bookUrl, bookData, callback
  */
 BookStorage.prototype.TrackData = function () {
     var _this = this;
-    this.logger.SaveLogDataToFile("Start run BookStorage.TrackData method");
     this._storage.get('lastUpdate', function(result) {
         if(result === undefined) result = {};
         if(result.lastUpdate === undefined) result.lastUpdate = 0;
         var dateDiffMillis = Date.now() - Number(result.lastUpdate);
         // if previous update was < 1h ago then do nothing
         if(dateDiffMillis / 1000 / 60 / 60 < 1) {
-            _this.logger.SaveLogDataToFile("Previous update was " + dateDiffMillis / 1000 / 60 / 60 + " ago that's why do nothing");
             return;
         }
         _this._storage.set({lastUpdate:Date.now()}, function(bytesInUse) {
-            _this.logger.SaveLogDataToFile("Set lastUpdate: " + GetFormattedDate(new Date()));
             _this.GetAllBooks(function(/** Array */ books) {
                 if(books === undefined) return;
                 var today = new Date().setHours(0,0,0,0);
@@ -199,7 +194,6 @@ BookStorage.prototype.TrackData = function () {
                     // if the last data is not from today
                     for(var i=0;i<book.salesRankData.length;i++) {
                         if(!book.trackingEnabled || book.salesRankData[i].date === today) {
-                            _this.logger.SaveLogDataToFile("Book: " + book.url + " is trackingEnabled: " + book.trackingEnabled + "  salesRankData date = " + GetFormattedDate(new Date(today)));
                             return;
                         }
                     }
@@ -214,11 +208,8 @@ BookStorage.prototype.TrackData = function () {
                         });
                         if((book.salesRankData.length % 30) === 0) {
                             book.trackingEnabled = false;
-                            _this.logger.SaveLogDataToFile("salesRankData tracked more than 30 days");
                         }
-                        _this.UpdateBookInStorage(book.url, book, function() {
-                            _this.logger.SaveLogDataToFile("BookStorage.UpdateBookInStorage already updated");
-                        });
+                        _this.UpdateBookInStorage(book.url, book, function() { });
                     });
                 });
             });
