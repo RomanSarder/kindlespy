@@ -5,6 +5,7 @@
 var ParentUrl;
 var SiteParser;
 var BookStore;
+var SearchKeyword = '';
 
 $(window).ready(function () {
     var Url = location.href;
@@ -20,14 +21,16 @@ $(window).ready(function () {
     // Amazon search form
     $(".nav-searchbar").submit(function()
     {
-        chrome.runtime.sendMessage({type: "save-pull-setting", PullStatus: false});
-        chrome.runtime.sendMessage({type: "remove-settings", ParentUrl: ParentUrl});
-        SearchResultsPager = undefined;
-        PagesPulled = 0;
-        setTimeout("processWhenDone()", 1500);
+        SearchKeyword = '';
+        chrome.runtime.sendMessage({type: "remove-settings", ParentUrl: ParentUrl}, function(){
+            if (SearchResultsPager) SearchResultsPager.stop();
+            SearchResultsPager = undefined;
+            PagesPulled = 0;
+            setTimeout("processWhenDone()", 500);
+        });
     });
     chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
-    chrome.runtime.sendMessage({type:"remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
+    chrome.runtime.sendMessage({type: "remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
 
     startPulling(1);
 });
@@ -124,8 +127,6 @@ function ParseBestSellersPage(responseText, parentUrl, IsFree)
     }
 
     chrome.runtime.sendMessage({type:"get-settings"}, function(response){
-        if (!response.settings.PullStatus) return;
-
         url.forEach(function(item, i) {
             if(url[i] !== undefined){
                 AsyncRunner.start(function(callback){
@@ -191,21 +192,16 @@ function ParseAuthorPage(startIndex, maxResults, responseText, parentUrl)
             category = tmpSplit[1];
     }
 
-    chrome.runtime.sendMessage({type:"get-settings"}, function(response){
-        var purl = location.href.replace(/\&page=[0-9]+/, '');
-        if (!response.settings.PullStatus) return;
-
-        url.forEach(function(item, i) {
-            if (url[i] !== undefined && url[i].length > 0
-                && price[i] !== undefined && price[i].length > 0){
-                AsyncRunner.start(function(callback){
-                    function wrapper(){
-                        parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
-                    }
-                    setTimeout(wrapper, i*1000);
-                })
-            }
-        });
+    url.forEach(function(item, i) {
+        if (url[i] !== undefined && url[i].length > 0
+            && price[i] !== undefined && price[i].length > 0){
+            AsyncRunner.start(function(callback){
+                function wrapper(){
+                    parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
+                }
+                setTimeout(wrapper, i*1000);
+            })
+        }
     });
 
     return index;
@@ -278,21 +274,20 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
     var totalResults = parseInt(SiteParser.GetTotalSearchResult(responseText).replace(/,/g,''));
     chrome.runtime.sendMessage({type:"save-TotalResults", TotalResults: totalResults});
 
-    chrome.runtime.sendMessage({type:"get-settings"}, function(response){
-        var purl = location.href.replace(/\&page=[0-9]+/, '');
-        if (!response.settings.PullStatus && parentUrl !== purl) return;
+    var purl = location.href.replace(/\&page=[0-9]+/, '');
+    if (parentUrl !== purl) return;
 
-        url.forEach(function(item, i) {
-            if (url[i] !== undefined && url[i].length > 0
-                && price[i] !== undefined && price[i].length > 0){
-                AsyncRunner.start(function(callback){
-                    function wrapper(){
-                        parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, "Search", callback);
-                    }
-                    setTimeout(wrapper, i*1000);
-                })
-            }
-        });
+    url.forEach(function(item, i) {
+        if (url[i] !== undefined && url[i].length > 0
+            && price[i] !== undefined && price[i].length > 0){
+            AsyncRunner.start(function(callback){
+                function wrapper(){
+                    if (search != SearchKeyword) return;
+                    parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, "Search", callback);
+                }
+                setTimeout(wrapper, i*1000);
+            })
+        }
     });
 
     return index;
@@ -323,32 +318,33 @@ function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, revie
     if(parser.isNotValid()) return callback();
     parser.GetBookData(url, price, reviews, function(pageData) {
         chrome.runtime.sendMessage({type: "get-settings"}, function (response) {
-            if (response.settings.PullStatus) {
-                chrome.runtime.sendMessage({
-                    type: "save-settings",
-                    No: num,
-                    URL: url,
-                    ParentURL: parenturl,
-                    NextUrl: nextUrl,
-                    Title: pageData.title,
-                    Description: pageData.description,
-                    Price: pageData.price,
-                    EstSales: pageData.estSale,
-                    SalesRecv: pageData.salesRecv,
-                    Reviews: pageData.reviews,
-                    SalesRank: pageData.salesRank,
-                    Category: category,
-                    CategoryKind: categoryKind,
-                    PrintLength: pageData.printLength,
-                    Author: pageData.author,
-                    DateOfPublication: pageData.dateOfPublication,
-                    GoogleSearchUrl: pageData.googleSearchUrl,
-                    GoogleImageSearchUrl: pageData.googleImageSearchUrl,
-                    Rating: pageData.rating
-                }, function(response){
-                    return callback();
-                });
-            }
+            // check if we still on the same search keywords page
+            if (categoryKind == 'Search' && category != SearchKeyword) return;
+            chrome.runtime.sendMessage({
+                type: "save-settings",
+                No: num,
+                URL: url,
+                ParentURL: parenturl,
+                NextUrl: nextUrl,
+                Title: pageData.title,
+                Description: pageData.description,
+                Price: pageData.price,
+                EstSales: pageData.estSale,
+                SalesRecv: pageData.salesRecv,
+                Reviews: pageData.reviews,
+                SalesRank: pageData.salesRank,
+                Category: category,
+                CategoryKind: categoryKind,
+                PrintLength: pageData.printLength,
+                Author: pageData.author,
+                DateOfPublication: pageData.dateOfPublication,
+                GoogleSearchUrl: pageData.googleSearchUrl,
+                GoogleImageSearchUrl: pageData.googleImageSearchUrl,
+                Rating: pageData.rating
+            }, function(response){
+                return callback();
+            });
+
         });
     });
 }
@@ -366,6 +362,7 @@ var SearchResultsPager;
 function LoadSearchResultsPage(callback){
     var itemsPerPage = SiteParser.SearchResultsNumber;
     var search = GetParameterByName(location.href, "field-keywords");
+    SearchKeyword = search;
 
     if(SearchResultsPager === undefined) {
         SearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, ParentUrl){
@@ -375,7 +372,7 @@ function LoadSearchResultsPage(callback){
         });
     }
 
-    setTimeout(SearchResultsPager.LoadNextPage.bind(SearchResultsPager, callback), 1000);
+    setTimeout(SearchResultsPager.loadNextPage.bind(SearchResultsPager, callback), 1000);
 }
 
 var AuthorPager;
@@ -390,7 +387,7 @@ function LoadAuthorResultPage(callback){
         });
     }
 
-    AuthorPager.LoadNextPage(callback);
+    AuthorPager.loadNextPage(callback);
 }
 
 var PagesPulled = 0;

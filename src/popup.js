@@ -100,6 +100,9 @@ function AutoAddFunc()
         obj.sort(compare);
 
         if (obj.length <= 0) return;
+
+        SetupHeader(obj[0].Category, obj[0].CategoryKind);
+
         if (!IsErrorWindow) {
             if (!refreshed && (ActiveTab.IsPaged)) {
                 ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
@@ -651,8 +654,7 @@ function checkIsDataLoaded(){
     chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
         var settings = response.settings;
 
-        if(settings.Book.length == 0
-            || settings.Book[0].ParentUrl !== trimCurrentUrl(CurrentPageUrl)){
+        if(settings.Book.length == 0){
             IsErrorWindow = true;
             resetCss();
             $('#main-header').html('');
@@ -690,14 +692,10 @@ function UpdateTable(obj)
 
         $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');
         $('#main-header').html(BuildHeaderHtml(num));
-        if(obj.length>0){
-            var categoryKind = obj[0].CategoryKind;
-            var category = obj[0].Category;
-            SetupHeader(category, categoryKind);
-        }
 
         SetupClickListeners();
     });
+    SetupHeader(obj[0].Category, obj[0].CategoryKind);
 
 	var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:175px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"searchf\" style=\"padding-right:25px;\">More</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:8px;\">Page(s)</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">Price</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Est. Sales</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Monthly Rev.</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" >Sales Rank</label>"

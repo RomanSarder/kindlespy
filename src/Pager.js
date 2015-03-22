@@ -9,13 +9,15 @@ function Pager(itemsPerPage, pullItemsFunction, getPageUrlFunction){
     this.alreadyPulled = 0;
     this.pagesLoaded = 0;
     this.isInProgress = false;
+    this.isStopped = false;
     this.pullItemsFunction = pullItemsFunction || function(startFromIndex, maxResults, responseText, ParentUrl){};
     this.getPageUrlFunction = getPageUrlFunction || function(url, page){};
 }
 
-Pager.prototype.LoadNextPage = function(callback){
+Pager.prototype.loadNextPage = function(callback){
     if (this.alreadyPulled === undefined) return;
-    if (this.isInProgress) return setTimeout(this.LoadNextPage.bind(this, callback), 1000);
+    if (this.isStopped) return;
+    if (this.isInProgress) return setTimeout(this.loadNextPage.bind(this, callback), 100);
 
     this.isInProgress = true;
 
@@ -23,10 +25,12 @@ Pager.prototype.LoadNextPage = function(callback){
     var totalItemsLoaded = 0;
     var pulledItems;
     var i = this.lastPage;
-    setTimeout(PullOnePage.bind(this), 1000);
+    setTimeout(PullOnePage.bind(this), 100);
 
     function PullOnePage() {
+        if(_this.isStopped) return;
         $.get(_this.getPageUrlFunction(ParentUrl, i).trim(), function (responseText) {
+            if(_this.isStopped) return;
             var startFromIndex = (i - 1) * _this.itemsPerPage + _this.alreadyPulled;
             var maxResults = _this.itemsInResult - totalItemsLoaded;
             pulledItems = _this.pullItemsFunction(startFromIndex, maxResults, responseText, ParentUrl);
@@ -47,8 +51,12 @@ Pager.prototype.LoadNextPage = function(callback){
                 _this.isInProgress = false;
                 if(callback !== undefined)
                     callback();
-            };
+            }
         });
     }
 
+};
+
+Pager.prototype.stop = function(){
+    this.isStopped = true;
 };

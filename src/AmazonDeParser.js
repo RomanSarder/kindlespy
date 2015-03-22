@@ -124,6 +124,5 @@ AmazonDeParser.prototype.GetRating = function(responseText){
 AmazonDeParser.prototype.GetTotalSearchResult = function(responseText){
     var totalSearchResult = $(responseText).find("#s-result-count").text();
     var result = totalSearchResult.substring(totalSearchResult.indexOf("von")+4, totalSearchResult.indexOf("Ergebnissen")-1).replace(/[^0-9]/g,'');
-    console.log('"' + result + '"');
     return result;
 };

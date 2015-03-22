@@ -123,6 +123,5 @@ AmazonComParser.prototype.GetRating = function(responseText){
 AmazonComParser.prototype.GetTotalSearchResult = function(responseText){
     var totalSearchResult = $(responseText).find("#s-result-count").text();
     var result = totalSearchResult.substring(totalSearchResult.indexOf("of")+3, totalSearchResult.indexOf("results")-1).replace(/[^0-9]/g,'');
-    console.log('"' + result + '"');
     return result;
 };

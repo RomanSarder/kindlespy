@@ -123,6 +123,5 @@ AmazonFrParser.prototype.GetRating = function(responseText){
 AmazonFrParser.prototype.GetTotalSearchResult = function(responseText){
     var totalSearchResult = $(responseText).find("#s-result-count").text();
     var result = totalSearchResult.substring(totalSearchResult.indexOf("sur")+4, totalSearchResult.indexOf("résultats")-1).replace(/[^0-9]/g,'');
-    console.log('"' + result + '"');
     return result;
 };

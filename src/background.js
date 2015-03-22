@@ -1,7 +1,6 @@
 
 var defaultSetting = {
     "version": "0.0.0",
-    "PullStatus": true, // unknown usage
     "IsPulling" : false,
     "CurrentUrl" : "",
     "PageNum" : {MainTab: "1", KeywordAnalysisTab: "1"},
@@ -174,14 +173,6 @@ function onMessageReceived(b, a, callback){
     if ("get-current-Tab" === b.type)
     {
         return callback({URL: CurrentTabUrl, ID: CurrentTabID});
-    }
-
-    if ("save-pull-setting" === b.type)
-    {
-        var setting = getSetting();
-        setting.PullStatus = b.PullStatus;
-        localStorage.settings = JSON.stringify(setting);
-        return callback({});
     }
 
     if ("set-type-page" === b.type)
