@@ -67,6 +67,16 @@ body, div, a, p, table, tr, td, th {
     max-height: 320px;
     line-height: 55px;
 }
+#no-supported-area{
+    display: none;
+    margin-top: 30px;
+    height: 400px;
+    max-height: 400px;
+}
+#no-data-found-content{
+    display:none;
+    margin-top: 50px;
+}
 #tracking-content {
     height: 290px;
     max-height: 290px;

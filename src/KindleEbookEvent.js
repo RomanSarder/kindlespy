@@ -296,9 +296,10 @@ function ParseSearchPage(startIndex, maxResults, responseText, parentUrl, search
 function processWhenDone() {
 	var search = GetParameterByName(location.href, "field-keywords");
 	if(search.trim()=="" || $("#bcKwText").text() !== '"'+search+'"' || 
-		$("#bcKwText").css("visibility")!= "visible")
-		setTimeout("processWhenDone()", 500);
-	else {
+		$("#bcKwText").css("visibility")!= "visible"){
+        chrome.runtime.sendMessage({type: "set-type-page", TYPE: 'search'});
+        setTimeout("processWhenDone()", 500);
+    }else {
         var Url = location.href;
         ParentUrl = Url;
         if (ParentUrl.indexOf("/s/") < 0) {
@@ -398,12 +399,15 @@ function startPulling(pageNumber){
 
     if(IsAuthorPage()){
         LoadAuthorResultPage();
+        chrome.runtime.sendMessage({type: "set-type-page", TYPE: 'author'});
     }
     else if (IsBestSellersPage(location.href)){
         LoadBestSellersPage(pageNumber);
+        chrome.runtime.sendMessage({type: "set-type-page", TYPE: 'best-seller'});
     }
     else if(IsSearchPage(location.href)){
         LoadSearchResultsPage();
+        chrome.runtime.sendMessage({type: "set-type-page", TYPE: 'search'});
     }
     else if (IsSingleBookPage(location.href)){
         chrome.runtime.sendMessage({type: "set-type-page", TYPE: 'single'});

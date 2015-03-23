@@ -26,7 +26,6 @@ $(window).ready(function () {
     $('#LinkBackTo').click(function () {
         $('#data-body').css("overflow-y", "auto");
         ActiveTab = new MainTab();
-        chrome.runtime.sendMessage({type: "set-type-page", TYPE: ''});
         frun();
     });
     $('#enableTracking').click(function () {
@@ -66,6 +65,7 @@ function resetCss(){
     // content
     $('#word-cloud-content').hide();
     $('#no-data-found-content').hide();
+    $('#no-supported-area').hide();
     $('#main-content').hide();
     $('#tracking-content').hide();
     $('.right-panel').hide();
@@ -484,7 +484,7 @@ function UpdateTrackedBookView(bookData){
     $('#AvgSalesRank').html(AddCommas(Math.floor(avgSalesRank)));
     $('#EstDailyRev').html(SiteParser.FormatPrice(AddCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
-    $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', ''));
+    $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', '').replace('AA278', ''));
     $('#ExportBtnWordCloud').attr('book-url', bookData.url);
 
     var chartData = bookData.salesRankData;
@@ -653,15 +653,16 @@ function LoadData(obj) {
 function checkIsDataLoaded(){
     chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
         var settings = response.settings;
-
+        console.log(settings.TYPE);
         if(settings.Book.length == 0){
             IsErrorWindow = true;
             resetCss();
             $('#main-header').html('');
-            $('.info.list_books').html('');
-            $('.info.list_books').show();
             $('.table-head').html('');
-            $('#no-data-found-content').show();
+
+            if(settings.TYPE == '' || settings.TYPE == undefined) $('#no-supported-area').show();
+            else $('#no-data-found-content').show();
+
             $('#ExportBtn').show();
             $('#NoDataFooter').show();
             $('#AdPanel').show();
