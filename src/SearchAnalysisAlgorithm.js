@@ -21,7 +21,7 @@ SearchAnalysisAlgorithm.prototype.GetPotentialColor = function(monthlyRevBook){
 };
 
 SearchAnalysisAlgorithm.prototype.GetCompetitionColor = function(callback){
-    chrome.runtime.sendMessage({type: "get-TotalResults"}, function(response){
+    Popup.sendMessage({type: "get-TotalResults"}, function(response){
         var totalResults = parseInt(response.TotalResults);
         if (totalResults < 500) return callback('green');
         if (totalResults < 1500) return callback('yellow');

@@ -25,6 +25,7 @@ Pager.prototype.loadNextPage = function(callback){
     var totalItemsLoaded = 0;
     var pulledItems;
     var i = this.lastPage;
+    var prevPulledItems = 0;
     setTimeout(PullOnePage.bind(this), 100);
 
     function PullOnePage() {
@@ -33,9 +34,11 @@ Pager.prototype.loadNextPage = function(callback){
             if(_this.isStopped) return;
             var startFromIndex = (i - 1) * _this.itemsPerPage + _this.alreadyPulled;
             var maxResults = _this.itemsInResult - totalItemsLoaded;
+            prevPulledItems = pulledItems;
             pulledItems = _this.pullItemsFunction(startFromIndex, maxResults, responseText, ParentUrl);
 
-            if (pulledItems === undefined) {
+            if (pulledItems === undefined ||
+                (prevPulledItems == 0 && pulledItems == 0)) {
                 _this.isInProgress = false;
                 return;
             }

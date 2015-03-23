@@ -84,9 +84,21 @@ function resetCss(){
     $('#AdPanel').hide();
 }
 
-function AutoAddFunc()
-{
-    chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
+function Popup(){
+}
+
+Popup.sendMessage = function(message, callback){
+    callback = ValueOrDefault(callback, function(){});
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
+            return callback(response);
+        });
+    });
+};
+
+function getObjArray(callback){
+    callback = ValueOrDefault(callback, function(){});
+    Popup.sendMessage({type: "get-settings"}, function(response) {
         var settings = response.settings;
         var settingLen = settings.Book.length;
 
@@ -97,6 +109,14 @@ function AutoAddFunc()
             obj.push(settingTmp);
         }
 
+        return callback({obj: obj, isPulling: settings.IsPulling});
+    });
+}
+
+function AutoAddFunc()
+{
+    getObjArray(function(result){
+        obj = result.obj;
         obj.sort(compare);
 
         if (obj.length <= 0) return;
@@ -106,7 +126,7 @@ function AutoAddFunc()
         if (!IsErrorWindow) {
             if (!refreshed && (ActiveTab.IsPaged)) {
                 ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
-                if(settings.IsPulling) $('.img-load').show();
+                if(result.isPulling) $('.img-load').show();
                 else {
                     $('.img-load').hide();
                 }
@@ -640,7 +660,7 @@ function LoadData(obj) {
         $('#AdPanel').show();
 
         $('.table-head').html("");
-        $('#main-content').html("<div><img style=\"width:100%\" src=\"loading.gif\"//></div>");
+        $('#main-content').html("<div><img style=\"width:100%\" src=\"loading.gif\"/></div>");
         $('#main-content').show();
         $('#main-header').show();
 
@@ -651,9 +671,8 @@ function LoadData(obj) {
 }
 
 function checkIsDataLoaded(){
-    chrome.runtime.sendMessage({type: "get-settings"}, function(response) {
+    Popup.sendMessage({type: "get-settings"}, function(response) {
         var settings = response.settings;
-        console.log(settings.TYPE);
         if(settings.Book.length == 0){
             IsErrorWindow = true;
             resetCss();
@@ -668,14 +687,6 @@ function checkIsDataLoaded(){
             $('#AdPanel').show();
 
             LoadAdvertisementBanner();
-
-            var link2 = $('#ClickHere');
-            link2.click(function() {
-                chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
-                    chrome.tabs.update(response.ID, {url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html"});
-                    window.close();
-                });
-            });
 
             var link5 = $('#refresh');
             link5.click(function() {
@@ -693,10 +704,10 @@ function UpdateTable(obj)
 
         $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');
         $('#main-header').html(BuildHeaderHtml(num));
+        SetupHeader(obj[0].Category, obj[0].CategoryKind);
 
         SetupClickListeners();
     });
-    SetupHeader(obj[0].Category, obj[0].CategoryKind);
 
 	var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:175px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"searchf\" style=\"padding-right:25px;\">More</label><label class=\"sort-column\" id=\"pageno\" style=\"padding-right:8px;\">Page(s)</label><label class=\"sort-column\" id=\"price\" style=\"padding-right:30px;\">Price</label><label class=\"sort-column\" id=\"est-sales\" style=\"padding-right:20px;\" >Est. Sales</label><label class=\"sort-column\" id=\"sales-rev\" style=\"padding-right:15px;\" >Monthly Rev.</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:10px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" >Sales Rank</label>"
@@ -745,7 +756,7 @@ function SetActivePage(pageNum)
 function frun()
 {
 
-    chrome.runtime.sendMessage({type: "get-current-Tab"}, function(response) {
+    Popup.sendMessage({type: "get-current-Tab"}, function(response) {
         if (response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
         {
             chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
@@ -756,9 +767,9 @@ function frun()
         {   /////////////////////load//////////////////////////
             CurrentPageUrl = response.URL;
             SiteParser = GetSiteParser(CurrentPageUrl);
-            chrome.runtime.sendMessage({type: "save-UrlParams", MainUrl: SiteParser.MainUrl, ParamUrlBestSellers: SiteParser.ParamUrlBestSellers});
+            Popup.sendMessage({type: "save-UrlParams", MainUrl: SiteParser.MainUrl, ParamUrlBestSellers: SiteParser.ParamUrlBestSellers});
             InitRegionSelector();
-            chrome.runtime.sendMessage({type: "get-type-page"}, function(result) {
+            Popup.sendMessage({type: "get-type-page"}, function(result) {
                 if(result.TYPE == 'single') {
                     ActiveTab = new RankTrackingTab();
                     RankTrackingSingleShow(CurrentPageUrl);
@@ -784,8 +795,11 @@ function LoadInfos()
 {
     new MainTab().LoadPageNum(function(){
         new KeywordAnalysisTab().LoadPageNum(function(){
-            LoadData(obj);
-            LoadAdvertisementBanner();
+            getObjArray(function(result){
+                obj = result.obj;
+                LoadData(obj);
+                LoadAdvertisementBanner();
+            });
         });
     });
 
@@ -825,6 +839,6 @@ function LoadAdvertisementBanner()
     });
 }
 
-chrome.runtime.sendMessage({type: "set-current-Tab"}, function(response) {
+Popup.sendMessage({type: "set-current-Tab"}, function(response) {
     setTimeout(frun, 100);
 });

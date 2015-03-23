@@ -12,13 +12,13 @@ function MainTab(){
 }
 
 MainTab.prototype.SavePageNum = function(){
-    chrome.runtime.sendMessage({type: "save-PageNum", tab: 'MainTab', PageNum: this.PageNum});
+    Popup.sendMessage({type: "save-PageNum", tab: 'MainTab', PageNum: this.PageNum});
 }
 
 MainTab.prototype.LoadPageNum = function(callback){
     var _this = this;
     callback = ValueOrDefault(callback, function() {});
-    chrome.runtime.sendMessage({type: "get-PageNum", tab: 'MainTab'}, function(response){
+    Popup.sendMessage({type: "get-PageNum", tab: 'MainTab'}, function(response){
         _this.PageNum = parseInt(response.PageNum);
         callback();
     });

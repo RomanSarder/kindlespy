@@ -13,13 +13,13 @@ function KeywordAnalysisTab(){
 }
 
 KeywordAnalysisTab.prototype.SavePageNum = function(){
-    chrome.runtime.sendMessage({type: "save-PageNum", tab: 'KeywordAnalysisTab', PageNum: this.PageNum});
+    Popup.sendMessage({type: "save-PageNum", tab: 'KeywordAnalysisTab', PageNum: this.PageNum});
 };
 
 KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
     var _this = this;
     callback = ValueOrDefault(callback, function() {});
-    chrome.runtime.sendMessage({type: "get-PageNum", tab: 'KeywordAnalysisTab'}, function(response){
+    Popup.sendMessage({type: "get-PageNum", tab: 'KeywordAnalysisTab'}, function(response){
         _this.PageNum = parseInt(response.PageNum);
         callback();
     });
