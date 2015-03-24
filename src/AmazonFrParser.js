@@ -12,7 +12,7 @@ function AmazonFrParser(){
     this.Free = 'Gratuit';
     this.CurrencySign = "&euro;";
     this.CurrencySignForExport = "\u20AC";
-    this.ThousandSeparator = " ";
+    this.ThousandSeparator = ".";
     this.DecimalSeparator = ",";
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;

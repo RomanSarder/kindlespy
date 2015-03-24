@@ -115,8 +115,6 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     var html = "";
     var nTotalCnt = 0;
     var cellCnt = 0;
-    var salesRank20index = 0;
-    var salesRank20 = 0;
     var salesRankConclusion = 0;
     var salesRankConclusionValue = 0;
     var monthlyRevBook = 0;
@@ -156,14 +154,14 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            salesRankSum += parseInt(obj[i].SalesRank.replace(siteParser.ThousandSeparator, "").trim());
+            salesRankSum += parseInt(obj[i].SalesRank.replace(siteParser.ThousandSeparator, "").replace(" ","").trim());
             salesRecvSum += parseInt(obj[i].SalesRecv);
             if (price.indexOf("Free") >= 0)
                 priceSum = 0;
             else
                 priceSum += parseFloat(price.replace(/[^0-9\.]/g, ''));
 
-            reviewSum += parseInt(review.replace(siteParser.ThousandSeparator, "").trim());
+            reviewSum += parseInt(review.replace(siteParser.ThousandSeparator, "").replace(" ","").trim());
 
             salesRankConclusion = this.GetSalesRankConclusion(obj[i].SalesRank);
             if(salesRankConclusion == 3) salesRankConclusionValue ++;
@@ -202,9 +200,9 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
     addEventListenerForSingleResultBook();
 
-    salesRank20index = Math.min(19, obj.length-1);
-    salesRank20 = parseInt(obj[salesRank20index].SalesRank.replace(SiteParser.ThousandSeparator, "").trim() || 0);
-    
+    var salesRank20index = Math.min(19, obj.length-1);
+    var salesRank20 = parseInt(obj[salesRank20index].SalesRank.replace(SiteParser.ThousandSeparator, "").replace(" ","").trim() || 0);
+
     var avgMonthlyRev = Math.floor(salesRecvSum / nTotalCnt);
 
     $('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
