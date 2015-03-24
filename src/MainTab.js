@@ -115,6 +115,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     var html = "";
     var nTotalCnt = 0;
     var cellCnt = 0;
+    var salesRank20index = 0;
     var salesRank20 = 0;
     var salesRankConclusion = 0;
     var salesRankConclusionValue = 0;
@@ -201,10 +202,9 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
     addEventListenerForSingleResultBook();
 
-    for (var i = 0; i < 20 && i < obj.length; i++) {
-        salesRank20 += parseInt(obj[i].SalesRank.replace(SiteParser.ThousandSeparator, "").trim() || 0);
-    }
-
+    salesRank20index = Math.min(19, obj.length-1);
+    salesRank20 = parseInt(obj[salesRank20index].SalesRank.replace(SiteParser.ThousandSeparator, "").trim() || 0);
+    
     var avgMonthlyRev = Math.floor(salesRecvSum / nTotalCnt);
 
     $('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
