@@ -757,7 +757,7 @@ function frun()
 {
 
     Popup.sendMessage({type: "get-current-Tab"}, function(response) {
-        if (response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
+        if (response === undefined || response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
         {
             chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
             window.close();
