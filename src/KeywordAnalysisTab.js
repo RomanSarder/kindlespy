@@ -160,7 +160,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
             reviewSum += parseInt(review.replace(/[^0-9\.]/g, ''));
             pagesSum += $.isNumeric(obj[i].PrintLength) ? parseInt(obj[i].PrintLength) : 0;
             ratingSum += parseFloat(obj[i].Rating);
-            if(salesRankConclusion == 3) salesRankConclusionValue++;
+            if(salesRankConclusion == 1) salesRankConclusionValue++;
             if (obj[i].SalesRecv > 500) monthlyRevBook++;
             nTotalCnt ++;
 

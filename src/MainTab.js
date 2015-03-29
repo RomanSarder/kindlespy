@@ -164,7 +164,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
             reviewSum += parseInt(review.replace(siteParser.ThousandSeparator, "").replace(" ","").trim());
 
             salesRankConclusion = this.GetSalesRankConclusion(obj[i].SalesRank);
-            if(salesRankConclusion == 3) salesRankConclusionValue ++;
+            if(salesRankConclusion == 1) salesRankConclusionValue ++;
             if (obj[i].SalesRecv > 500) monthlyRevBook ++;
 
             nTotalCnt ++;
