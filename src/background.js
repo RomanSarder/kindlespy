@@ -8,6 +8,6 @@ function getVersion() {
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, callback){
-    if(message == 'getVersion')
+    if(message.action == 'getVersion')
         return callback(getVersion());
 });

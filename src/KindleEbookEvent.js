@@ -216,7 +216,7 @@ function onMessageReceived(request, sender, callback){
     }
 }
 
-chrome.runtime.sendMessage('getVersion', function (version){
+chrome.runtime.sendMessage({action:'getVersion'}, function (version){
     var currentVersion = version;
     var savedVersion = getSetting().version;
 
@@ -268,27 +268,6 @@ function ContentScript(){
 
 ContentScript.sendMessage = function(message, callback){
     return onMessageReceived(message, null, callback);
-};
-
-// AsyncRunner class
-var AsyncRunner = {
-    itemsInProgress: 0,
-    finished: function(){
-    },
-    itemLoaded: function(){
-        ContentScript.sendMessage({type:"set-IsPulling", IsPulling: false});
-    },
-    start: function(worker){
-        var _this = this;
-        _this.itemsInProgress++;
-        worker(function(){
-            _this.itemsInProgress--;
-            _this.itemLoaded();
-            if(_this.itemsInProgress == 0) {
-                _this.finished();
-            }
-        });
-    }
 };
 
 function processWhenDone() {

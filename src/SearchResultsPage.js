@@ -23,10 +23,10 @@ SearchResultsPage.prototype.LoadData = function(siteParser, parentUrl, search, c
         });
     }
 
-    setTimeout(this.SearchResultsPager.loadNextPage.bind(this.SearchResultsPager, callback), 1000);
+    setTimeout(this.SearchResultsPager.loadNextPage.bind(this.SearchResultsPager, parentUrl, callback), 1000);
 };
 
-SearchResultsPage.prototype.ParsePage= function(startIndex, maxResults, responseText, parentUrl, search, siteParser)
+SearchResultsPage.prototype.ParsePage = function(startIndex, maxResults, responseText, parentUrl, search, siteParser)
 {
     var _this = this;
     var No = [];
@@ -84,7 +84,7 @@ SearchResultsPage.prototype.ParsePage= function(startIndex, maxResults, response
     });
     if(counter == 0) return 0;
 
-    if (typeof category === undefined /*|| category.length < 1*/)
+    if (typeof category === undefined)
     {
         category = ParseString(responseText, 'entityHeader', '>', '<');
         var tmpSplit =category.split("by");
@@ -94,15 +94,12 @@ SearchResultsPage.prototype.ParsePage= function(startIndex, maxResults, response
     var totalResults = parseInt(siteParser.GetTotalSearchResult(responseText).replace(/,/g,''));
     ContentScript.sendMessage({type:"save-TotalResults", TotalResults: totalResults});
 
-    var purl = location.href.replace(/\&page=[0-9]+/, '');
-    if (parentUrl !== purl) return;
-
     url.forEach(function(item, i) {
         if (url[i] !== undefined && url[i].length > 0
             && price[i] !== undefined && price[i].length > 0){
             AsyncRunner.start(function(callback){
                 function wrapper(){
-                    if (search != _this.SearchKeyword) return; //???
+                    if (search != _this.SearchKeyword) return;
                     parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, "Search", callback);
                 }
                 setTimeout(wrapper, i*1000);

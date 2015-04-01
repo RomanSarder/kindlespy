@@ -14,10 +14,10 @@ function Pager(itemsPerPage, pullItemsFunction, getPageUrlFunction){
     this.getPageUrlFunction = getPageUrlFunction || function(url, page){};
 }
 
-Pager.prototype.loadNextPage = function(callback){
+Pager.prototype.loadNextPage = function(parentUrl, callback){
     if (this.alreadyPulled === undefined) return;
     if (this.isStopped) return;
-    if (this.isInProgress) return setTimeout(this.loadNextPage.bind(this, callback), 100);
+    if (this.isInProgress) return setTimeout(this.loadNextPage.bind(this, parentUrl, callback), 100);
 
     this.isInProgress = true;
 
@@ -30,12 +30,12 @@ Pager.prototype.loadNextPage = function(callback){
 
     function PullOnePage() {
         if(_this.isStopped) return;
-        $.get(_this.getPageUrlFunction(ParentUrl, i).trim(), function (responseText) {
+        $.get(_this.getPageUrlFunction(parentUrl, i).trim(), function (responseText) {
             if(_this.isStopped) return;
             var startFromIndex = (i - 1) * _this.itemsPerPage + _this.alreadyPulled;
             var maxResults = _this.itemsInResult - totalItemsLoaded;
             prevPulledItems = pulledItems;
-            pulledItems = _this.pullItemsFunction(startFromIndex, maxResults, responseText, ParentUrl);
+            pulledItems = _this.pullItemsFunction(startFromIndex, maxResults, responseText, parentUrl);
 
             if (pulledItems === undefined ||
                 (prevPulledItems == 0 && pulledItems == 0)) {

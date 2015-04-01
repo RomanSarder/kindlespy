@@ -19,7 +19,7 @@ AuthorPage.prototype.LoadData = function(siteParser, parentUrl, callback){
         });
     }
 
-    this.AuthorPager.loadNextPage(callback);
+    this.AuthorPager.loadNextPage(parentUrl, callback);
 };
 
 AuthorPage.prototype.ParsePage = function(startIndex, maxResults, responseText, parentUrl, siteParser){

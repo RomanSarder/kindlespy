@@ -19,7 +19,7 @@ AuthorSearchResultsPage.prototype.LoadData = function(siteParser, parentUrl, cal
             return url + '&page=' + page;
         });
     }
-    setTimeout(this.AuthorSearchResultsPager.loadNextPage.bind(this.AuthorSearchResultsPager, callback), 1000);
+    setTimeout(this.AuthorSearchResultsPager.loadNextPage.bind(this.AuthorSearchResultsPager, parentUrl, callback), 1000);
 };
 
 AuthorSearchResultsPage.prototype.ParsePage= function(startIndex, maxResults, responseText, parentUrl, siteParser)
