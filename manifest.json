@@ -44,6 +44,11 @@
                 "src/AmazonCoUkParser.js",
                 "src/AmazonDeParser.js",
                 "src/AmazonFrParser.js",
+                "src/AmazonCaParser.js",
+                "src/BestSellersPage.js",
+                "src/AuthorPage.js",
+                "src/SearchResultsPage.js",
+                "src/AuthorSearchResultsPage.js",
                 "src/KindleEbookEvent.js"
             ]
         }

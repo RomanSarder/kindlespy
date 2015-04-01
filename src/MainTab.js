@@ -144,8 +144,8 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
                 "<a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " +
                 "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
                 "<td style='padding-left:15px; width:30px;'>" +obj[i].PrintLength + "</td>" +
-                "<td style='width:30px;'>"+ obj[i].Price +"</td>" +
-                "<td style='padding-left:15px; width:60px;' align='right'>" + AddCommas(obj[i].EstSales) +"</td>" +
+                "<td style='width:50px;'>"+ obj[i].Price +"</td>" +
+                "<td style='width:60px;' align='center'>" + AddCommas(obj[i].EstSales) +"</td>" +
                 "<td style='width:80px;'><div style='float:left'> "+ siteParser.CurrencySign +" </div> <div style='float:right'>"+ AddCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
                 "<td style='width:50px;' align='right'>"+ obj[i].Reviews +"</td>" +
                 "<td style='width:80px;padding-right : 10px;' align='right'>"+ obj[i].SalesRank +"</td>"+

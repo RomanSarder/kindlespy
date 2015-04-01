@@ -63,6 +63,8 @@ function GetSiteParser(url){
         return new AmazonDeParser();
     if(url.indexOf(AmazonFrParser.MainUrl)!=-1)
         return new AmazonFrParser();
+    if(url.indexOf(AmazonCaParser.MainUrl)!=-1)
+        return new AmazonCaParser();
 }
 
 /**
@@ -116,13 +118,21 @@ function IsSearchPage(Url){
 }
 function IsSearchPageFromCategoryKind(categoryKind){
     return categoryKind.indexOf("Search") != -1;
-}/**
+}
+/**
  * Return bool value page is author page.
- * @param Url
  * @returns {boolean}
  */
 function IsAuthorPage(){
     return document.documentElement.innerHTML.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0 && document.documentElement.innerHTML.indexOf("ap-author-name") >= 0;
+}
+/**
+ * Return bool value page is author page.
+ * @param Url
+ * @returns {boolean}
+ */
+function IsAuthorSearchResultPage(Url){
+    return Url.indexOf(SiteParser.MainUrl +"/s") == 0 && Url.indexOf("field-author") > 0 && Url.indexOf("digital-text") > 0;
 }
 /**
  * Return bool value page is single page.
