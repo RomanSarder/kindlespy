@@ -59,11 +59,13 @@ AmazonCaParser.MainUrl = "http://www.amazon.ca";
 AmazonCaParser.Region = "CA";
 
 AmazonCaParser.prototype.GetTitle = function(responseText){
-    return $(responseText).find("#btAsinTitle").text().trim();
+    return responseText.find('#btAsinTitle>span').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    })[0].nodeValue.trim();
 };
 
 AmazonCaParser.prototype.GetDescription = function(responseText){
-    return $(responseText).find(".productDescriptionWrapper").text().trim();
+    return responseText.find(".productDescriptionWrapper").text().trim();
 };
 
 AmazonCaParser.prototype.ParsePrice = function(price) {
@@ -77,15 +79,15 @@ AmazonCaParser.prototype.FormatPrice = function(price) {
 };
 
 AmazonCaParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    return callback($(responseText).find('#main-image').attr('rel'));
+    return callback(responseText.find('#main-image').attr('rel'));
 };
 
 AmazonCaParser.prototype.GetImageUrlSrc = function(responseText) {
-    return ParseString($(responseText).find('#holderMainImage noscript').text(),"src=","\"", "\" ");
+    return ParseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
 AmazonCaParser.prototype.GetReviews = function(responseText) {
-    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    var rl_reviews = responseText.find("#acr .acrCount a:first");
     if (rl_reviews.length)
         return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
     else
@@ -93,7 +95,7 @@ AmazonCaParser.prototype.GetReviews = function(responseText) {
 };
 
 AmazonCaParser.prototype.GetRating = function(responseText){
-    var ratingString = $(responseText).find("#revSum .acrRating:contains('out of')");
+    var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };

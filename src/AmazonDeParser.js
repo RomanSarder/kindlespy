@@ -60,10 +60,12 @@ AmazonDeParser.MainUrl = "http://www.amazon.de";
 AmazonDeParser.Region = "DE";
 
 AmazonDeParser.prototype.GetTitle = function(responseText){
-    return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
+    return responseText.find('#btAsinTitle>span').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    })[0].nodeValue.trim();
 };
 AmazonDeParser.prototype.GetDescription = function(responseText){
-    return $(responseText).find("#productDescription .content").text().trim();
+    return responseText.find("#productDescription .content").text().trim();
 };
 AmazonDeParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
@@ -100,15 +102,15 @@ AmazonDeParser.prototype.FormatPrice = function(price) {
 };
 
 AmazonDeParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    return callback($(responseText).find('#main-image').attr('rel'));
+    return callback(responseText.find('#main-image').attr('rel'));
 };
 
 AmazonDeParser.prototype.GetImageUrlSrc = function(responseText) {
-    return $(responseText).find('#main-image').attr('src');
+    return responseText.find('#main-image').attr('src');
 };
 
 AmazonDeParser.prototype.GetReviews = function(responseText) {
-    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    var rl_reviews = responseText.find("#acr .acrCount a:first");
     if (rl_reviews.length)
         return $(rl_reviews).text().replace('Rezensionen','').replace('Rezension','').trim();
     else
@@ -116,7 +118,7 @@ AmazonDeParser.prototype.GetReviews = function(responseText) {
 };
 
 AmazonDeParser.prototype.GetRating = function(responseText){
-    var ratingString = $(responseText).find("#revSum .acrRating:contains('von')");
+    var ratingString = responseText.find("#revSum .acrRating:contains('von')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("von")[0].trim();
 };

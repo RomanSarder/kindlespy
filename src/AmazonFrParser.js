@@ -60,10 +60,12 @@ AmazonFrParser.MainUrl = "http://www.amazon.fr";
 AmazonFrParser.Region = "FR";
 
 AmazonFrParser.prototype.GetTitle = function(responseText){
-    return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
+    return responseText.find('#btAsinTitle>span').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    })[0].nodeValue.trim();
 };
 AmazonFrParser.prototype.GetDescription = function(responseText){
-    return $(responseText).find("#productDescription .content").text().trim();
+    return responseText.find("#productDescription .content").text().trim();
 };
 AmazonFrParser.prototype.GetKindleEditionRow = function(resultItem) {
     var _this = this;
@@ -99,15 +101,15 @@ AmazonFrParser.prototype.FormatPrice = function(price) {
 };
 
 AmazonFrParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    callback($(responseText).find('#main-image').attr('rel'));
+    callback(responseText.find('#main-image').attr('rel'));
 };
 
 AmazonFrParser.prototype.GetImageUrlSrc = function(responseText) {
-    return $(responseText).find('#main-image').attr('src');
+    return responseText.find('#main-image').attr('src');
 };
 
 AmazonFrParser.prototype.GetReviews = function(responseText) {
-    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    var rl_reviews = responseText.find("#acr .acrCount a:first");
     if (rl_reviews.length)
         return $(rl_reviews).text().replace('commentaires','').replace('commentaire','').trim();
     else
@@ -115,7 +117,7 @@ AmazonFrParser.prototype.GetReviews = function(responseText) {
 };
 
 AmazonFrParser.prototype.GetRating = function(responseText){
-    var ratingString = $(responseText).find("#revSum span:contains('étoiles sur')");
+    var ratingString = responseText.find("#revSum span:contains('étoiles sur')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("étoiles sur")[0].trim();
 };

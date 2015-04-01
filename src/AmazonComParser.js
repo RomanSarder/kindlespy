@@ -60,11 +60,12 @@ AmazonComParser.MainUrl = "http://www.amazon.com";
 AmazonComParser.Region = "USA";
 
 AmazonComParser.prototype.GetTitle = function(responseText){
-    return ParseString(responseText, "id=\"btAsinTitle\"", '>', '<');
-};
+    return responseText.find('#btAsinTitle').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    })[0].nodeValue.trim();};
 
 AmazonComParser.prototype.GetDescription = function(responseText){
-    return $(responseText).find("#outer_postBodyPS").text().trim();
+    return responseText.find("#outer_postBodyPS").text().trim();
 };
 
 AmazonComParser.prototype.GetKindleEditionRow = function(resultItem) {
@@ -102,20 +103,20 @@ AmazonComParser.prototype.FormatPrice = function(price) {
 };
 
 AmazonComParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    return callback($(responseText).find('#main-image').attr('rel'));
+    return callback(responseText.find('#main-image').attr('rel'));
 };
 
 AmazonComParser.prototype.GetImageUrlSrc = function(responseText) {
-    return ParseString($(responseText).find('#holderMainImage noscript').text(),"src=","\"", "\" ");
+    return ParseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
 AmazonComParser.prototype.GetReviews = function(responseText) {
-    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    var rl_reviews = responseText.find("#acr .acrCount a:first");
     return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
 };
 
 AmazonComParser.prototype.GetRating = function(responseText){
-    var ratingString = $(responseText).find("#revSum .acrRating:contains('out of')");
+    var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };

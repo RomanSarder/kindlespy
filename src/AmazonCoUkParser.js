@@ -60,10 +60,12 @@ AmazonCoUkParser.MainUrl = "http://www.amazon.co.uk";
 AmazonCoUkParser.Region = "UK";
 
 AmazonCoUkParser.prototype.GetTitle = function(responseText){
-    return ParseString(responseText, "id=\"btAsinTitle\"", "<span style=\"padding-left: 0\">", '<span');
+    return responseText.find('#btAsinTitle>span').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    })[0].nodeValue.trim();
 };
 AmazonCoUkParser.prototype.GetDescription = function(responseText){
-    return $(responseText).find("#outer_postBodyPS").text().trim();
+    return responseText.find("#outer_postBodyPS").text().trim();
 };
 AmazonCoUkParser.prototype.GetKindleEditionRow = function(resultItem) {
     var retval;
@@ -103,7 +105,7 @@ AmazonCoUkParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, u
     var path = url.split("/");
     if(path.length > 5){
         this.GetResponseTextFromAmazonComParser(path[5], function(responseText){
-             return callback((responseText!==null)?$(responseText).find('#main-image').attr('rel'):"");
+             return callback((responseText!==null) ? responseText.find('#main-image').attr('rel') : '');
         });
         return;
     }
@@ -117,11 +119,11 @@ AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCod
 };
 
 AmazonCoUkParser.prototype.GetImageUrlSrc = function(responseText) {
-    return $(responseText).find('#prodImage').attr('src');
+    return responseText.find('#prodImage').attr('src');
 };
 
 AmazonCoUkParser.prototype.GetReviews = function(responseText) {
-    var rl_reviews = $(responseText).find("#acr .acrCount a:first");
+    var rl_reviews = responseText.find("#acr .acrCount a:first");
     if (rl_reviews.length)
         return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
     else
@@ -129,7 +131,7 @@ AmazonCoUkParser.prototype.GetReviews = function(responseText) {
 };
 
 AmazonCoUkParser.prototype.GetRating = function(responseText){
-    var ratingString = $(responseText).find("#revSum .acrRating:contains('out of')");
+    var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };
