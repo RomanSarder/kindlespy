@@ -704,6 +704,7 @@ function UpdateTable(obj)
         $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');
         $('#main-header').html(BuildHeaderHtml(num));
         SetupHeader(obj[0].Category, obj[0].CategoryKind);
+        SetupFooter(obj[0].CategoryKind);
 
         SetupClickListeners();
     });

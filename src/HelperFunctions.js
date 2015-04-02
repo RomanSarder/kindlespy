@@ -165,6 +165,20 @@ function SetupHeader(category, categoryKind){
     $('#BestSellerLink').html('Author Titles');
 }
 
+function SetupFooter(categoryKind){
+    $('#Conclusion').hide();
+    $('#AdPanel').hide();
+    if (IsBestSellersPageFromCategoryKind(categoryKind)){
+        $('#Conclusion').show();
+        return;
+    }
+    if(IsSearchPageFromCategoryKind(categoryKind)){
+        $('#Conclusion').show();
+        return;
+    }
+    $('#AdPanel').show();
+}
+
 function BuildHeaderHtml(rankTrackingNum){
     var headerHtml = '<div style="float:left;font-size:14px;padding-left:11px;" id="CategoryKind"></div>' +
         '<div style="float:left;font-size:14px;padding-left:6px;font-weight:bold" id="title"></div>' +
