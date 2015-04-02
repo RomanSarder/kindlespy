@@ -292,6 +292,7 @@ function processWhenDone() {
 function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, reviews, category, categoryKind, callback)
 {
     callback = ValueOrDefault(callback, function(){});
+    if (categoryKind == 'Search' && category != SearchKeyword) return;
     var parser = new BookPageParser(url);
     if(parser.isNotValid()) return callback();
     parser.GetBookData(url, price, reviews, function(pageData) {

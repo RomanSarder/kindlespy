@@ -48,6 +48,7 @@
                 "src/BestSellersPage.js",
                 "src/AuthorPage.js",
                 "src/SearchResultsPage.js",
+                "src/SearchPageParser.js",
                 "src/AuthorSearchResultsPage.js",
                 "src/KindleEbookEvent.js",
                 "src/AsyncRunner.js"
