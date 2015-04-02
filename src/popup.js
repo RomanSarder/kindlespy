@@ -1,7 +1,6 @@
 var obj = [];
 var clouds = [];
 var CurrentPageUrl = "";
-var refreshed = false;
 var ActiveTab = new MainTab();
 var IsErrorWindow = false;
 var SiteParser;
@@ -124,7 +123,7 @@ function AutoAddFunc()
         SetupHeader(obj[0].Category, obj[0].CategoryKind);
 
         if (!IsErrorWindow) {
-            if (!refreshed && (ActiveTab.IsPaged)) {
+            if (ActiveTab.IsPaged) {
                 ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
                 if(result.isPulling) $('.img-load').show();
                 else {
@@ -135,12 +134,8 @@ function AutoAddFunc()
             frun();
         }
     });
-
-    if (!refreshed)
-    {
-        setTimeout(AutoAddFunc, 1000);
-    }
-}
+    setTimeout(AutoAddFunc, 1000);
+  }
 
 function wordSort(a, b)
 {
@@ -598,17 +593,21 @@ function SetupClickListeners(){
         RankTrackingListShow();
     });
 
-    var refreshButton = $('#refresh');
+    $('#search').click(function() {
 
-    refreshButton.click(function() {
-        var mainTab = new MainTab();
-        mainTab.PageNum = 1;
-        mainTab.SavePageNum();
-        var keywordAnalysisTab = new KeywordAnalysisTab();
-        keywordAnalysisTab.PageNum = 1;
-        keywordAnalysisTab.SavePageNum();
-        location.reload();
     });
+
+   // var refreshButton = $('#refresh');
+
+//    refreshButton.click(function() {
+//        var mainTab = new MainTab();
+//        mainTab.PageNum = 1;
+//        mainTab.SavePageNum();
+//        var keywordAnalysisTab = new KeywordAnalysisTab();
+//        keywordAnalysisTab.PageNum = 1;
+//        keywordAnalysisTab.SavePageNum();
+//        location.reload();
+//    });
     var linkKwdAnalysis = $("#KeywordAnalysis");
     linkKwdAnalysis.click(function() {
         ActiveTab = new KeywordAnalysisTab();
@@ -688,10 +687,10 @@ function checkIsDataLoaded(){
 
             LoadAdvertisementBanner();
 
-            var link5 = $('#refresh');
-            link5.click(function() {
-                frun();
-            });
+//            var link5 = $('#refresh');
+//            link5.click(function() {
+//                frun();
+//            });
         }
     });
 }
