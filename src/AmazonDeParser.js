@@ -7,7 +7,6 @@ function AmazonDeParser(){
     this.MainUrl = AmazonDeParser.MainUrl;
     this.Region = AmazonDeParser.Region;
     this.ParamUrlBestSellers = "530886031";
-    this.AmazonBestSellersPattern = "Amazon Bestseller-Rang";
     this.AreYouAnAuthorPattern = "Sind Sie ein Autor";
     this.Free = 'Gratis';
     this.CurrencySign = "&euro;";

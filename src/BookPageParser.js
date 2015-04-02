@@ -95,32 +95,15 @@ BookPageParser.prototype.GetPrice = function(responseText) {
 };
 
 BookPageParser.prototype.GetSalesRank = function(responseText) {
-    if (typeof responseText === "undefined" || responseText === "") return '0';
+    if (responseText === undefined || responseText.length == 0) return '0';
 
     // when page refreshed it can be undefined
     if (this._siteParser === undefined) return '0';
-    var szPattern = this._siteParser.AmazonBestSellersPattern;
-    var pos = responseText.indexOf(szPattern);
-
-    if (typeof pos === "undefined" || pos < 0) return '0';
-
-    var szSalesRank = responseText.substr(pos + szPattern.length);
-    szPattern = '>';
-    pos = szSalesRank.indexOf(szPattern);
-
-    if (typeof pos === "undefined" || pos < 0) return "0";
-
-    var szSalesRank = szSalesRank.substr(pos + szPattern.length);
-    szSalesRank = szSalesRank.trim();
-    var szTmp = szSalesRank.split(' ');
-    for (var i = 0; i < szTmp.length; i++) {
-        if (szTmp[i].indexOf(this._siteParser.NumberSign) >= 0) {
-            szSalesRank = szTmp[i].substr(szTmp[i].indexOf(this._siteParser.NumberSign) + this._siteParser.NumberSign.length);
-            return szSalesRank;
-        }
-    }
-
-    return '0';
+    var salesRankString = responseText.find("#SalesRank").contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    })[1].nodeValue.trim();
+    if(( salesRankString === undefined) || (salesRankString == "")) return '0';
+    return salesRankString.substring(salesRankString.indexOf(this._siteParser.NumberSign) + this._siteParser.NumberSign.length, salesRankString.indexOf(' '));
 };
 
 BookPageParser.prototype.GetEstSale = function(salesRank) {
@@ -177,7 +160,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
         if (!reviews) reviews = _this.GetReviews(jqResponseText);
         if (!price) price = _this.GetPrice(jqResponseText);
 
-        var entrySalesRank = _this.GetSalesRank(responseText);
+        var entrySalesRank = _this.GetSalesRank(jqResponseText);
         var entryEstSale = _this.GetEstSale(entrySalesRank);
         var realPrice = _this._siteParser.ParsePrice(price);
         var entrySalesRecv = _this.GetSalesRecv(entryEstSale, realPrice);

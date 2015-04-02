@@ -7,7 +7,6 @@ function AmazonFrParser(){
     this.MainUrl = AmazonFrParser.MainUrl;
     this.Region = AmazonFrParser.Region;
     this.ParamUrlBestSellers = "695398031";
-    this.AmazonBestSellersPattern = "Classement des meilleures ventes d'Amazon";
     this.AreYouAnAuthorPattern = "Etes-vous un auteur";
     this.Free = 'Gratuit';
     this.CurrencySign = "&euro;";

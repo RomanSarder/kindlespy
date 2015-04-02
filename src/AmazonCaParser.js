@@ -7,7 +7,6 @@ function AmazonCaParser(){
     this.MainUrl = AmazonCaParser.MainUrl;
     this.Region = AmazonCaParser.Region;
     this.ParamUrlBestSellers = "2980423011";
-    this.AmazonBestSellersPattern = "Amazon Bestsellers Rank";
     this.Free = 'Free';
     this.CurrencySign = "$";
     this.CurrencySignForExport = "$";

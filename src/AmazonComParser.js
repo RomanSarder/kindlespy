@@ -7,7 +7,6 @@ function AmazonComParser(){
     this.MainUrl = AmazonComParser.MainUrl;
     this.Region = AmazonComParser.Region;
     this.ParamUrlBestSellers = "341689031";
-    this.AmazonBestSellersPattern = "Amazon Best Sellers Rank";
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.Free = 'Free';
     this.CurrencySign = "$";

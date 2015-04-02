@@ -7,7 +7,6 @@ function AmazonCoUkParser(){
     this.MainUrl = AmazonCoUkParser.MainUrl;
     this.Region = AmazonCoUkParser.Region;
     this.ParamUrlBestSellers = "154606011";
-    this.AmazonBestSellersPattern = "Amazon Bestsellers Rank";
     this.AreYouAnAuthorPattern = "Are You an Author";
     this.Free = 'Free';
     this.CurrencySign = "&pound;";
