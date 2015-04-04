@@ -594,27 +594,115 @@ function SetupClickListeners(){
     });
 
     $('#search').click(function() {
-
+        ActiveTab = new SearchKeywordsTab();
+        SearchKeywordsPage();
     });
 
-   // var refreshButton = $('#refresh');
-
-//    refreshButton.click(function() {
-//        var mainTab = new MainTab();
-//        mainTab.PageNum = 1;
-//        mainTab.SavePageNum();
-//        var keywordAnalysisTab = new KeywordAnalysisTab();
-//        keywordAnalysisTab.PageNum = 1;
-//        keywordAnalysisTab.SavePageNum();
-//        location.reload();
-//    });
     var linkKwdAnalysis = $("#KeywordAnalysis");
     linkKwdAnalysis.click(function() {
         ActiveTab = new KeywordAnalysisTab();
         KwdAnalysisListShow();
     });
 }
+/**********************************************************/
+function SearchKeywordsPage() {
+    var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
+    var tableHead = "<label></label><label>Competition</label><label>Full Results</label>";
+    var info = '<div class="search-panel"><input id ="go-search" type="button" value="Find" style="float: right"/><div style="overflow: hidden; padding-right: .5em;"><input id="search-text" type="text" style="width: 100%;"/></div>';
+    $('#main-header').html('');
+    $('#main-content').html(ContentHtml);
+    $('.info.list_books').html(info);
+    resetCss();
+    $('#main-header').show();
+    $('#main-content').show();
+    $('#TrackedPanelFooter').show();
+    $('.info.list_books').show();
+    $('.table-head').show();
+    $('#AdPanel').show();
 
+    LoadAdvertisementBanner();
+
+    $('#data-body').css("overflow-y", "auto");
+    $('.table-head').html(tableHead);
+
+    $("#go-search").click(function()
+    {
+        ClearSearchKeywordsTable();
+        GetSearchKeywordsList(function(keywords){
+             GetSearchKeywordFullData(keywords, function(response){
+                 AppendSearchKeywordsTable(response);
+             });
+        });
+    });
+
+    $('table[name="data"]').find('tbody[id="data-body"]').on('click', '.keyword-analyze', function(){
+        ActiveTab = new MainTab();
+        var search = $(this).attr('keyword');
+        Popup.sendMessage({type: "start-analyze-search-keywords", keyword: search});
+    });
+
+}
+function GetSearchKeywordFullData(list, callback){
+    list.forEach(function(item){
+        GetCompetitionColor(item, function(color){
+                return callback({
+                    keyword: item,
+                    color: color
+                });
+        });
+    });
+}
+
+function ClearSearchKeywordsTable(){
+    $('table[name="data"]').find('tbody[id="data-body"]').html('');
+}
+
+function formattedKeywordString(searchedKeyword){
+    var keyword = $("#search-text").val();
+    var pos = searchedKeyword.indexOf(keyword)+keyword.length;
+    return '<b>' + searchedKeyword.substring(0,pos) + '</b>' + searchedKeyword.substring(pos);
+
+}
+
+function AppendSearchKeywordsTable(item){
+    var html = $('table[name="data"]').find('tbody[id="data-body"]').html();
+    html += "<tr>" +
+        "<td style=\"width:200px;padding-left:50px;text-align:left;\">" + formattedKeywordString(item.keyword) + "</td>" +
+        "<td style=\"width:85px;\"><div style='width:32px; height:27px; margin: -11 auto 0 auto;' class='bullet-" + item.color + "' ></div></td>" +
+        "<td style=\"width:85px;\"><a class = 'keyword-analyze' href='#' keyword = '" + item.keyword + "'>Analyze</a></td>" +
+        "</tr>";
+
+    $('table[name="data"]').find('tbody[id="data-body"]').html(html);
+}
+
+function GetSearchKeywordsList(callback){
+    var q = encodeURI($("#search-text").val());
+    $.ajax({
+        url: SiteParser.CompletionUrl + "&q=" + q,
+        method: "GET",
+        dataType: "json",
+        success: function (responseJson) {
+            if(responseJson === undefined || responseJson.length < 2) return callback([]);
+            return callback(responseJson[1]);
+        },
+        error: function (obj, textStatus, errorThrown){
+            console.error(textStatus + "  " + errorThrown);
+            return callback([]);
+        }
+    });
+
+}
+function GetCompetitionColor(keyword, callback){
+    var pageUrl = getSearchUrl(keyword);
+    $.get(pageUrl, function(responseText){
+        var totalResults = parseInt(SiteParser.GetTotalSearchResult($(responseText)).replace(/,/g,''));
+        if (totalResults < 500) return callback('green');
+        if (totalResults < 1500) return callback('yellow');
+        return callback('red');
+    });
+
+}
+/****************************************************************************************/
 var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;

@@ -55,15 +55,17 @@ function ParseString(text, pattern, startChar, endChar)
  * @returns {object} SiteParser
   */
 function GetSiteParser(url){
-    if(url.indexOf(AmazonComParser.MainUrl)!=-1)
+    var fullUrl = new URL(url);
+    var hostname = fullUrl.hostname;
+    if(hostname.indexOf(AmazonComParser.Zone)!=-1)
         return new AmazonComParser();
-    if(url.indexOf(AmazonCoUkParser.MainUrl)!=-1)
+    if(hostname.indexOf(AmazonCoUkParser.Zone)!=-1)
         return new AmazonCoUkParser();
-    if(url.indexOf(AmazonDeParser.MainUrl)!=-1)
+    if(hostname.indexOf(AmazonDeParser.Zone)!=-1)
         return new AmazonDeParser();
-    if(url.indexOf(AmazonFrParser.MainUrl)!=-1)
+    if(hostname.indexOf(AmazonFrParser.Zone)!=-1)
         return new AmazonFrParser();
-    if(url.indexOf(AmazonCaParser.MainUrl)!=-1)
+    if(hostname.indexOf(AmazonCaParser.Zone)!=-1)
         return new AmazonCaParser();
 }
 
@@ -208,4 +210,8 @@ function trimCurrentUrl(currentPageUrl){
 
 function isTop100Free(){
     return location.href.indexOf('tf=1') != -1;
+}
+
+function getSearchUrl(keyword){
+    return SiteParser.MainUrl + "/s/url=search-alias%3Ddigital-text&field-keywords=" + encodeURI(keyword);
 }

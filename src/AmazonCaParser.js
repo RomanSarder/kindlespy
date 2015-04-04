@@ -4,7 +4,8 @@
  */
 
 function AmazonCaParser(){
-    this.MainUrl = AmazonCaParser.MainUrl;
+    this.MainUrl = "http://www.amazon." + AmazonCaParser.Zone;
+    this.CompletionUrl = "http://" + "completion.amazon." + AmazonCaParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
     this.Region = AmazonCaParser.Region;
     this.ParamUrlBestSellers = "2980423011";
     this.Free = 'Free';
@@ -54,7 +55,7 @@ function AmazonCaParser(){
     ];
 }
 
-AmazonCaParser.MainUrl = "http://www.amazon.ca";
+AmazonCaParser.Zone = "ca";
 AmazonCaParser.Region = "CA";
 
 AmazonCaParser.prototype.GetTitle = function(responseText){

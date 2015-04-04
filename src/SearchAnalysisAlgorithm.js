@@ -29,6 +29,12 @@ SearchAnalysisAlgorithm.prototype.GetCompetitionColor = function(callback){
     });
 };
 
+function getCompetitionColor(totalResults, callback){
+    if (totalResults < 500) return callback('green');
+    if (totalResults < 1500) return callback('yellow');
+    return callback('red');
+}
+
 SearchAnalysisAlgorithm.prototype.SetBulletColor = function(object){
     $('#bullet-1').removeClass().addClass('bullet-' + this.GetPopularityColor(object.salesRankConclusionValue));
     $('#bullet-2').removeClass().addClass('bullet-' + this.GetPotentialColor(object.monthlyRevBook));

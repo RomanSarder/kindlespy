@@ -4,7 +4,8 @@
  */
 
 function AmazonCoUkParser(){
-    this.MainUrl = AmazonCoUkParser.MainUrl;
+    this.MainUrl = "http://www.amazon." + AmazonCoUkParser.Zone;
+    this.CompletionUrl = "http://" + "completion.amazon." + AmazonCoUkParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
     this.Region = AmazonCoUkParser.Region;
     this.ParamUrlBestSellers = "154606011";
     this.AreYouAnAuthorPattern = "Are You an Author";
@@ -55,7 +56,7 @@ function AmazonCoUkParser(){
     ];
 }
 
-AmazonCoUkParser.MainUrl = "http://www.amazon.co.uk";
+AmazonCoUkParser.Zone = "co.uk";
 AmazonCoUkParser.Region = "UK";
 
 AmazonCoUkParser.prototype.GetTitle = function(responseText){

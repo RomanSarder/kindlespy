@@ -127,6 +127,11 @@ function onMessageReceived(request, sender, callback){
     if(request.page !== undefined)
         return callback(startPulling(request.page));
 
+    if ("start-analyze-search-keywords" === request.type)
+    {
+        return callback(startPullingSearchPage(request.keyword));
+    }
+
     if ("remove-settings" === request.type)
     {
         RemoveSettings(request.Url, request.ParentUrl, request.IsFree);
@@ -233,6 +238,11 @@ var ParentUrl;
 var SiteParser;
 var BookStore;
 var SearchKeyword = '';
+var ParserAsyncRunner = new AsyncRunner();
+ParserAsyncRunner.itemFinished = function(){
+    ContentScript.sendMessage({type:"set-IsPulling", IsPulling: false});
+};
+
 
 $(window).ready(function () {
     var Url = location.href;
@@ -355,3 +365,9 @@ function startPulling(pageNumber){
         ContentScript.sendMessage({type: "set-type-page", TYPE: 'single'});
     }
 }
+ function startPullingSearchPage(keyword){ //??
+     SearchKeyword = keyword;
+     var url = getSearchUrl(keyword);
+     new SearchResultsPage().LoadData(SiteParser, url, keyword);
+     ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
+ }

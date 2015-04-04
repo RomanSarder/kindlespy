@@ -47,7 +47,7 @@ BestSellersPage.prototype.ParsePage = function(responseText, parentUrl){
     ContentScript.sendMessage({type:"get-settings"}, function(response){
         url.forEach(function(item, i) {
             if(url[i] !== undefined){
-                AsyncRunner.start(function(callback){
+                ParserAsyncRunner.start(function(callback){
                     function wrapper(){
                         parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
                     }

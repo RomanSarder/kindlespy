@@ -4,7 +4,8 @@
  */
 
 function AmazonComParser(){
-    this.MainUrl = AmazonComParser.MainUrl;
+    this.MainUrl = "http://www.amazon." + AmazonComParser.Zone;
+    this.CompletionUrl = "http://" + "completion.amazon." + AmazonComParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
     this.Region = AmazonComParser.Region;
     this.ParamUrlBestSellers = "341689031";
     this.AreYouAnAuthorPattern = "Are You an Author";
@@ -55,7 +56,7 @@ function AmazonComParser(){
     ];
 }
 
-AmazonComParser.MainUrl = "http://www.amazon.com";
+AmazonComParser.Zone = "com";
 AmazonComParser.Region = "USA";
 
 AmazonComParser.prototype.GetTitle = function(responseText){

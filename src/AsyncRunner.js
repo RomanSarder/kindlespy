@@ -3,22 +3,20 @@
  */
 
 // AsyncRunner class
-var AsyncRunner = {
-    itemsInProgress: 0,
-    finished: function(){
-    },
-    itemLoaded: function(){
-        ContentScript.sendMessage({type:"set-IsPulling", IsPulling: false});
-    },
-    start: function(worker){
-        var _this = this;
-        _this.itemsInProgress++;
-        worker(function(){
-            _this.itemsInProgress--;
-            _this.itemLoaded();
-            if(_this.itemsInProgress == 0) {
-                _this.finished();
-            }
-        });
-    }
+function AsyncRunner() {
+    this.itemsInProgress = 0;
+    this.finished = function(){};
+    this.itemFinished = function(){};
+}
+
+AsyncRunner.prototype.start = function(worker){
+    var _this = this;
+    _this.itemsInProgress++;
+    worker(function(){
+        _this.itemsInProgress--;
+        _this.itemFinished();
+        if(_this.itemsInProgress == 0) {
+            _this.finished();
+        }
+    });
 };

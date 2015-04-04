@@ -71,7 +71,7 @@ AuthorPage.prototype.ParsePage = function(startIndex, maxResults, responseText, 
     url.forEach(function(item, i) {
         if (url[i] !== undefined && url[i].length > 0
             && price[i] !== undefined && price[i].length > 0){
-            AsyncRunner.start(function(callback){
+            ParserAsyncRunner.start(function(callback){
                 function wrapper(){
                     parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
                 }

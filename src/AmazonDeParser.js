@@ -4,7 +4,8 @@
  */
 
 function AmazonDeParser(){
-    this.MainUrl = AmazonDeParser.MainUrl;
+    this.MainUrl = "http://www.amazon." + AmazonDeParser.Zone;
+    this.CompletionUrl = "http://" + "completion.amazon." + AmazonDeParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
     this.Region = AmazonDeParser.Region;
     this.ParamUrlBestSellers = "530886031";
     this.AreYouAnAuthorPattern = "Sind Sie ein Autor";
@@ -55,7 +56,7 @@ function AmazonDeParser(){
     ];
 }
 
-AmazonDeParser.MainUrl = "http://www.amazon.de";
+AmazonDeParser.Zone = "de";
 AmazonDeParser.Region = "DE";
 
 AmazonDeParser.prototype.GetTitle = function(responseText){

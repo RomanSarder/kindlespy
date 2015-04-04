@@ -468,3 +468,10 @@ td.wow a:hover
 .img-load img {
     height: 15px;
 }
+
+/*Search panel for keyword*/
+.search-panel{
+    width:600px;
+    border: 3px solid #EAEDE9;
+    border-radius: 5px;
+}

@@ -50,8 +50,8 @@
                 "src/SearchResultsPage.js",
                 "src/SearchPageParser.js",
                 "src/AuthorSearchResultsPage.js",
-                "src/KindleEbookEvent.js",
-                "src/AsyncRunner.js"
+                "src/AsyncRunner.js",
+                "src/KindleEbookEvent.js"
             ]
         }
     ],
