@@ -6,17 +6,22 @@ function BestSellersPage(){
         return BestSellersPage.prototype._singletonInstance;
     BestSellersPage.prototype._singletonInstance = this;
 }
-BestSellersPage.prototype.LoadData = function(pageNumber, parentUrl){
+
+BestSellersPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
+    callback = ValueOrDefault(callback, function(){});
     var _this = this;
     var pageUrl = parentUrl + "?pg=" + pageNumber;
     if(isTop100Free())
         pageUrl += '&tf=1';
     $.get(pageUrl, function(responseText){
-        _this.ParsePage(responseText, ParentUrl);
+        // no need jQuery here
+        //var jqResponseText = parseHtmlToJquery(responseText);
+        _this.ParsePage(pullingToken, responseText, ParentUrl);
+        return callback();
     });
 };
 
-BestSellersPage.prototype.ParsePage = function(responseText, parentUrl){
+BestSellersPage.prototype.ParsePage = function(pullingToken, responseText, parentUrl){
     var pattern = 'class="zg_itemImmersion"';
     var str = responseText;
     var pos = str.indexOf(pattern);
@@ -44,17 +49,15 @@ BestSellersPage.prototype.ParsePage = function(responseText, parentUrl){
         index++;
     }
 
-    ContentScript.sendMessage({type:"get-settings"}, function(response){
-        url.forEach(function(item, i) {
-            if(url[i] !== undefined){
-                ParserAsyncRunner.start(function(callback){
-                    function wrapper(){
-                        parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
-                    }
-                    setTimeout(wrapper, i*1000);
-                })
-            }
-        });
+    url.forEach(function(item, i) {
+        if(url[i] !== undefined){
+            ParserAsyncRunner.start(function(callback){
+                function wrapper(){
+                    parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
+                }
+                setTimeout(wrapper, i*1000);
+            })
+        }
     });
 };
 

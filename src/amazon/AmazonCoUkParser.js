@@ -60,16 +60,18 @@ AmazonCoUkParser.Zone = "co.uk";
 AmazonCoUkParser.Region = "UK";
 
 AmazonCoUkParser.prototype.GetTitle = function(responseText){
-    return responseText.find('#btAsinTitle>span').contents().filter(function(){
+    var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
-    })[0].nodeValue.trim();
+    });
+    if (titleNodes === undefined || titleNodes.length == 0) return '';
+    return titleNodes[0].nodeValue.trim();
 };
-AmazonCoUkParser.prototype.GetDescription = function(responseText){
-    return responseText.find("#outer_postBodyPS").text().trim();
+AmazonCoUkParser.prototype.GetDescription = function(jqNodes){
+    return jqNodes.find("#outer_postBodyPS").text().trim();
 };
-AmazonCoUkParser.prototype.GetKindleEditionRow = function(resultItem) {
+AmazonCoUkParser.prototype.GetKindleEditionRow = function(jqNode) {
     var retval;
-    $(resultItem).find("li").each(function() {
+    jqNode.find("li").each(function() {
         if($(this).text().indexOf("Kindle Edition")>0)
             retval= $(this);
         else if($(this).text().indexOf("Kindle Purchase")>0)
@@ -104,8 +106,9 @@ AmazonCoUkParser.prototype.FormatPrice = function(price) {
 AmazonCoUkParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
     var path = url.split("/");
     if(path.length > 5){
-        this.GetResponseTextFromAmazonComParser(path[5], function(responseText){
-             return callback((responseText!==null) ? responseText.find('#main-image').attr('rel') : '');
+        this.GetResponseTextFromAmazonComParser(path[5], function(htmlFromAmazonCom){
+            var jqHtml = parseHtmlToJquery(htmlFromAmazonCom);
+             return callback((jqHtml!==null) ? jqHtml.find('#main-image').attr('rel') : '');
         });
         return;
     }

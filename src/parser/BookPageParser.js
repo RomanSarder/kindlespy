@@ -2,18 +2,18 @@
  * Created by Andrey Klochkov on 12.10.2014.
  */
 
-function BookPageParser(url){
-    this._siteParser = GetSiteParser(url);
+function BookPageParser(url, siteParser){
+    this._siteParser = siteParser ? siteParser : GetSiteParser(url);
 }
 
 BookPageParser.prototype.isNotValid = function (){
     return this._siteParser === undefined;
 };
 
-BookPageParser.prototype.GetDateOfPublication = function(responseText, callback) {
-    var pubdate = responseText.find('#pubdate').val();
+BookPageParser.prototype.GetDateOfPublication = function(jqNodes, callback) {
+    var pubdate = jqNodes.find('#pubdate').val();
     if(pubdate === undefined){
-        var publisherElement = responseText.find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
+        var publisherElement = jqNodes.find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
         var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
 
         return callback(dateOfPublication);
@@ -33,8 +33,8 @@ BookPageParser.prototype.GetDateOfPublication = function(responseText, callback)
     });
 };
 
-BookPageParser.prototype.GetAuthorTitle = function(responseText) {
-    return responseText.find('#productTitle').text().trim();
+BookPageParser.prototype.GetAuthorTitle = function(jqNodes) {
+    return jqNodes.find('#productTitle').text().trim();
 };
 
 BookPageParser.prototype.GetGoogleSearchUrlByTitleAndAuthor = function(title, author){
@@ -45,63 +45,65 @@ BookPageParser.prototype.GetGoogleSearchUrlByTitleAndAuthor = function(title, au
     return baseUrl + "?q=" + title + "+" + author + "&oq=" + title + "+" + author + "#safe=off&q="+ title + "+" + author;
 };
 
-BookPageParser.prototype.GetGoogleImageSearchUrl = function(responseText, url, callback){
+BookPageParser.prototype.GetGoogleImageSearchUrl = function(jqNodes, url, callback){
     var googleUrl = "https://www.google.com/";
-    if(responseText === undefined || responseText.length == 0) {
+    if(jqNodes === undefined || jqNodes.length == 0) {
         return callback(googleUrl);
     }
-    this._siteParser.GetGoogleImageSearchUrlRel(responseText, url, function(rel){
+    this._siteParser.GetGoogleImageSearchUrlRel(jqNodes, url, function(rel){
         if (rel === undefined || rel.length<1)
             return callback(googleUrl);
         return callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
     });
 };
 
-BookPageParser.prototype.GetImageUrl = function(responseText){
-    if(responseText === undefined || responseText.length == 0) return '';
-    var src = this._siteParser.GetImageUrlSrc(responseText);
+BookPageParser.prototype.GetImageUrl = function(jqNodes){
+    if(jqNodes === undefined || jqNodes.length == 0) return '';
+    var src = this._siteParser.GetImageUrlSrc(jqNodes);
     if (src === undefined || src.length < 1) return '';
     return src;
 };
 
-BookPageParser.prototype.GetTitle = function(responseText) {
-    if(responseText === undefined || responseText.length == 0) return '';
-    return this._siteParser.GetTitle(responseText);
+BookPageParser.prototype.GetTitle = function(jqNodes) {
+    if(jqNodes === undefined || jqNodes.length == 0) return '';
+    return this._siteParser.GetTitle(jqNodes);
 };
 
-BookPageParser.prototype.GetDescription = function(responseText) {
-    if(responseText === undefined || responseText.length == 0) return '';
-    return this._siteParser.GetDescription(responseText);
+BookPageParser.prototype.GetDescription = function(jqNodes) {
+    if(jqNodes === undefined || jqNodes.length == 0) return '';
+    return this._siteParser.GetDescription(jqNodes);
 };
 
-BookPageParser.prototype.GetRating = function(responseText) {
-    if(responseText === undefined || responseText.length == 0) return '';
-    return this._siteParser.GetRating(responseText);
+BookPageParser.prototype.GetRating = function(jqNodes) {
+    if(jqNodes === undefined || jqNodes.length == 0) return '';
+    return this._siteParser.GetRating(jqNodes);
 };
 
-BookPageParser.prototype.GetReviews = function(responseText) {
-    if(responseText === undefined || responseText.length == 0) return '';
-    return this._siteParser.GetReviews(responseText);
+BookPageParser.prototype.GetReviews = function(jqNodes) {
+    if(jqNodes === undefined || jqNodes.length == 0) return '';
+    return this._siteParser.GetReviews(jqNodes);
 };
 
-BookPageParser.prototype.GetPrice = function(responseText) {
-    var priceBlock = responseText.find('#priceBlock b.priceLarge');
+BookPageParser.prototype.GetPrice = function(jqNodes) {
+    var priceBlock = jqNodes.find('#priceBlock b.priceLarge');
     if(priceBlock && priceBlock.text().trim() !== '') {
         if(priceBlock.text().trim() == "Free") return this._siteParser.FormatPrice("0" + this._siteParser.DecimalSeparator + "00");
          return priceBlock.text().trim();
     }
-    priceBlock = responseText.find('#kindle_meta_binding_winner .price');
+    priceBlock = jqNodes.find('#kindle_meta_binding_winner .price');
     return priceBlock ? priceBlock.text().trim() : "";
 };
 
-BookPageParser.prototype.GetSalesRank = function(responseText) {
-    if (responseText === undefined || responseText.length == 0) return '0';
+BookPageParser.prototype.GetSalesRank = function(jqNodes) {
+    if (jqNodes === undefined || jqNodes.length == 0) return '0';
 
     // when page refreshed it can be undefined
     if (this._siteParser === undefined) return '0';
-    var salesRankString = responseText.find("#SalesRank").contents().filter(function(){
+    var salesRankNodes = jqNodes.find("#SalesRank").contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
-    })[1].nodeValue.trim();
+    });
+    if(salesRankNodes === undefined || salesRankNodes.length < 2) return '0';
+    var salesRankString = salesRankNodes[1].nodeValue.trim();
     if(( salesRankString === undefined) || (salesRankString == "")) return '0';
     return salesRankString.substring(salesRankString.indexOf(this._siteParser.NumberSign) + this._siteParser.NumberSign.length, salesRankString.indexOf(' '));
 };
@@ -124,15 +126,15 @@ BookPageParser.prototype.GetSalesRecv = function(estsales, price) {
     return estsales * price;
 };
 
-BookPageParser.prototype.GetPrintLength = function(responseText) {
-    return parseInt(responseText.find('#pageCountAvailable span').text()).toString();
+BookPageParser.prototype.GetPrintLength = function(jqNodes) {
+    return parseInt(jqNodes.find('#pageCountAvailable span').text()).toString();
 };
 
-BookPageParser.prototype.GetAuthor = function(responseText) {
-    var author = responseText.find('.contributorNameTrigger>a').text().trim();
+BookPageParser.prototype.GetAuthor = function(jqNodes) {
+    var author = jqNodes.find('.contributorNameTrigger>a').text().trim();
     if (author == ''){
-        var asin = responseText.find('.contributorNameTrigger').attr('asin');
-        author = responseText.find('#contributorContainer' + asin + ' b:first').text().trim();
+        var asin = jqNodes.find('.contributorNameTrigger').attr('asin');
+        author = jqNodes.find('#contributorContainer' + asin + ' b:first').text().trim();
     }
 
     return author;
@@ -142,7 +144,8 @@ BookPageParser.prototype.GetSalesRankFromUrl = function(url, callback) {
     var _this = this;
 
     $.get(url, function (responseText) {
-        var salesRank = _this.GetSalesRank(responseText);
+        var jqResponse = parseHtmlToJquery(responseText);
+        var salesRank = _this.GetSalesRank(jqResponse);
         if (!salesRank) salesRank = "1";
         callback(salesRank);
     });
@@ -152,7 +155,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
     var _this = this;
 
     $.get(url, function (responseText) {
-        var jqResponseText = $(responseText);
+        var jqResponseText = parseHtmlToJquery(responseText);
         var entryTitle = _this.GetTitle(jqResponseText);
         if (entryTitle == '') entryTitle = _this.GetAuthorTitle(jqResponseText);
         if (entryTitle === undefined) return;

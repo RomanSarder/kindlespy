@@ -56,21 +56,23 @@ function AmazonFrParser(){
     ];
 }
 
-AmazonFrParser.MainUrl = "fr";
+AmazonFrParser.Zone = "fr";
 AmazonFrParser.Region = "FR";
 
 AmazonFrParser.prototype.GetTitle = function(responseText){
-    return responseText.find('#btAsinTitle>span').contents().filter(function(){
+    var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
-    })[0].nodeValue.trim();
+    });
+    if (titleNodes === undefined || titleNodes.length == 0) return '';
+    return titleNodes[0].nodeValue.trim();
 };
-AmazonFrParser.prototype.GetDescription = function(responseText){
-    return responseText.find("#productDescription .content").text().trim();
+AmazonFrParser.prototype.GetDescription = function(jqNodes){
+    return jqNodes.find("#productDescription .content").text().trim();
 };
-AmazonFrParser.prototype.GetKindleEditionRow = function(resultItem) {
+AmazonFrParser.prototype.GetKindleEditionRow = function(jqNode) {
     var _this = this;
     var retval;
-    $(resultItem).find("li").each(function() {
+    jqNode.find("li").each(function() {
         if($(this).text().indexOf(_this.SearchPattern)>0)
             retval= $(this);
     });

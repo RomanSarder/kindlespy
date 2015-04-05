@@ -9,14 +9,15 @@ function AuthorSearchResultsPage(){
     this.AuthorSearchResultsPager;
 }
 
-AuthorSearchResultsPage.prototype.LoadData = function(siteParser, parentUrl, callback){
+AuthorSearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
+    callback = ValueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.AuthorResultsNumber;
     if(_this.AuthorSearchResultsPager === undefined) {
         _this.AuthorSearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
-            var jqResponseText = $(responseText);
+            var jqResponseText = parseHtmlToJquery(responseText);
             var category = jqResponseText.find("#s-result-count > span > span").text().trim().replace(/"/g,'');
-            return new SearchPageParser().ParsePage(startFromIndex, maxResults, jqResponseText, parentUrl, category, siteParser, "Author");
+            return new SearchPageParser().ParsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, category, siteParser, "Author");
         }, function(url, page){
             return url + '&page=' + page;
         });

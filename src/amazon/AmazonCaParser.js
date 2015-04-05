@@ -59,13 +59,15 @@ AmazonCaParser.Zone = "ca";
 AmazonCaParser.Region = "CA";
 
 AmazonCaParser.prototype.GetTitle = function(responseText){
-    return responseText.find('#btAsinTitle>span').contents().filter(function(){
+    var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
-    })[0].nodeValue.trim();
+    });
+    if (titleNodes === undefined || titleNodes.length == 0) return '';
+    return titleNodes[0].nodeValue.trim();
 };
 
-AmazonCaParser.prototype.GetDescription = function(responseText){
-    return responseText.find(".productDescriptionWrapper").text().trim();
+AmazonCaParser.prototype.GetDescription = function(jqNodes){
+    return jqNodes.find(".productDescriptionWrapper").text().trim();
 };
 
 AmazonCaParser.prototype.ParsePrice = function(price) {

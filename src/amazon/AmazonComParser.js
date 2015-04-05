@@ -60,17 +60,20 @@ AmazonComParser.Zone = "com";
 AmazonComParser.Region = "USA";
 
 AmazonComParser.prototype.GetTitle = function(responseText){
-    return responseText.find('#btAsinTitle').contents().filter(function(){
+    var titleNodes = responseText.find('#btAsinTitle').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
-    })[0].nodeValue.trim();};
-
-AmazonComParser.prototype.GetDescription = function(responseText){
-    return responseText.find("#outer_postBodyPS").text().trim();
+    });
+    if (titleNodes === undefined || titleNodes.length == 0) return '';
+    return titleNodes[0].nodeValue.trim();
 };
 
-AmazonComParser.prototype.GetKindleEditionRow = function(resultItem) {
+AmazonComParser.prototype.GetDescription = function(jqNodes){
+    return jqNodes.find("#outer_postBodyPS").text().trim();
+};
+
+AmazonComParser.prototype.GetKindleEditionRow = function(jqNode) {
     var retval;
-    $(resultItem).find(".tp").find("tr").each(function() {
+    jqNode.find(".tp").find("tr").each(function() {
         if($(this).text().indexOf("Kindle Edition")>0)
             retval= $(this);
     });

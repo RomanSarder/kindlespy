@@ -60,16 +60,18 @@ AmazonDeParser.Zone = "de";
 AmazonDeParser.Region = "DE";
 
 AmazonDeParser.prototype.GetTitle = function(responseText){
-    return responseText.find('#btAsinTitle>span').contents().filter(function(){
+    var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
-    })[0].nodeValue.trim();
+    });
+    if (titleNodes === undefined || titleNodes.length == 0) return '';
+    return titleNodes[0].nodeValue.trim();
 };
-AmazonDeParser.prototype.GetDescription = function(responseText){
-    return responseText.find("#productDescription .content").text().trim();
+AmazonDeParser.prototype.GetDescription = function(jqNodes){
+    return jqNodes.find("#productDescription .content").text().trim();
 };
-AmazonDeParser.prototype.GetKindleEditionRow = function(resultItem) {
+AmazonDeParser.prototype.GetKindleEditionRow = function(jqNode) {
     var retval;
-    $(resultItem).find("li").each(function() {
+    jqNode.find("li").each(function() {
         if($(this).text().indexOf("Kindle Edition")>0 && $(this).text().indexOf("andere Formate")<0)
             retval= $(this);
         else if($(this).text().indexOf("Kindle-Kauf")>0)

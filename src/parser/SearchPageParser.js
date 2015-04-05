@@ -6,7 +6,7 @@ function SearchPageParser(){
 
 }
 
-SearchPageParser.prototype.ParsePage = function(startIndex, maxResults, responseText, parentUrl, category, siteParser, type)
+SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, category, siteParser, type)
 {
     var _this = this;
     var No = [];
@@ -19,9 +19,9 @@ SearchPageParser.prototype.ParsePage = function(startIndex, maxResults, response
     var counter = 0;
     var result;
 
-    var listItems = $.merge(responseText.find("#centerPlus").has('.a-fixed-left-grid-inner'),
-        responseText.find("#atfResults li").has('.a-fixed-left-grid-inner'));
-    listItems = $.merge(listItems, responseText.find("#btfResults li").has('.a-fixed-left-grid-inner'));
+    var listItems = $.merge(jqNodes.find("#centerPlus").has('.a-fixed-left-grid-inner'),
+        jqNodes.find("#atfResults li").has('.a-fixed-left-grid-inner'));
+    listItems = $.merge(listItems, jqNodes.find("#btfResults li").has('.a-fixed-left-grid-inner'));
 
     listItems.each(function() {
         if($(this).attr('id') !== 'result_'+(startIndex+index)
@@ -66,12 +66,12 @@ SearchPageParser.prototype.ParsePage = function(startIndex, maxResults, response
 
 //    if (typeof category === undefined)
 //    {
-//        category = ParseString(responseText, 'entityHeader', '>', '<');
+//        category = ParseString(jqNodes, 'entityHeader', '>', '<');
 //        var tmpSplit =category.split("by");
 //        if (tmpSplit.length > 1)
 //            category = tmpSplit[1];
 //    }
-    var totalResults = parseInt(siteParser.GetTotalSearchResult(responseText).replace(/,/g,''));
+    var totalResults = parseInt(siteParser.GetTotalSearchResult(jqNodes).replace(/,/g,''));
     ContentScript.sendMessage({type:"save-TotalResults", TotalResults: totalResults});
 
     url.forEach(function(item, i) {
@@ -79,7 +79,7 @@ SearchPageParser.prototype.ParsePage = function(startIndex, maxResults, response
             && price[i] !== undefined && price[i].length > 0){
             ParserAsyncRunner.start(function(callback){
                 function wrapper(){
-                    parseDataFromBookPageAndSend(No[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);
+                    parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);
                 }
                 setTimeout(wrapper, i*1000);
             })
@@ -87,4 +87,4 @@ SearchPageParser.prototype.ParsePage = function(startIndex, maxResults, response
     });
 
     return index;
-}
+};

@@ -20,25 +20,17 @@ SearchAnalysisAlgorithm.prototype.GetPotentialColor = function(monthlyRevBook){
     return 'green';
 };
 
-SearchAnalysisAlgorithm.prototype.GetCompetitionColor = function(callback){
-    Popup.sendMessage({type: "get-TotalResults"}, function(response){
-        var totalResults = parseInt(response.TotalResults);
-        if (totalResults < 500) return callback('green');
-        if (totalResults < 1500) return callback('yellow');
-        return callback('red');
-    });
+SearchAnalysisAlgorithm.prototype.GetCompetitionColor = function(totalResults){
+    if (totalResults < 500) return 'green';
+    if (totalResults < 1500) return 'yellow';
+    return 'red';
 };
 
-function getCompetitionColor(totalResults, callback){
-    if (totalResults < 500) return callback('green');
-    if (totalResults < 1500) return callback('yellow');
-    return callback('red');
-}
-
 SearchAnalysisAlgorithm.prototype.SetBulletColor = function(object){
+    var _this = this;
     $('#bullet-1').removeClass().addClass('bullet-' + this.GetPopularityColor(object.salesRankConclusionValue));
     $('#bullet-2').removeClass().addClass('bullet-' + this.GetPotentialColor(object.monthlyRevBook));
-    this.GetCompetitionColor(function(color){
-        $('#bullet-3').removeClass().addClass('bullet-' + color);
+    Popup.sendMessage({type: "get-TotalResults"}, function(response){
+        $('#bullet-3').removeClass().addClass('bullet-' + _this.GetCompetitionColor(parseInt(response.TotalResults)));
     });
 };

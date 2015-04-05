@@ -15,8 +15,7 @@
         "https://*/*"
     ],
     "background": {
-        "scripts": ["libs/jquery-2.0.3.min.js",
-                    "src/background.js"],
+        "scripts": ["src/background.js"],
         "persistent": false
     },
     "browser_action": {
@@ -35,22 +34,21 @@
             "run_at": "document_start",
             "js": [
                 "libs/jquery-2.0.3.min.js",
-                "libs/xpathjs.min.js",
-                "src/HelperFunctions.js",
-                "src/Pager.js",
-                "src/BookStorage.js",
-                "src/BookPageParser.js",
-                "src/AmazonComParser.js",
-                "src/AmazonCoUkParser.js",
-                "src/AmazonDeParser.js",
-                "src/AmazonFrParser.js",
-                "src/AmazonCaParser.js",
-                "src/BestSellersPage.js",
-                "src/AuthorPage.js",
-                "src/SearchResultsPage.js",
-                "src/SearchPageParser.js",
-                "src/AuthorSearchResultsPage.js",
-                "src/AsyncRunner.js",
+                "src/common/HelperFunctions.js",
+                "src/common/Pager.js",
+                "src/common/BookStorage.js",
+                "src/common/AsyncRunner.js",
+                "src/parser/BookPageParser.js",
+                "src/parser/SearchPageParser.js",
+                "src/amazon/AmazonComParser.js",
+                "src/amazon/AmazonCoUkParser.js",
+                "src/amazon/AmazonDeParser.js",
+                "src/amazon/AmazonFrParser.js",
+                "src/amazon/AmazonCaParser.js",
+                "src/page/BestSellersPage.js",
+                "src/page/AuthorPage.js",
+                "src/page/SearchResultsPage.js",
+                "src/page/AuthorSearchResultsPage.js",
                 "src/KindleEbookEvent.js"
             ]
         }

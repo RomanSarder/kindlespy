@@ -57,15 +57,16 @@ function ParseString(text, pattern, startChar, endChar)
 function GetSiteParser(url){
     var fullUrl = new URL(url);
     var hostname = fullUrl.hostname;
-    if(hostname.indexOf(AmazonComParser.Zone)!=-1)
+    if(hostname.indexOf('www.amazon.') == -1) return undefined;
+    if(hostname.indexOf(AmazonComParser.Zone) != -1)
         return new AmazonComParser();
-    if(hostname.indexOf(AmazonCoUkParser.Zone)!=-1)
+    if(hostname.indexOf(AmazonCoUkParser.Zone) != -1)
         return new AmazonCoUkParser();
-    if(hostname.indexOf(AmazonDeParser.Zone)!=-1)
+    if(hostname.indexOf(AmazonDeParser.Zone) != -1)
         return new AmazonDeParser();
-    if(hostname.indexOf(AmazonFrParser.Zone)!=-1)
+    if(hostname.indexOf(AmazonFrParser.Zone) != -1)
         return new AmazonFrParser();
-    if(hostname.indexOf(AmazonCaParser.Zone)!=-1)
+    if(hostname.indexOf(AmazonCaParser.Zone) != -1)
         return new AmazonCaParser();
 }
 
@@ -145,6 +146,17 @@ function IsSingleBookPage(Url){
     var fullUrl = Url.split("/");
     var mainUrl = fullUrl[0] +"//"+ fullUrl[2];
     return (mainUrl.indexOf(SiteParser.MainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
+}
+
+/**
+ * Parses html with replace of src tags to data-src
+ * @param html
+ * @returns {jQuery}
+ */
+function parseHtmlToJquery(html){
+    html = $.trim(html);
+    html = html.replace(/src=/gi, "data-src=");
+    return $(html);
 }
 
 function SetupHeader(category, categoryKind){

@@ -14,7 +14,8 @@ var defaultSetting = {
     "TotalResults":"",
     "Book":
         [
-            //{"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":"", "Rating":""}
+            //{"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":"", "Rating":"",
+            // PullingToken: ''}
         ]
 };
 
@@ -234,18 +235,62 @@ chrome.runtime.sendMessage({action:'getVersion'}, function (version){
 
 
 //______________________________________________________________________________________________________________________
-var ParentUrl;
+var Url;
+var ParentUrl; // trimmed Url
 var SiteParser;
 var BookStore;
-var SearchKeyword = '';
+// used to invalidate the current data is being pulled when the other pulling with new parameters started
+var PullingToken = 0;
+var CurrentPage;
 var ParserAsyncRunner = new AsyncRunner();
 ParserAsyncRunner.itemFinished = function(){
     ContentScript.sendMessage({type:"set-IsPulling", IsPulling: false});
 };
 
+function test(){
+    function parseData(data){
+        data = data.replace(/src=/gi, "tempsrc=");
+        var parsed = $(data);
+        console.log(parsed.find('div'));
+    }
+    //$.get('http://www.amazon.com/Ride-Studs-Spurs-Book-3-ebook/dp/B004DEQKX0/ref=sr_1_32?s=digital-text&ie=UTF8&qid=1428231166&sr=1-32&keywords=cat+johnson', parseData);
+    //$.get('http://www.amazon.com/gp/product/features/ebook-synopsis/formatDate.html?datetime=2015-02-03T00%3A00%3A00', parseData);
+    //$.get('http://www.amazon.com/The-Nightingale-Kristin-Hannah-ebook/dp/B00JO8PEN2/ref=zg_bs_154606011_20', parseData);
+    parseData('<div id="test"></div>\
+\
+        <div id="imdirty">\
+            <a href="href!" alt="alt">\
+            test\
+            </a>\
+            <a href="href1!" alt="alt1">\
+            test1\
+            </a>\
+            <a href="werhref2!" alt="alt2">\
+            test2\
+            </a>\
+            <a href="werhttpref2!" alt="alt2">\
+            no\
+            </a>\
+            <a href="http://werhref2!" alt="alt2">\
+            go away\
+            </a>\
+            <a taco="httpwerhref2!" alt="alt2">\
+            test2\
+            </a>\
+        \
+            <script src="http://google.com/app.js"></script>\
+            <iframe src="http://google.com"></iframe>\
+            <script>\
+            console.log("test");\
+            alert("hello");\
+            </script>\
+        </div>\
+        <img src="test" onerror="console.log(\'error\')" onload="console.log(\'load\')"></img>\
+    ');
+}
 
 $(window).ready(function () {
-    var Url = location.href;
+    Url = location.href;
     ParentUrl = trimCurrentUrl(Url);
     SiteParser = GetSiteParser(Url);
     BookStore = new BookStorage();
@@ -254,24 +299,58 @@ $(window).ready(function () {
 
     if (SiteParser === undefined) return;
     if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;
+    CurrentPage = getPageFromCurrentPage();
+    if (CurrentPage === undefined) return;
+
+//    ContentScript.sendMessage({type: "set-type-page", TYPE: ''});
+//    ContentScript.sendMessage({type: "remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
 
     // Amazon search form
     $("#nav-searchbar, .nav-searchbar").submit(function()
     {
-        SearchKeyword = '';
-        ContentScript.sendMessage({type: "remove-settings", ParentUrl: ParentUrl}, function(){
-            var searchResultPager = new SearchResultsPage();
-            if (searchResultPager.SearchResultsPager) searchResultPager.SearchResultsPager.stop();
-            searchResultPager.SearchResultsPager = undefined;
-            PagesPulled = 0;
+        ClearSearchResults(function(){
             setTimeout("processWhenDone()", 500);
         });
     });
-    ContentScript.sendMessage({type: "set-type-page", TYPE: ''});
-    ContentScript.sendMessage({type: "remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
 
+    PullingToken = new Date().getTime();
     startPulling(1);
 });
+
+function getPageFromCurrentPage(){
+    if(IsAuthorPage()){
+        ContentScript.sendMessage({type: "set-type-page", TYPE: 'author'});
+        return new AuthorPage();
+    }
+    if(IsAuthorSearchResultPage(location.href)){
+        ContentScript.sendMessage({type: "set-type-page", TYPE: 'author-search'});
+        return new AuthorSearchResultsPage();
+    }
+    if (IsBestSellersPage(location.href)){
+        ContentScript.sendMessage({type: "set-type-page", TYPE: 'best-seller'});
+        return new BestSellersPage();
+    }
+    if(IsSearchPage(location.href)){
+        ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
+        return new SearchResultsPage();
+    }
+    if (IsSingleBookPage(location.href)){
+        ContentScript.sendMessage({type: "set-type-page", TYPE: 'single'});
+        return new SingleBookPage();
+    }
+}
+
+function ClearSearchResults(callback){
+    callback = ValueOrDefault(callback, function(){});
+    PullingToken = 0;
+    ContentScript.sendMessage({type: "remove-settings", ParentUrl: ParentUrl}, function(){
+        var searchResultPage = new SearchResultsPage();
+        if (searchResultPage.SearchResultsPager) searchResultPage.SearchResultsPager.stop();
+        searchResultPage.SearchResultsPager = undefined;
+        PagesPulled = 0;
+        callback();
+    });
+}
 
 function ContentScript(){
 }
@@ -299,16 +378,16 @@ function processWhenDone() {
     }
 }
 
-function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, reviews, category, categoryKind, callback)
+function parseDataFromBookPageAndSend(pullingToken, num, url, price, parenturl, nextUrl, reviews, category, categoryKind, callback)
 {
     callback = ValueOrDefault(callback, function(){});
-    if (categoryKind == 'Search' && category != SearchKeyword) return;
-    var parser = new BookPageParser(url);
+    if (pullingToken != PullingToken) return;
+    var parser = new BookPageParser(null, SiteParser);
     if(parser.isNotValid()) return callback();
     parser.GetBookData(url, price, reviews, function(pageData) {
         ContentScript.sendMessage({type: "get-settings"}, function (response) {
-            // check if we still on the same search keywords page
-            if (categoryKind == 'Search' && category != SearchKeyword) return;
+            // check if we still on the same search keywords page and didn't start a new pulling with new params
+            if (pullingToken != PullingToken) return;
             ContentScript.sendMessage({
                 type: "save-settings",
                 No: num,
@@ -333,7 +412,6 @@ function parseDataFromBookPageAndSend(num, url, price, parenturl, nextUrl, revie
             }, function(response){
                 return callback();
             });
-
         });
     });
 }
@@ -342,32 +420,19 @@ var PagesPulled = 0;
 function startPulling(pageNumber){
     if (pageNumber <= PagesPulled) return;
     PagesPulled = pageNumber;
+    var searchKeyword = GetParameterByName(Url, "field-keywords");
     ContentScript.sendMessage({type:"set-IsPulling", IsPulling: true});
 
-    if(IsAuthorPage()){
-        new AuthorPage().LoadData(SiteParser, ParentUrl);
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'author'});
-    }
-    else if(IsAuthorSearchResultPage(location.href)){
-        new AuthorSearchResultsPage().LoadData(SiteParser, ParentUrl)
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'author-search'});
-    }
-    else if (IsBestSellersPage(location.href)){
-        new BestSellersPage().LoadData(pageNumber, ParentUrl);
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'best-seller'});
-    }
-    else if(IsSearchPage(location.href)){
-        SearchKeyword = GetParameterByName(location.href, "field-keywords");
-        new SearchResultsPage().LoadData(SiteParser, ParentUrl, SearchKeyword);
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
-    }
-    else if (IsSingleBookPage(location.href)){
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'single'});
-    }
+    CurrentPage.LoadData(PullingToken, SiteParser, ParentUrl, searchKeyword, pageNumber);
 }
- function startPullingSearchPage(keyword){ //??
-     SearchKeyword = keyword;
-     var url = getSearchUrl(keyword);
-     new SearchResultsPage().LoadData(SiteParser, url, keyword);
-     ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
- }
+
+function startPullingSearchPage(keyword){
+    ClearSearchResults(function(){
+        PullingToken = new Date().getTime();
+        Url = getSearchUrl(keyword);
+        ParentUrl = trimCurrentUrl(Url);
+        CurrentPage = new SearchResultsPage();
+        ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
+        startPulling(1);
+    });
+}

@@ -10,15 +10,16 @@ function SearchResultsPage(){
     this.SearchKeyword;
 }
 
-SearchResultsPage.prototype.LoadData = function(siteParser, parentUrl, search, callback){
+SearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
+    callback = ValueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.SearchResultsNumber;
     this.SearchKeyword = search;
 
     if(this.SearchResultsPager === undefined) {
         this.SearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
-            var jqResponseText = $(responseText);
-            return new SearchPageParser().ParsePage(startFromIndex, maxResults, jqResponseText, parentUrl, search, siteParser, "Search");
+            var jqResponseText = parseHtmlToJquery(responseText);
+            return new SearchPageParser().ParsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, search, siteParser, "Search");
         }, function(url, page){
             return url + '&page=' + page;
         });

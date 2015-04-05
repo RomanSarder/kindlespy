@@ -643,12 +643,17 @@ function SearchKeywordsPage() {
 
 }
 function GetSearchKeywordFullData(list, callback){
+    var algorithm = new SearchAnalysisAlgorithm();
     list.forEach(function(item){
-        GetCompetitionColor(item, function(color){
-                return callback({
-                    keyword: item,
-                    color: color
-                });
+        var pageUrl = getSearchUrl(item);
+        $.get(pageUrl, function(responseText){
+            var jqResponse = parseHtmlToJquery(responseText);
+            var totalResults = parseInt(SiteParser.GetTotalSearchResult(jqResponse).replace(/,/g,''));
+            var color = algorithm.GetCompetitionColor(totalResults);
+            return callback({
+                keyword: item,
+                color: color
+            });
         });
     });
 }
@@ -692,16 +697,7 @@ function GetSearchKeywordsList(callback){
     });
 
 }
-function GetCompetitionColor(keyword, callback){
-    var pageUrl = getSearchUrl(keyword);
-    $.get(pageUrl, function(responseText){
-        var totalResults = parseInt(SiteParser.GetTotalSearchResult($(responseText)).replace(/,/g,''));
-        if (totalResults < 500) return callback('green');
-        if (totalResults < 1500) return callback('yellow');
-        return callback('red');
-    });
 
-}
 /****************************************************************************************/
 var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
@@ -747,7 +743,7 @@ function LoadData(obj) {
         $('#AdPanel').show();
 
         $('.table-head').html("");
-        $('#main-content').html("<div><img style=\"width:100%\" src=\"loading.gif\"/></div>");
+        $('#main-content').html('<div><img style="width:100%" src="icons/loading.gif"/></div>');
         $('#main-content').show();
         $('#main-header').show();
 
