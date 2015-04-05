@@ -5,7 +5,7 @@
 
 function AmazonCoUkParser(){
     this.MainUrl = "http://www.amazon." + AmazonCoUkParser.Zone;
-    this.CompletionUrl = "http://" + "completion.amazon." + AmazonCoUkParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
+    this.CompletionUrl = "http://completion.amazon." + AmazonCoUkParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=3";
     this.Region = AmazonCoUkParser.Region;
     this.ParamUrlBestSellers = "154606011";
     this.AreYouAnAuthorPattern = "Are You an Author";

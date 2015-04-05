@@ -5,7 +5,8 @@
 
 function AmazonCaParser(){
     this.MainUrl = "http://www.amazon." + AmazonCaParser.Zone;
-    this.CompletionUrl = "http://" + "completion.amazon." + AmazonCaParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
+    // Amazon.ca uses api from amazon.com
+    this.CompletionUrl = "http://completion.amazon." + AmazonComParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=7";
     this.Region = AmazonCaParser.Region;
     this.ParamUrlBestSellers = "2980423011";
     this.Free = 'Free';

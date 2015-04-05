@@ -5,7 +5,8 @@
 
 function AmazonFrParser(){
     this.MainUrl = "http://www.amazon." + AmazonFrParser.Zone;
-    this.CompletionUrl = "http://" + "completion.amazon." + AmazonFrParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
+    // Amazon.fr uses api from amazon.co.uk
+    this.CompletionUrl = "http://t1-completion.amazon." + AmazonCoUkParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=5";
     this.Region = AmazonFrParser.Region;
     this.ParamUrlBestSellers = "695398031";
     this.AreYouAnAuthorPattern = "Etes-vous un auteur";

@@ -5,7 +5,8 @@
 
 function AmazonDeParser(){
     this.MainUrl = "http://www.amazon." + AmazonDeParser.Zone;
-    this.CompletionUrl = "http://" + "completion.amazon." + AmazonDeParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
+    // Amazon.de uses api from amazon.co.uk
+    this.CompletionUrl = "http://completion.amazon." + AmazonCoUkParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=4";
     this.Region = AmazonDeParser.Region;
     this.ParamUrlBestSellers = "530886031";
     this.AreYouAnAuthorPattern = "Sind Sie ein Autor";
