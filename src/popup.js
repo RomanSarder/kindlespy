@@ -61,11 +61,15 @@ function resetCss(){
     $('.table-head').hide();
     $('.img-load').hide();
 
+    //table keywords
+    $('.table-head-keyword-search').hide();
+
     // content
     $('#word-cloud-content').hide();
     $('#no-data-found-content').hide();
     $('#no-supported-area').hide();
     $('#main-content').hide();
+    $('#content-keyword-search').hide();
     $('#tracking-content').hide();
     $('.right-panel').hide();
     $('.left-panel').css('width', '');
@@ -604,36 +608,33 @@ function SetupClickListeners(){
         KwdAnalysisListShow();
     });
 }
-/**********************************************************/
+var SearchedKeyword = '';
 function SearchKeywordsPage() {
-    var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
-    var tableHead = "<label></label><label>Competition</label><label>Full Results</label>";
     var info = '<div class="search-inner-panel">' +
         '<div class="search-panel">' +
         '<div id ="go-search" value="Find"></div>' +
         '<div style="overflow: hidden;">' +
-        '<input id="search-text" type="text" style="width: 100%;height:100%;border: none;"/>' +
+        '<input id="search-text" value="' + SearchedKeyword + '" type="text"/>' +
         '</div>' +
         '</div>' +
         '</div>';
     $('#main-header').html('');
-    $('#main-content').html(ContentHtml);
     $('.info.list_books').html(info);
     resetCss();
     $('#main-header').show();
-    $('#main-content').show();
+    $('.table-head-keyword-search').show();
+    $('#content-keyword-search').show();
     $('#TrackedPanelFooter').show();
     $('.info.list_books').show();
-    $('.table-head').show();
     $('#AdPanel').show();
 
     LoadAdvertisementBanner();
 
-    $('#data-body').css("overflow-y", "auto");
-    $('.table-head').html(tableHead);
+    $('#data-body-keyword-search').css("overflow-y", "auto");
 
     $("#go-search").click(function()
     {
+        SearchedKeyword = $("#search-text").val();
         ClearSearchKeywordsTable();
         GetSearchKeywordsList(function(keywords){
              GetSearchKeywordFullData(keywords, function(response){
@@ -642,7 +643,7 @@ function SearchKeywordsPage() {
         });
     });
 
-    $('table[name="data"]').find('tbody[id="data-body"]').on('click', '.keyword-analyze', function(){
+    $('table[name="data-keyword-search"] tbody').on('click', '.keyword-analyze', function(){
         ActiveTab = new MainTab();
         var search = $(this).attr('keyword');
         Popup.sendMessage({type: "start-analyze-search-keywords", keyword: search});
@@ -667,23 +668,22 @@ function GetSearchKeywordFullData(list, callback){
 }
 
 function ClearSearchKeywordsTable(){
-    $('table[name="data"]').find('tbody[id="data-body"]').html('');
+    $('table[name="data-keyword-search"] tbody').html('');
 }
 
 function formattedKeywordString(searchedKeyword){
-    var keyword = $("#search-text").val();
-    return searchedKeyword.replace(keyword, '<b>' + keyword + '</b>');
+    return searchedKeyword.replace(SearchedKeyword, '<b>' + SearchedKeyword + '</b>');
 }
 
 function AppendSearchKeywordsTable(item){
-    var html = $('table[name="data"]').find('tbody[id="data-body"]').html();
+    var html = $('table[name="data-keyword-search"] tbody').html();
     html += "<tr>" +
         "<td style=\"width:200px;padding-left:50px;text-align:left;\">" + formattedKeywordString(item.keyword) + "</td>" +
-        "<td style=\"width:85px;\"><div style='width:32px; height:27px; margin: -11 auto 0 auto;' class='bullet-" + item.color + "' ></div></td>" +
+        "<td style=\"width:85px;\"><div style='width:32px; height:31px; margin: -9px auto -4px auto;' class='bullet-" + item.color + "' ></div></td>" +
         "<td style=\"width:85px;\"><a class = 'keyword-analyze' href='#' keyword = '" + item.keyword + "'>Analyze</a></td>" +
         "</tr>";
 
-    $('table[name="data"]').find('tbody[id="data-body"]').html(html);
+    $('table[name="data-keyword-search"] tbody').html(html);
 }
 
 function GetSearchKeywordsList(callback){
@@ -704,7 +704,6 @@ function GetSearchKeywordsList(callback){
 
 }
 
-/****************************************************************************************/
 var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;
