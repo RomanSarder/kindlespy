@@ -622,25 +622,27 @@ function SearchKeywordsPage() {
     $('.info.list_books').html(info);
     resetCss();
     $('#main-header').show();
-    $('.table-head-keyword-search').show();
     $('#content-keyword-search').show();
     $('#TrackedPanelFooter').show();
     $('.info.list_books').show();
+    $('#search-text').focus();
     $('#AdPanel').show();
+    if ($('table[name="data-keyword-search"] tr').length > 0) $('.table-head-keyword-search').show();
 
     LoadAdvertisementBanner();
 
     $('#data-body-keyword-search').css("overflow-y", "auto");
 
+    $("#search-text").keypress(function(event){
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == '13'){
+            startSearchKeywords();
+        }
+    });
+
     $("#go-search").click(function()
     {
-        SearchedKeyword = $("#search-text").val();
-        ClearSearchKeywordsTable();
-        GetSearchKeywordsList(function(keywords){
-             GetSearchKeywordFullData(keywords, function(response){
-                 AppendSearchKeywordsTable(response);
-             });
-        });
+        startSearchKeywords();
     });
 
     $('table[name="data-keyword-search"] tbody').on('click', '.keyword-analyze', function(){
@@ -651,7 +653,18 @@ function SearchKeywordsPage() {
     });
 }
 
-function GetSearchKeywordFullData(list, callback){
+function startSearchKeywords(){
+    $('.table-head-keyword-search').hide();
+    SearchedKeyword = $("#search-text").val();
+    ClearSearchKeywordsTable();
+    GetSearchKeywordsList(function(keywords){
+        GetSearchKeywordFullData(keywords, function(response){
+            AppendSearchKeywordsTable(response);
+        });
+    });
+}
+
+function GetSearchKeywordFullData(list, processItemFunction){
     var algorithm = new SearchAnalysisAlgorithm();
     list.forEach(function(item){
         var pageUrl = getSearchUrl(item);
@@ -659,7 +672,7 @@ function GetSearchKeywordFullData(list, callback){
             var jqResponse = parseHtmlToJquery(responseText);
             var totalResults = parseInt(SiteParser.GetTotalSearchResult(jqResponse).replace(/,/g,''));
             var color = algorithm.GetCompetitionColor(totalResults);
-            return callback({
+            return processItemFunction({
                 keyword: item,
                 color: color
             });
@@ -669,6 +682,8 @@ function GetSearchKeywordFullData(list, callback){
 
 function ClearSearchKeywordsTable(){
     $('table[name="data-keyword-search"] tbody').html('');
+    $('#content-keyword-search .content').hide();
+    $('#content-keyword-search .loading').show();
 }
 
 function formattedKeywordString(searchedKeyword){
@@ -676,6 +691,9 @@ function formattedKeywordString(searchedKeyword){
 }
 
 function AppendSearchKeywordsTable(item){
+    $('#content-keyword-search .loading').hide();
+    $('#content-keyword-search .content').show();
+    $('.table-head-keyword-search').show();
     var html = $('table[name="data-keyword-search"] tbody').html();
     html += "<tr>" +
         "<td style=\"width:200px;padding-left:50px;text-align:left;\">" + formattedKeywordString(item.keyword) + "</td>" +

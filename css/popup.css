@@ -463,9 +463,9 @@ td.wow a:hover
     padding-left: 10px;font-size: 17px;
 }
 #content-keyword-search,
-.table-head-keyword-search{
+.table-head-keyword-search,
+#content-keyword-search .loading {
     display:none;
-    overflow: hidden;
 }
 
 .table-head-keyword-search{
@@ -473,4 +473,7 @@ td.wow a:hover
 }
 .data-keyword-search{
     margin: 0 auto;
+}
+#content-keyword-search .content{
+    overflow: hidden;
 }
