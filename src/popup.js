@@ -608,7 +608,14 @@ function SetupClickListeners(){
 function SearchKeywordsPage() {
     var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label></label><label>Competition</label><label>Full Results</label>";
-    var info = '<div class="search-panel"><input id ="go-search" type="button" value="Find" style="float: right"/><div style="overflow: hidden; padding-right: .5em;"><input id="search-text" type="text" style="width: 100%;"/></div>';
+    var info = '<div class="search-inner-panel">' +
+        '<div class="search-panel">' +
+        '<div id ="go-search" value="Find"></div>' +
+        '<div style="overflow: hidden;">' +
+        '<input id="search-text" type="text" style="width: 100%;height:100%;border: none;"/>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
     $('#main-header').html('');
     $('#main-content').html(ContentHtml);
     $('.info.list_books').html(info);
@@ -639,9 +646,10 @@ function SearchKeywordsPage() {
         ActiveTab = new MainTab();
         var search = $(this).attr('keyword');
         Popup.sendMessage({type: "start-analyze-search-keywords", keyword: search});
+        frun();
     });
-
 }
+
 function GetSearchKeywordFullData(list, callback){
     var algorithm = new SearchAnalysisAlgorithm();
     list.forEach(function(item){
@@ -664,9 +672,7 @@ function ClearSearchKeywordsTable(){
 
 function formattedKeywordString(searchedKeyword){
     var keyword = $("#search-text").val();
-    var pos = searchedKeyword.indexOf(keyword)+keyword.length;
-    return '<b>' + searchedKeyword.substring(0,pos) + '</b>' + searchedKeyword.substring(pos);
-
+    return searchedKeyword.replace(keyword, '<b>' + keyword + '</b>');
 }
 
 function AppendSearchKeywordsTable(item){
@@ -743,7 +749,7 @@ function LoadData(obj) {
         $('#AdPanel').show();
 
         $('.table-head').html("");
-        $('#main-content').html('<div><img style="width:100%" src="icons/loading.gif"/></div>');
+        $('#main-content').html('<div><img style="width:100%" src="../icons/loading.gif"/></div>');
         $('#main-content').show();
         $('#main-header').show();
 
@@ -770,11 +776,6 @@ function checkIsDataLoaded(){
             $('#AdPanel').show();
 
             LoadAdvertisementBanner();
-
-//            var link5 = $('#refresh');
-//            link5.click(function() {
-//                frun();
-//            });
         }
     });
 }
