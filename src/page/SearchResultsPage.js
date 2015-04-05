@@ -25,5 +25,5 @@ SearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parent
         });
     }
 
-    setTimeout(this.SearchResultsPager.loadNextPage.bind(this.SearchResultsPager, parentUrl, callback), 1000);
+    this.SearchResultsPager.loadNextPage(parentUrl, callback);
 };
