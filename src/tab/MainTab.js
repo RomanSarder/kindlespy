@@ -13,7 +13,7 @@ function MainTab(){
 
 MainTab.prototype.SavePageNum = function(){
     Popup.sendMessage({type: "save-PageNum", tab: 'MainTab', PageNum: this.PageNum});
-}
+};
 
 MainTab.prototype.LoadPageNum = function(callback){
     var _this = this;
@@ -22,7 +22,7 @@ MainTab.prototype.LoadPageNum = function(callback){
         _this.PageNum = parseInt(response.PageNum);
         callback();
     });
-}
+};
 
 MainTab.prototype.ExportToCsv = function(data){
     var bookData = data.bookData;
@@ -103,7 +103,7 @@ MainTab.prototype.ExportToCsv = function(data){
     link.setAttribute("href", url);
     link.setAttribute("download", "bs-"+GetCategoryFromBookData(bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
     link.click();
-}
+};
 
 MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     var category = "";
@@ -215,7 +215,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
         avgMonthlyRev:avgMonthlyRev,
         salesRankConclusionValue: salesRankConclusionValue,
         monthlyRevBook:monthlyRevBook});
-}
+};
 
 MainTab.prototype.GetSalesRankConclusion = function(salesRankString){
     var salesRank = parseInt(salesRankString.replace(/[^0-9]/g, ''));

@@ -404,15 +404,6 @@ td.wow a:hover
 .bg-grey{
     background-color: #CCCCCC;
 }
-.bullet-green{
-    background: url("../icons/bullet-green.png") no-repeat;
-}
-.bullet-red{
-    background: url("../icons/bullet-red.png")no-repeat;
-}
-.bullet-yellow{
-    background: url("../icons/bullet-yellow.png")no-repeat;
-}
 .status{
     width:50px;
     text-align:center;
@@ -427,6 +418,21 @@ td.wow a:hover
 .status-img div{
     width: 32px;
     height: 32px;
+}
+.bullet-green{
+    background: url("../icons/bullet-green.png") no-repeat;
+}
+.bullet-red{
+    background: url("../icons/bullet-red.png") no-repeat;
+}
+.bullet-yellow{
+    background: url("../icons/bullet-yellow.png") no-repeat;
+}
+.status-img .bullet-progress{
+    background: url("../icons/3-dot-load.gif") no-repeat;
+    background-size: 32px;
+    margin-top: 10px;
+    height: 20px;
 }
 
 .img-load {

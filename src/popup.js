@@ -121,13 +121,13 @@ function getObjArray(callback){
             obj.push(settingTmp);
         }
 
-        return callback({obj: obj, isPulling: settings.IsPulling});
+        return callback({obj: obj, isWaitForPulling: settings.IsWaitForPulling, isPulling: settings.IsPulling});
     });
 }
 
 function AutoAddFunc()
 {
-    getObjArray(function(result){
+    getObjArray(function(result) {
         obj = result.obj;
         obj.sort(compare);
 
@@ -135,16 +135,25 @@ function AutoAddFunc()
 
         SetupHeader(obj[0].Category, obj[0].CategoryKind);
 
-        if (!IsErrorWindow) {
-            if (ActiveTab.IsPaged) {
-                ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
-                if(result.isPulling) $('.img-load').show();
-                else {
-                    $('.img-load').hide();
-                }
-            }
-        } else {
+        if (IsErrorWindow) {
             frun();
+            return;
+        }
+
+        if (ActiveTab.IsPaged) {
+            ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
+            if (result.isWaitForPulling) $('.img-load').show();
+            else {
+                $('.img-load').hide();
+            }
+            if (result.isPulling){
+                $('.status-img div').hide();
+                $('.bullet-progress').show();
+            }
+            else{
+                $('.status-img div').show();
+                $('.bullet-progress').hide();
+            }
         }
     });
     setTimeout(AutoAddFunc, 1000);
@@ -411,7 +420,7 @@ function KwdAnalysisListShow() {
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(tableHead);
 
-    ActiveTab.InsertData(0, obj, SiteParser);
+    ActiveTab.InsertData(ActiveTab.PageNum-1, obj, SiteParser);
 }
 var prevBookUrl;
 function resetTrackingBookPage(bookUrl) {
@@ -853,7 +862,7 @@ function UpdateTable(obj)
         });
     });
 
-    ActiveTab.InsertData(0, obj, SiteParser);
+    ActiveTab.InsertData(ActiveTab.PageNum-1, obj, SiteParser);
 }
 
 function SetActivePage(pageNum)
@@ -908,6 +917,7 @@ function LoadInfos()
         new KeywordAnalysisTab().LoadPageNum(function(){
             getObjArray(function(result){
                 obj = result.obj;
+                obj.sort(compare);
                 LoadData(obj);
                 LoadAdvertisementBanner();
             });
@@ -954,5 +964,5 @@ function LoadAdvertisementBanner()
 }
 
 Popup.sendMessage({type: "set-current-Tab"}, function(response) {
-    setTimeout(frun, 100);
+    frun();
 });

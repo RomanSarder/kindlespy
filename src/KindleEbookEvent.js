@@ -5,6 +5,7 @@
 
 var defaultSetting = {
     "version": "0.0.0",
+    "IsWaitForPulling" : false,
     "IsPulling" : false,
     "CurrentUrl" : "",
     "PageNum" : {MainTab: "1", KeywordAnalysisTab: "1"},
@@ -24,15 +25,19 @@ function getStorage(){
     return customStorage;
 }
 
-function getSetting()
+function getSettings()
 {
     var a = getStorage().settings;
     return a = a ? JSON.parse(a) : defaultSetting
 }
 
+function setSettings(value){
+    getStorage().settings = JSON.stringify(value);
+}
+
 function RemoveSettings(url, parentUrl, IsFree)
 {
-    var setting = getSetting();
+    var setting = getSettings();
 
     var bookInfolen = setting.Book.length;
 
@@ -47,12 +52,12 @@ function RemoveSettings(url, parentUrl, IsFree)
         }
     }
     setting = defaultSetting;
-    getStorage().settings = JSON.stringify(setting);
+    setSettings(setting);
 }
 
 function SaveSettings(num, url, parentUrl, nextUrl, title, description, price, estsales, salesRecv, Reviews, salesRank, category, categoryKind, printLength, author, dateOfPublication, googleSearchUrl, googleImageSearchUrl, rating)
 {
-    var setting = getSetting();
+    var setting = getSettings();
 
     var bookInfolen = setting.Book.length;
 
@@ -94,28 +99,28 @@ function SaveSettings(num, url, parentUrl, nextUrl, title, description, price, e
         setting.Book.push(settingTmp);
     }
 
-    getStorage().settings = JSON.stringify(setting);
+    setSettings(setting);
 }
 
 function SavePageNum(pageNum, tabName)
 {
-    var setting = getSetting();
+    var setting = getSettings();
     setting.PageNum[tabName] = pageNum;
-    getStorage().settings = JSON.stringify(setting);
+    setSettings(setting);
 }
 function SaveUrlParams(url, urlParamBestSellers)
 {
-    var setting = getSetting();
+    var setting = getSettings();
     setting.MainUrl = url;
     setting.ParamUrlBestSellers = urlParamBestSellers;
-    getStorage().settings = JSON.stringify(setting);
+    setSettings(setting);
 }
 
 function SaveTotalResults(totalResults)
 {
-    var setting = getSetting();
+    var setting = getSettings();
     setting.TotalResults = totalResults;
-    getStorage().settings = JSON.stringify(setting);
+    setSettings(setting);
 }
 
 var CurrentTabUrl;
@@ -142,7 +147,7 @@ function onMessageReceived(request, sender, callback){
     if ("get-settings" === request.type)
     {
         return callback({
-            settings: getSetting()
+            settings: getSettings()
         });
     }
 
@@ -160,7 +165,7 @@ function onMessageReceived(request, sender, callback){
 
     if ("get-PageNum" === request.type)
     {
-        var setting = getSetting();
+        var setting = getSettings();
         return callback({PageNum:setting.PageNum[request.tab]});
     }
 
@@ -183,30 +188,16 @@ function onMessageReceived(request, sender, callback){
 
     if ("set-type-page" === request.type)
     {
-        var setting = getSetting();
+        var setting = getSettings();
         setting.TYPE = request.TYPE;
-        getStorage().settings = JSON.stringify(setting);
+        setSettings(setting);
         return callback({});
     }
 
     if ("get-type-page" === request.type)
     {
-        var setting = getSetting();
+        var setting = getSettings();
         return callback({TYPE:setting.TYPE});
-    }
-
-    if ("set-IsPulling" === request.type)
-    {
-        var setting = getSetting();
-        setting.IsPulling = request.IsPulling;
-        getStorage().settings = JSON.stringify(setting);
-        return callback({});
-    }
-
-    if ("get-IsPulling" === request.type)
-    {
-        var setting = getSetting();
-        return callback({IsPulling: setting.IsPulling});
     }
 
     if ("save-TotalResults" === request.type)
@@ -217,19 +208,19 @@ function onMessageReceived(request, sender, callback){
 
     if ("get-TotalResults" === request.type)
     {
-        var setting = getSetting();
+        var setting = getSettings();
         return callback({TotalResults:setting.TotalResults});
     }
 }
 
 chrome.runtime.sendMessage({action:'getVersion'}, function (version){
     var currentVersion = version;
-    var savedVersion = getSetting().version;
+    var savedVersion = getSettings().version;
 
     if (typeof savedVersion === "undefined" || currentVersion !== savedVersion)
     {
         defaultSetting.version = currentVersion;
-        getStorage().settings = JSON.stringify(defaultSetting);
+        setSettings(defaultSetting);
     }
 });
 
@@ -244,50 +235,15 @@ var PullingToken = 0;
 var CurrentPage;
 var ParserAsyncRunner = new AsyncRunner();
 ParserAsyncRunner.itemFinished = function(){
-    ContentScript.sendMessage({type:"set-IsPulling", IsPulling: false});
+    var settings = getSettings();
+    settings.IsWaitForPulling = false;
+    setSettings(settings);
 };
-
-function test(){
-    function parseData(data){
-        data = data.replace(/src=/gi, "tempsrc=");
-        var parsed = $(data);
-        console.log(parsed.find('div'));
-    }
-    //$.get('http://www.amazon.com/Ride-Studs-Spurs-Book-3-ebook/dp/B004DEQKX0/ref=sr_1_32?s=digital-text&ie=UTF8&qid=1428231166&sr=1-32&keywords=cat+johnson', parseData);
-    //$.get('http://www.amazon.com/gp/product/features/ebook-synopsis/formatDate.html?datetime=2015-02-03T00%3A00%3A00', parseData);
-    //$.get('http://www.amazon.com/The-Nightingale-Kristin-Hannah-ebook/dp/B00JO8PEN2/ref=zg_bs_154606011_20', parseData);
-    parseData('<div id="test"></div>\
-\
-        <div id="imdirty">\
-            <a href="href!" alt="alt">\
-            test\
-            </a>\
-            <a href="href1!" alt="alt1">\
-            test1\
-            </a>\
-            <a href="werhref2!" alt="alt2">\
-            test2\
-            </a>\
-            <a href="werhttpref2!" alt="alt2">\
-            no\
-            </a>\
-            <a href="http://werhref2!" alt="alt2">\
-            go away\
-            </a>\
-            <a taco="httpwerhref2!" alt="alt2">\
-            test2\
-            </a>\
-        \
-            <script src="http://google.com/app.js"></script>\
-            <iframe src="http://google.com"></iframe>\
-            <script>\
-            console.log("test");\
-            alert("hello");\
-            </script>\
-        </div>\
-        <img src="test" onerror="console.log(\'error\')" onload="console.log(\'load\')"></img>\
-    ');
-}
+ParserAsyncRunner.finished = function(){
+    var settings = getSettings();
+    settings.IsPulling = false;
+    setSettings(settings);
+};
 
 $(window).ready(function () {
     Url = location.href;
@@ -301,9 +257,6 @@ $(window).ready(function () {
     if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;
     CurrentPage = getPageFromCurrentPage();
     if (CurrentPage === undefined) return;
-
-//    ContentScript.sendMessage({type: "set-type-page", TYPE: ''});
-//    ContentScript.sendMessage({type: "remove-settings", Url: "", ParentUrl:ParentUrl, IsFree: true});
 
     // Amazon search form
     $("#nav-searchbar, .nav-searchbar").submit(function()
@@ -421,7 +374,10 @@ function startPulling(pageNumber){
     if (pageNumber <= PagesPulled) return;
     PagesPulled = pageNumber;
     var searchKeyword = GetParameterByName(Url, "field-keywords");
-    ContentScript.sendMessage({type:"set-IsPulling", IsPulling: true});
+    var settings = getSettings();
+    settings.IsWaitForPulling = true;
+    settings.IsPulling = true;
+    setSettings(settings);
 
     CurrentPage.LoadData(PullingToken, SiteParser, ParentUrl, searchKeyword, pageNumber);
 }
