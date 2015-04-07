@@ -211,7 +211,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     $('#result5').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
     $('#totalReSalesRecv').html(siteParser.FormatPrice(AddCommas(salesRecvSum)));
     this.Analysis = IsSearchPageFromCategoryKind(categoryKind)? new SearchAnalysisAlgorithm() : new CategoryAnalysisAlgorithm();
-    this.Analysis.SetBulletColor({salesRank20: salesRank20,
+    this.Analysis.SetBullets({salesRank20: salesRank20,
         avgMonthlyRev:avgMonthlyRev,
         salesRankConclusionValue: salesRankConclusionValue,
         monthlyRevBook:monthlyRevBook});

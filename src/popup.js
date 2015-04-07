@@ -43,6 +43,15 @@ $(window).ready(function () {
             RankTrackingSingleShow($(_this).data().url);
         });
     });
+
+    $('#bullet-1, #bullet-2, #bullet-3').tooltipster({
+        animation: 'fade',
+        theme: 'tooltip-theme',
+        maxWidth:200,
+        updateAnimation: false,
+        position: 'top'
+    });
+
     SetupStaticClickListeners();
 });
 

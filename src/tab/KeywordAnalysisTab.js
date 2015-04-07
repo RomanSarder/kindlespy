@@ -199,7 +199,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     $('#result5').html(AddCommas((ratingSum/ nTotalCnt).toFixed(1)));
     $('#result6').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
 
-    this.Analysis.SetBulletColor({
+    this.Analysis.SetBullets({
         salesRankConclusionValue: salesRankConclusionValue,
         monthlyRevBook: monthlyRevBook
     });

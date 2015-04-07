@@ -477,3 +477,15 @@ td.wow a:hover
 #content-keyword-search .content{
     overflow: hidden;
 }
+/*Tootip*/
+.tooltip-theme {
+    border-radius: 5px;
+    background: #484747;
+}
+.tooltip-theme .tooltipster-content {
+    font-size: 11px;
+    line-height: 13px;
+    padding: 8px 10px;
+    color: #FFFFFF;
+    font-weight: bold;
+}
