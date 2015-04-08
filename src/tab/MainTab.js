@@ -205,7 +205,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 		if(this.GetSalesRankConclusion(obj[i].SalesRank) == 1) salesRankConclusionValue ++;
 		if (obj[i].SalesRecv > 500) monthlyRevBook ++;
 	}
-	var avgMonthlyRev20 = avgMonthlyRev20/(Math.min(19, obj.length-1));
+	var avgMonthlyRev20 = monthlyRev20/(Math.min(19, obj.length-1));
 	/*End region get data for analysis*/
     
 	$('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
