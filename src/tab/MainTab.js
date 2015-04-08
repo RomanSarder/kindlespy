@@ -115,10 +115,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     var html = "";
     var nTotalCnt = 0;
     var cellCnt = 0;
-    var salesRankConclusion = 0;
-    var salesRankConclusionValue = 0;
-    var monthlyRevBook = 0;
-
+ 
     for(var i = obj.length - 1; i >= 0 ; i --)
     {
         if (typeof obj[i].SalesRank === "undefined" || obj[i].SalesRank.length < 1)
@@ -163,10 +160,6 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
             reviewSum += parseInt(review.replace(siteParser.ThousandSeparator, "").replace(" ","").trim());
 
-            salesRankConclusion = this.GetSalesRankConclusion(obj[i].SalesRank);
-            if(salesRankConclusion == 1) salesRankConclusionValue ++;
-            if (obj[i].SalesRecv > 500) monthlyRevBook ++;
-
             nTotalCnt ++;
 
             if (category == "")
@@ -200,25 +193,35 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
     addEventListenerForSingleResultBook();
 
-    var salesRank20index = Math.min(19, obj.length-1);
+    /*Start region: get data for analysis*/
+	var salesRank20index = Math.min(19, obj.length-1);
     var salesRank20 = parseInt(obj[salesRank20index].SalesRank.replace(SiteParser.ThousandSeparator, "").replace(" ","").trim() || 0);
-
-    var avgMonthlyRev = Math.floor(salesRecvSum / nTotalCnt);
-
-    $('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
-    $('#result3').html( siteParser.FormatPrice(AddCommas(avgMonthlyRev)));
+	
+	var monthlyRev20 = 0;
+	var salesRankConclusionValue = 0;
+	var monthlyRevBook = 0;
+	for (var i = 0; i < 20 && i < obj.length; i++) {
+        monthlyRev20 += parseInt(obj[i].SalesRecv);
+		if(this.GetSalesRankConclusion(obj[i].SalesRank) == 1) salesRankConclusionValue ++;
+		if (obj[i].SalesRecv > 500) monthlyRevBook ++;
+	}
+	var avgMonthlyRev20 = avgMonthlyRev20/(Math.min(19, obj.length-1));
+	/*End region get data for analysis*/
+    
+	$('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
+    $('#result3').html( siteParser.FormatPrice(AddCommas(Math.floor(salesRecvSum / nTotalCnt))));
     $('#result4').html(siteParser.FormatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result5').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
     $('#totalReSalesRecv').html(siteParser.FormatPrice(AddCommas(salesRecvSum)));
     this.Analysis = IsSearchPageFromCategoryKind(categoryKind)? new SearchAnalysisAlgorithm() : new CategoryAnalysisAlgorithm();
     this.Analysis.SetBullets({salesRank20: salesRank20,
-        avgMonthlyRev:avgMonthlyRev,
+        avgMonthlyRev:avgMonthlyRev20,
         salesRankConclusionValue: salesRankConclusionValue,
         monthlyRevBook:monthlyRevBook});
 };
 
 MainTab.prototype.GetSalesRankConclusion = function(salesRankString){
-    var salesRank = parseInt(salesRankString.replace(/[^0-9]/g, ''));
+    var salesRank = parseInt(salesRankString.replace(SiteParser.ThousandSeparator, "").replace(" ","").trim());
     if (salesRank < 10000) return 1;
     if (salesRank < 20000) return 2;
     if (salesRank < 50000) return 3;

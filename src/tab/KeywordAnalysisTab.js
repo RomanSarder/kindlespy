@@ -112,8 +112,6 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     var html = "";
     var nTotalCnt = 0;
     var salesRankConclusion = 0;
-    var salesRankConclusionValue = 0;
-    var monthlyRevBook = 0;
 
     for(var i = obj.length - 1; i >= 0 ; i --)
     {
@@ -160,8 +158,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
             reviewSum += parseInt(review.replace(/[^0-9\.]/g, ''));
             pagesSum += $.isNumeric(obj[i].PrintLength) ? parseInt(obj[i].PrintLength) : 0;
             ratingSum += parseFloat(obj[i].Rating);
-            if(salesRankConclusion == 1) salesRankConclusionValue++;
-            if (obj[i].SalesRecv > 500) monthlyRevBook++;
+
             nTotalCnt ++;
 
             if (category == "")
@@ -192,7 +189,16 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     }
 
     $("table[name='data']").find("tbody").html(html);
-
+	
+	/*Start region: get data for analysis*/
+	var salesRankConclusionValue = 0;
+	var monthlyRevBook = 0;
+	for (var i = 0; i < 20 && i < obj.length; i++) {
+		if(this.GetSalesRankConclusion(obj[i].SalesRank) == 1) salesRankConclusionValue++;
+		if (obj[i].SalesRecv > 500) monthlyRevBook++;
+	}
+	/*End region get data for analysis*/
+	
     $('#result2').html(SiteParser.FormatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result3').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
     $('#result4').html(AddCommas(Math.floor(pagesSum/ nTotalCnt)));

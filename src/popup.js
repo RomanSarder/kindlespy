@@ -146,7 +146,7 @@ function AutoAddFunc()
             else {
                 $('.img-load').hide();
             }
-            if (result.isPulling){
+            if (result.isPulling && obj.length < 20){
                 $('.status-img div').hide();
                 $('.bullet-progress').show();
             }
@@ -157,7 +157,7 @@ function AutoAddFunc()
         }
     });
     setTimeout(AutoAddFunc, 1000);
-  }
+}
 
 function wordSort(a, b)
 {
