@@ -2,6 +2,22 @@
  * Created by Andrey Klochkov on 09.08.14.
  */
 
+function HelperFunctions(){
+}
+
+HelperFunctions.parseFloat = function(string, decimalSeparator){
+    decimalSeparator = ValueOrDefault(decimalSeparator, '.');
+    // leave only numbers and decimal separator
+    var numbersWithLocalDecimalSeparator = string.trim().replace(new RegExp('[^0-9' + decimalSeparator + ']','g'), '');
+    return parseFloat(numbersWithLocalDecimalSeparator.replace(decimalSeparator, '.'));
+};
+
+HelperFunctions.parseInt = function(string, decimalSeparator){
+    decimalSeparator = ValueOrDefault(decimalSeparator, '.');
+    // leave only numbers and decimal separator
+    return parseInt(string.trim().replace(new RegExp('[^0-9' + decimalSeparator + ']','g'), ''));
+};
+
 /**
  * Parses URL and returns a get parameter requested
  * @param url url to parse

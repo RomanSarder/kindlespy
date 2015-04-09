@@ -47,7 +47,7 @@ SearchAnalysisAlgorithm.prototype.SetPotentialBullet = function(value){
 SearchAnalysisAlgorithm.prototype.SetCompetitionBullet = function(){
     var _this = this;
     Popup.sendMessage({type: "get-TotalResults"}, function(response){
-        var competitionColor =  _this.GetCompetitionColor(parseInt(response.TotalResults))
+        var competitionColor =  _this.GetCompetitionColor(parseInt(response.TotalResults));
         $('#bullet-3').removeClass().addClass('bullet-' + competitionColor);
         $('#bullet-3').tooltipster('content', _this.GetCompetitionTooltip(competitionColor));
     });

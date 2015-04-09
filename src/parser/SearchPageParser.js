@@ -71,7 +71,7 @@ SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxRes
 //        if (tmpSplit.length > 1)
 //            category = tmpSplit[1];
 //    }
-    var totalResults = parseInt(siteParser.GetTotalSearchResult(jqNodes).replace(/,/g,''));
+    var totalResults = HelperFunctions.parseInt(siteParser.GetTotalSearchResult(jqNodes), siteParser.DecimalSeparator);
     ContentScript.sendMessage({type:"save-TotalResults", TotalResults: totalResults});
 
     url.forEach(function(item, i) {

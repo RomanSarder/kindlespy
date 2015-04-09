@@ -151,14 +151,14 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            salesRankSum += parseInt(obj[i].SalesRank.replace(siteParser.ThousandSeparator, "").replace(" ","").trim());
+            salesRankSum += HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator);
             salesRecvSum += parseInt(obj[i].SalesRecv);
             if (price.indexOf("Free") >= 0)
                 priceSum = 0;
             else
-                priceSum += parseFloat(price.replace(/[^0-9\.]/g, ''));
+                priceSum += HelperFunctions.parseFloat(price, siteParser.DecimalSeparator);
 
-            reviewSum += parseInt(review.replace(siteParser.ThousandSeparator, "").replace(" ","").trim());
+            reviewSum += HelperFunctions.parseInt(review, siteParser.DecimalSeparator);
 
             nTotalCnt ++;
 
@@ -195,14 +195,14 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
     /*Start region: get data for analysis*/
 	var salesRank20index = Math.min(19, obj.length-1);
-    var salesRank20 = parseInt(obj[salesRank20index].SalesRank.replace(SiteParser.ThousandSeparator, "").replace(" ","").trim() || 0);
+    var salesRank20 = HelperFunctions.parseInt(obj[salesRank20index].SalesRank || 0, siteParser.DecimalSeparator);
 	
 	var monthlyRev20 = 0;
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
 	for (var i = 0; i < 20 && i < obj.length; i++) {
         monthlyRev20 += parseInt(obj[i].SalesRecv);
-		if(this.GetSalesRankConclusion(obj[i].SalesRank) == 1) salesRankConclusionValue ++;
+		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator)) == 1) salesRankConclusionValue ++;
 		if (obj[i].SalesRecv > 500) monthlyRevBook ++;
 	}
 	var avgMonthlyRev20 = monthlyRev20/(Math.min(20, obj.length));
@@ -220,8 +220,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
         monthlyRevBook:monthlyRevBook});
 };
 
-MainTab.prototype.GetSalesRankConclusion = function(salesRankString){
-    var salesRank = parseInt(salesRankString.replace(SiteParser.ThousandSeparator, "").replace(" ","").trim());
+MainTab.prototype.GetSalesRankConclusion = function(salesRank){
     if (salesRank < 10000) return 1;
     if (salesRank < 20000) return 2;
     if (salesRank < 50000) return 3;

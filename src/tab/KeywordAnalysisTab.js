@@ -133,7 +133,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
         {
             var kwt = this.IsKeywordInText(obj[i].Category, obj[i].Title);
             var kwd = this.IsKeywordInText(obj[i].Category, obj[i].Description);
-            salesRankConclusion = this.GetSalesRankConclusion(obj[i].SalesRank);
+            salesRankConclusion = this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator));
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow' style='min-width:280px;max-width:280px;'><a href="+obj[i].Url+" target='_blank'>" + obj[i].Title + "</a></td>" +
@@ -142,20 +142,20 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
                 "<td class='bg-" + this.GetKWColor(kwt) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwt + "</td>" +
                 "<td class='bg-" + this.GetKWColor(kwd) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwd + "</td>" +
                 "<td class='bg-" + this.GetRatingColor(obj[i].Rating) + "' style='padding-left:20px;min-width:20px;max-width:20px;padding-right:20px;'>" + Number(obj[i].Rating).toFixed(1) +"</td>" +
-                "<td class='bg-" + this.GetReviewColor(obj[i].Reviews) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ obj[i].Reviews +"</td>" +
+                "<td class='bg-" + this.GetReviewColor(HelperFunctions.parseInt(obj[i].Reviews, siteParser.DecimalSeparator)) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ obj[i].Reviews +"</td>" +
                 "<td class='bg-" + this.GetSalesRankColor(salesRankConclusion) + "' align='right' style='padding-left:31px;width:70px;'>"+ obj[i].SalesRank +"</td>"+
                 "</tr>";
 
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            salesRankSum += parseInt(obj[i].SalesRank.replace(/[^0-9]/g, ''));
+            salesRankSum += HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator);
             if (price.indexOf("Free") >= 0)
                 priceSum = 0;
             else
-                priceSum += parseFloat(price.replace(/[^0-9\.]/g, ''));
+                priceSum += HelperFunctions.parseFloat(price, siteParser.DecimalSeparator);
 
-            reviewSum += parseInt(review.replace(/[^0-9\.]/g, ''));
+            reviewSum += HelperFunctions.parseInt(review, siteParser.DecimalSeparator);
             pagesSum += $.isNumeric(obj[i].PrintLength) ? parseInt(obj[i].PrintLength) : 0;
             ratingSum += parseFloat(obj[i].Rating);
 
@@ -194,7 +194,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
 	for (var i = 0; i < 20 && i < obj.length; i++) {
-		if(this.GetSalesRankConclusion(obj[i].SalesRank) == 1) salesRankConclusionValue++;
+		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator)) == 1) salesRankConclusionValue++;
 		if (obj[i].SalesRecv > 500) monthlyRevBook++;
 	}
 	/*End region get data for analysis*/
@@ -216,8 +216,7 @@ KeywordAnalysisTab.prototype.IsKeywordInText = function(keyWord, text){
     return text.toLowerCase().indexOf(keyWord.toLowerCase())!=-1 ? "Yes" : "No";
 };
 
-KeywordAnalysisTab.prototype.GetSalesRankConclusion = function(salesRankString){
-    var salesRank = parseInt(salesRankString.replace(/[^0-9]/g, ''));
+KeywordAnalysisTab.prototype.GetSalesRankConclusion = function(salesRank){
     if (salesRank < 10000) return 1;
     if (salesRank < 20000) return 2;
     if (salesRank < 50000) return 3;
@@ -238,8 +237,7 @@ KeywordAnalysisTab.prototype.GetRatingColor = function(rating){
     return 'red';
 };
 
-KeywordAnalysisTab.prototype.GetReviewColor = function(reviewString){
-    var review = parseInt(reviewString.replace(/[^0-9]/g, ''));
+KeywordAnalysisTab.prototype.GetReviewColor = function(review){
     if (review == '' || review == 0) return 'grey';
     if (review < 21) return 'green';
     if (review < 76) return 'orange';

@@ -8,15 +8,15 @@ var Storage = new BookStorage();
 var columnGetterFunctions = [];
 columnGetterFunctions['no'] = function(a){return parseInt(a.No)};
 columnGetterFunctions['pageno'] = function(a){
-    var printLength = parseInt(a.PrintLength);
+    var printLength = HelperFunctions.parseInt(a.PrintLength, SiteParser.DecimalSeparator);
     return isNaN(printLength) ? 0 : printLength;
 };
 columnGetterFunctions['title-book'] = function(a){return a.Title};
-columnGetterFunctions['price'] = function(a){return parseFloat(a.Price.replace(/[^0-9\.]/g, ''))};
+columnGetterFunctions['price'] = function(a){return HelperFunctions.parseFloat(a.Price, SiteParser.DecimalSeparator)};
 columnGetterFunctions['est-sales'] = function(a){return a.EstSales};
 columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv};
-columnGetterFunctions['reviews'] = function(a){return parseInt(a.Reviews.replace(/,/g,''))};
-columnGetterFunctions['sales-rank'] = function(a){return parseInt(a.SalesRank.replace(/,/g,''))};
+columnGetterFunctions['reviews'] = function(a){return HelperFunctions.parseInt(a.Reviews, SiteParser.DecimalSeparator)};
+columnGetterFunctions['sales-rank'] = function(a){return HelperFunctions.parseInt(a.SalesRank, SiteParser.DecimalSeparator)};
 
 var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
@@ -508,12 +508,12 @@ function UpdateTrackedBookView(bookData){
     var sumRank=0;
     var points = bookData.salesRankData.length;
     for(var j=0; j<points;j++){
-        sumRank += parseInt(bookData.salesRankData[j].salesRank.replace(SiteParser.ThousandSeparator, "").trim());
+        sumRank += HelperFunctions.parseInt(bookData.salesRankData[j].salesRank, SiteParser.DecimalSeparator);
     }
     var avgSalesRank = sumRank/points;
     var bookPageParser = new BookPageParser(bookData.url);
     var estSale = bookPageParser.GetEstSale(avgSalesRank);
-    var realPrice = parseFloat(bookData.price.replace(/[^0-9\.]/g, ''));
+    var realPrice = HelperFunctions.parseFloat(bookData.price, SiteParser.DecimalSeparator);
     var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
     var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
 
@@ -688,7 +688,7 @@ function GetSearchKeywordFullData(list, processItemFunction){
         var pageUrl = getSearchUrl(item);
         $.get(pageUrl, function(responseText){
             var jqResponse = parseHtmlToJquery(responseText);
-            var totalResults = parseInt(SiteParser.GetTotalSearchResult(jqResponse).replace(/,/g,''));
+            var totalResults = HelperFunctions.parseInt(SiteParser.GetTotalSearchResult(jqResponse), SiteParser.DecimalSeparator);
             var color = algorithm.GetCompetitionColor(totalResults);
             return processItemFunction({
                 keyword: item,
