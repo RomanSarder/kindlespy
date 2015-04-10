@@ -50,7 +50,7 @@
                 "src/page/SearchResultsPage.js",
                 "src/page/AuthorSearchResultsPage.js",
                 "src/page/SingleBookPage.js",
-                "src/KindleEbookEvent.js"
+                "src/pageScript.js"
             ]
         }
     ],
