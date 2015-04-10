@@ -236,8 +236,8 @@ $(window).ready(function () {
     ParentUrl = trimCurrentUrl(Url);
     SiteParser = GetSiteParser(Url);
     BookStore = new BookStorage();
-    BookStore.TrackData();
-    setInterval("BookStore.TrackData()", 2*60*60*1000);
+    BookStore.trackData();
+    setInterval("BookStore.trackData()", 2*60*60*1000);
 
     if (SiteParser === undefined) return;
     if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;

@@ -173,7 +173,7 @@ BookStorage.prototype.updateBookInStorage = function(bookUrl, bookData, callback
 /**
  * Scans all books and fill them with today's data
  */
-BookStorage.prototype.TrackData = function () {
+BookStorage.prototype.trackData = function () {
     var _this = this;
     this._storage.get('lastUpdate', function(result) {
         if(result === undefined) result = {};
