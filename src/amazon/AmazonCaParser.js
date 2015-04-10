@@ -17,7 +17,7 @@ function AmazonCaParser(){
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
     this.Publisher = "Publisher";
-    this.searchKeys = new Array("to buy","to rent");
+    this.searchKeys = ["to buy","to rent"];
     this.NumberSign = "#";
     this.SearchPattern = "Kindle Edition";
     this.EstSalesScale = [
@@ -59,7 +59,7 @@ function AmazonCaParser(){
 AmazonCaParser.Zone = "ca";
 AmazonCaParser.Region = "CA";
 
-AmazonCaParser.prototype.GetTitle = function(responseText){
+AmazonCaParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
@@ -67,29 +67,35 @@ AmazonCaParser.prototype.GetTitle = function(responseText){
     return titleNodes[0].nodeValue.trim();
 };
 
-AmazonCaParser.prototype.GetDescription = function(jqNodes){
+AmazonCaParser.prototype.getDescription = function(jqNodes){
     return jqNodes.find(".productDescriptionWrapper").text().trim();
 };
 
-AmazonCaParser.prototype.ParsePrice = function(price) {
+// functions are used only on author page which doesn't exist on amazon.ca site.
+AmazonCaParser.prototype.getKindleEditionRow = function() {};
+AmazonCaParser.prototype.getUrlFromKindleEditionRow = function() {};
+AmazonCaParser.prototype.getPriceFromKindleEditionRow = function() {};
+AmazonCaParser.prototype.getReviewsCountFromResult = function() {};
+
+AmazonCaParser.prototype.parsePrice = function(price) {
     if(price == this.Free) return 0;
     if(!price) return 0;
     return price.substr(4);
 };
 
-AmazonCaParser.prototype.FormatPrice = function(price) {
+AmazonCaParser.prototype.formatPrice = function(price) {
     return this.CurrencySign + price;
 };
 
-AmazonCaParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
+AmazonCaParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
     return callback(responseText.find('#main-image').attr('rel'));
 };
 
-AmazonCaParser.prototype.GetImageUrlSrc = function(responseText) {
+AmazonCaParser.prototype.getImageUrlSrc = function(responseText) {
     return ParseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
-AmazonCaParser.prototype.GetReviews = function(responseText) {
+AmazonCaParser.prototype.getReviews = function(responseText) {
     var rl_reviews = responseText.find("#acr .acrCount a:first");
     if (rl_reviews.length)
         return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
@@ -97,14 +103,13 @@ AmazonCaParser.prototype.GetReviews = function(responseText) {
         return  "0";
 };
 
-AmazonCaParser.prototype.GetRating = function(responseText){
+AmazonCaParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };
 
-AmazonCaParser.prototype.GetTotalSearchResult = function(responseText){
+AmazonCaParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    var result = totalSearchResult.substring(totalSearchResult.indexOf("of")+3, totalSearchResult.indexOf("results")-1).replace(/[^0-9]/g,'');
-    return result;
+    return totalSearchResult.substring(totalSearchResult.indexOf("of") + 3, totalSearchResult.indexOf("results") - 1);
 };

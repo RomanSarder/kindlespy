@@ -31,7 +31,7 @@ $(window).ready(function () {
         $('#enableTracking').prop('disabled', true);
         $('#LinkBackTo').hide();
         var _this = this;
-        Storage.EnableTracking($(_this).data().url, function() {
+        Storage.enableTracking($(_this).data().url, function() {
             $('#enableTracking').prop('disabled', false);
             $('#LinkBackTo').show();
             RankTrackingSingleShow($(_this).data().url);
@@ -39,7 +39,7 @@ $(window).ready(function () {
     });
     $('#disableTracking').click(function () {
         var _this = this;
-        Storage.DisableTracking($(_this).data().url, function(bytesInUse) {
+        Storage.disableTracking($(_this).data().url, function(bytesInUse) {
             RankTrackingSingleShow($(_this).data().url);
         });
     });
@@ -465,13 +465,13 @@ function RankTrackingSingleShow(bookUrl){
     $('#tracking-content').html('');
 
     $('#LinkBackTo').hide();
-    Storage.GetBook(bookUrl, function(bookData) {
+    Storage.getBook(bookUrl, function(bookData) {
         if(bookData) {
             UpdateTrackedBookView(bookData);
             return;
         }
 
-        Storage.InitBookFromUrl(bookUrl, UpdateTrackedBookView);
+        Storage.initBookFromUrl(bookUrl, UpdateTrackedBookView);
     });
 }
 
@@ -503,7 +503,7 @@ function UpdateTrackedBookView(bookData){
     $('#singleResult2').html(bookData.price);
     $('#singleResult3').html(bookData.pages);
     $('#singleResult4').html(AddCommas(bookData.estSales));
-    $('#singleResult5').html(SiteParser.FormatPrice(AddCommas(Math.round(bookData.estSalesRev))));
+    $('#singleResult5').html(SiteParser.formatPrice(AddCommas(Math.round(bookData.estSalesRev))));
     $('#singleResult6').html(bookData.numberOfReviews);
     var sumRank=0;
     var points = bookData.salesRankData.length;
@@ -519,7 +519,7 @@ function UpdateTrackedBookView(bookData){
 
     $('#days').html(points);
     $('#AvgSalesRank').html(AddCommas(Math.floor(avgSalesRank)));
-    $('#EstDailyRev').html(SiteParser.FormatPrice(AddCommas(EstDailyRev)));
+    $('#EstDailyRev').html(SiteParser.formatPrice(AddCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', '').replace('AA278', ''));
     $('#ExportBtnWordCloud').attr('book-url', bookData.url);
@@ -560,7 +560,7 @@ function UpdateTrackedBookView(bookData){
 }
 
 function UpdateRateTrackingTable(){
-    Storage.GetAllBooks(function(books){
+    Storage.getAllBooks(function(books){
         var html = "";
         for(var i=0;i<books.length;i++){
             html += "<tr>" +
@@ -578,7 +578,7 @@ function UpdateRateTrackingTable(){
         var RemoveRankTrackedBooks = $('.RankTrackingRemove');
         for(var i = 0;i<RemoveRankTrackedBooks.length; i++) {
             $(RemoveRankTrackedBooks[i]).click(function () {
-                Storage.RemoveBookInStorage($(this).attr('bookUrl'), function(){
+                Storage.removeBookInStorage($(this).attr('bookUrl'), function(){
                     RankTrackingListShow();
                 });
             });
@@ -688,8 +688,8 @@ function GetSearchKeywordFullData(list, processItemFunction){
         var pageUrl = getSearchUrl(item);
         $.get(pageUrl, function(responseText){
             var jqResponse = parseHtmlToJquery(responseText);
-            var totalResults = HelperFunctions.parseInt(SiteParser.GetTotalSearchResult(jqResponse), SiteParser.DecimalSeparator);
-            var color = algorithm.GetCompetitionColor(totalResults);
+            var totalResults = HelperFunctions.parseInt(SiteParser.getTotalSearchResult(jqResponse), SiteParser.DecimalSeparator);
+            var color = algorithm.getCompetitionColor(totalResults);
             return processItemFunction({
                 keyword: item,
                 color: color
@@ -818,7 +818,7 @@ function checkIsDataLoaded(){
 function UpdateTable(obj)
 {
     IsErrorWindow = false;
-    Storage.GetNumberOfBooks(function(num){
+    Storage.getNumberOfBooks(function(num){
         num = (num === undefined)?0:num;
 
         $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');

@@ -13,7 +13,7 @@ function RankTrackingTab(){
 RankTrackingTab.prototype.ExportToCsv = function(data){
     var bookUrl = $('#ExportBtnWordCloud').attr('book-url');
 
-    new BookStorage().GetBook(bookUrl, function(bookData) {
+    new BookStorage().getBook(bookUrl, function(bookData) {
         if(bookData) {
             var x = new Array(bookData.salesRankData.length+1);
 

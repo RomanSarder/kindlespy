@@ -18,7 +18,7 @@ function AmazonFrParser(){
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
     this.Publisher = "Editeur";
-    this.searchKeys = new Array("à acheter","louer");
+    this.searchKeys = ["à acheter","louer"];
     this.NumberSign = decodeURI("n%C2%B0");
     this.SearchPattern = "Format Kindle";
     this.EstSalesScale = [
@@ -60,17 +60,19 @@ function AmazonFrParser(){
 AmazonFrParser.Zone = "fr";
 AmazonFrParser.Region = "FR";
 
-AmazonFrParser.prototype.GetTitle = function(responseText){
+AmazonFrParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
     if (titleNodes === undefined || titleNodes.length == 0) return '';
     return titleNodes[0].nodeValue.trim();
 };
-AmazonFrParser.prototype.GetDescription = function(jqNodes){
+
+AmazonFrParser.prototype.getDescription = function(jqNodes){
     return jqNodes.find("#productDescription .content").text().trim();
 };
-AmazonFrParser.prototype.GetKindleEditionRow = function(jqNode) {
+
+AmazonFrParser.prototype.getKindleEditionRow = function(jqNode) {
     var _this = this;
     var retval;
     jqNode.find("li").each(function() {
@@ -81,37 +83,37 @@ AmazonFrParser.prototype.GetKindleEditionRow = function(jqNode) {
     return retval;
 };
 
-AmazonFrParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow) {
+AmazonFrParser.prototype.getUrlFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("a:first").attr("href");
 };
 
-AmazonFrParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
+AmazonFrParser.prototype.getPriceFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("span.bld");
 };
 
-AmazonFrParser.prototype.GetReviewsCountFromResult = function(resultItem) {
+AmazonFrParser.prototype.getReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".rvwCnt > a:first").text();
 };
 
-AmazonFrParser.prototype.ParsePrice = function(price) {
+AmazonFrParser.prototype.parsePrice = function(price) {
     if(price == this.Free) return 0;
     if(!price) return 0;
-    return price.replace(/\./g,'').replace(',', '.').replace(/[^0-9\.]/g, '');
+    return HelperFunctions.parseFloat(price, this.DecimalSeparator);
 };
 
-AmazonFrParser.prototype.FormatPrice = function(price) {
+AmazonFrParser.prototype.formatPrice = function(price) {
     return this.CurrencySign + price;
 };
 
-AmazonFrParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
+AmazonFrParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
     callback(responseText.find('#main-image').attr('rel'));
 };
 
-AmazonFrParser.prototype.GetImageUrlSrc = function(responseText) {
+AmazonFrParser.prototype.getImageUrlSrc = function(responseText) {
     return responseText.find('#main-image').attr('src');
 };
 
-AmazonFrParser.prototype.GetReviews = function(responseText) {
+AmazonFrParser.prototype.getReviews = function(responseText) {
     var rl_reviews = responseText.find("#acr .acrCount a:first");
     if (rl_reviews.length)
         return $(rl_reviews).text().replace('commentaires','').replace('commentaire','').trim();
@@ -119,14 +121,13 @@ AmazonFrParser.prototype.GetReviews = function(responseText) {
         return "0";
 };
 
-AmazonFrParser.prototype.GetRating = function(responseText){
+AmazonFrParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#revSum span:contains('étoiles sur')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("étoiles sur")[0].trim();
 };
 
-AmazonFrParser.prototype.GetTotalSearchResult = function(responseText){
+AmazonFrParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    var result = totalSearchResult.substring(totalSearchResult.indexOf("sur")+4, totalSearchResult.indexOf("résultats")-1).replace(/[^0-9]/g,'');
-    return result;
+    return totalSearchResult.substring(totalSearchResult.indexOf("sur") + 4, totalSearchResult.indexOf("résultats") - 1);
 };

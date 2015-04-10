@@ -18,7 +18,7 @@ function AmazonDeParser(){
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
     this.Publisher = "Verlag";
-    this.searchKeys = new Array("kaufen","to rent");
+    this.searchKeys = ["kaufen","to rent"];
     this.NumberSign = "#";
     this.SearchPattern = "Kindle Edition";
     this.EstSalesScale = [
@@ -60,17 +60,18 @@ function AmazonDeParser(){
 AmazonDeParser.Zone = "de";
 AmazonDeParser.Region = "DE";
 
-AmazonDeParser.prototype.GetTitle = function(responseText){
+AmazonDeParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
     if (titleNodes === undefined || titleNodes.length == 0) return '';
     return titleNodes[0].nodeValue.trim();
 };
-AmazonDeParser.prototype.GetDescription = function(jqNodes){
+
+AmazonDeParser.prototype.getDescription = function(jqNodes){
     return jqNodes.find("#productDescription .content").text().trim();
 };
-AmazonDeParser.prototype.GetKindleEditionRow = function(jqNode) {
+AmazonDeParser.prototype.getKindleEditionRow = function(jqNode) {
     var retval;
     jqNode.find("li").each(function() {
         if($(this).text().indexOf("Kindle Edition")>0 && $(this).text().indexOf("andere Formate")<0)
@@ -82,37 +83,37 @@ AmazonDeParser.prototype.GetKindleEditionRow = function(jqNode) {
     return retval;
 };
 
-AmazonDeParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow) {
+AmazonDeParser.prototype.getUrlFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("a:first").attr("href");
 };
 
-AmazonDeParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
+AmazonDeParser.prototype.getPriceFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("span.bld");
 };
 
-AmazonDeParser.prototype.GetReviewsCountFromResult = function(resultItem) {
+AmazonDeParser.prototype.getReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".rvwCnt > a:first").text();
 };
 
-AmazonDeParser.prototype.ParsePrice = function(price) {
+AmazonDeParser.prototype.parsePrice = function(price) {
     if(price == this.Free) return 0;
     if(!price) return 0;
-    return price.replace(/\./g,'').replace(',', '.').replace(/[^0-9\.]/g, '');
+    return HelperFunctions.parseFloat(price, this.DecimalSeparator);
 };
 
-AmazonDeParser.prototype.FormatPrice = function(price) {
+AmazonDeParser.prototype.formatPrice = function(price) {
     return this.CurrencySign + price;
 };
 
-AmazonDeParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
+AmazonDeParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
     return callback(responseText.find('#main-image').attr('rel'));
 };
 
-AmazonDeParser.prototype.GetImageUrlSrc = function(responseText) {
+AmazonDeParser.prototype.getImageUrlSrc = function(responseText) {
     return responseText.find('#main-image').attr('src');
 };
 
-AmazonDeParser.prototype.GetReviews = function(responseText) {
+AmazonDeParser.prototype.getReviews = function(responseText) {
     var rl_reviews = responseText.find("#acr .acrCount a:first");
     if (rl_reviews.length)
         return $(rl_reviews).text().replace('Rezensionen','').replace('Rezension','').trim();
@@ -120,14 +121,13 @@ AmazonDeParser.prototype.GetReviews = function(responseText) {
         return "0";
 };
 
-AmazonDeParser.prototype.GetRating = function(responseText){
+AmazonDeParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#revSum .acrRating:contains('von')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("von")[0].trim();
 };
 
-AmazonDeParser.prototype.GetTotalSearchResult = function(responseText){
+AmazonDeParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    var result = totalSearchResult.substring(totalSearchResult.indexOf("von")+4, totalSearchResult.indexOf("Ergebnissen")-1).replace(/[^0-9]/g,'');
-    return result;
+    return totalSearchResult.substring(totalSearchResult.indexOf("von") + 4, totalSearchResult.indexOf("Ergebnissen") - 1);
 };

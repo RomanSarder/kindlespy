@@ -209,12 +209,12 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 	/*End region get data for analysis*/
     
 	$('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
-    $('#result3').html( siteParser.FormatPrice(AddCommas(Math.floor(salesRecvSum / nTotalCnt))));
-    $('#result4').html(siteParser.FormatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
+    $('#result3').html( siteParser.formatPrice(AddCommas(Math.floor(salesRecvSum / nTotalCnt))));
+    $('#result4').html(siteParser.formatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result5').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
-    $('#totalReSalesRecv').html(siteParser.FormatPrice(AddCommas(salesRecvSum)));
+    $('#totalReSalesRecv').html(siteParser.formatPrice(AddCommas(salesRecvSum)));
     this.Analysis = IsSearchPageFromCategoryKind(categoryKind)? new SearchAnalysisAlgorithm() : new CategoryAnalysisAlgorithm();
-    this.Analysis.SetBullets({salesRank20: salesRank20,
+    this.Analysis.setBullets({salesRank20: salesRank20,
         avgMonthlyRev:avgMonthlyRev20,
         salesRankConclusionValue: salesRankConclusionValue,
         monthlyRevBook:monthlyRevBook});

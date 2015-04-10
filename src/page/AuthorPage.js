@@ -39,17 +39,17 @@ AuthorPage.prototype.ParsePage = function(pullingToken, startIndex, maxResults, 
     jqNodes.find(".results").children().each(function() {
         if(this.id == "result_"+(startIndex+counter)) {
             if(counter>=maxResults) return;
-            var krow = siteParser.GetKindleEditionRow($(this));
+            var krow = siteParser.getKindleEditionRow($(this));
             No[index] = parseInt(index) + 1 + parseInt(startIndex);
             if(typeof krow == "undefined"){
                 counter++;
                 return;
             }
 
-            url[index] = siteParser.GetUrlFromKindleEditionRow(krow);
-            review[index] = siteParser.GetReviewsCountFromResult($(this));
+            url[index] = siteParser.getUrlFromKindleEditionRow(krow);
+            review[index] = siteParser.getReviewsCountFromResult($(this));
             if(!review[index]) review[index] = "0";
-            var kprice = siteParser.GetPriceFromKindleEditionRow(krow);
+            var kprice = siteParser.getPriceFromKindleEditionRow(krow);
             if(kprice.length<1) {
                 kprice = $(krow).find(".toePrice a#buyPrice:first");
             }

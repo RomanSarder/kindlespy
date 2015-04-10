@@ -17,7 +17,7 @@ function AmazonComParser(){
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 12;
     this.Publisher = "Publisher";
-    this.searchKeys = new Array("to buy","to rent");
+    this.searchKeys = ["to buy","to rent"];
     this.NumberSign = "#";
     this.SearchPattern = "Kindle Edition";
     this.EstSalesScale = [
@@ -59,7 +59,7 @@ function AmazonComParser(){
 AmazonComParser.Zone = "com";
 AmazonComParser.Region = "USA";
 
-AmazonComParser.prototype.GetTitle = function(responseText){
+AmazonComParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
@@ -67,11 +67,11 @@ AmazonComParser.prototype.GetTitle = function(responseText){
     return titleNodes[0].nodeValue.trim();
 };
 
-AmazonComParser.prototype.GetDescription = function(jqNodes){
+AmazonComParser.prototype.getDescription = function(jqNodes){
     return jqNodes.find("#outer_postBodyPS").text().trim();
 };
 
-AmazonComParser.prototype.GetKindleEditionRow = function(jqNode) {
+AmazonComParser.prototype.getKindleEditionRow = function(jqNode) {
     var retval;
     jqNode.find(".tp").find("tr").each(function() {
         if($(this).text().indexOf("Kindle Edition")>0)
@@ -81,51 +81,50 @@ AmazonComParser.prototype.GetKindleEditionRow = function(jqNode) {
     return retval;
 };
 
-AmazonComParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow) {
+AmazonComParser.prototype.getUrlFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find(".tpType > a:first").attr("href");
 };
 
-AmazonComParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
+AmazonComParser.prototype.getPriceFromKindleEditionRow = function(kindleEditionRow) {
     var priceTag = kindleEditionRow.find(".toeOurPrice > a:first");
     if (priceTag.length > 0) return priceTag;
     return kindleEditionRow.find(".toeOurPriceWithRent > a:first");
 };
 
-AmazonComParser.prototype.GetReviewsCountFromResult = function(resultItem) {
+AmazonComParser.prototype.getReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".reviewsCount > a:first").text();
 };
 
-AmazonComParser.prototype.ParsePrice = function(price) {
+AmazonComParser.prototype.parsePrice = function(price) {
     if(price == this.Free) return 0;
     if(!price) return 0;
     return price.substr(1);
 };
 
-AmazonComParser.prototype.FormatPrice = function(price) {
+AmazonComParser.prototype.formatPrice = function(price) {
     return this.CurrencySign + price;
 };
 
-AmazonComParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
+AmazonComParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
     return callback(responseText.find('#main-image').attr('rel'));
 };
 
-AmazonComParser.prototype.GetImageUrlSrc = function(responseText) {
+AmazonComParser.prototype.getImageUrlSrc = function(responseText) {
     return ParseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
-AmazonComParser.prototype.GetReviews = function(responseText) {
+AmazonComParser.prototype.getReviews = function(responseText) {
     var rl_reviews = responseText.find("#acr .acrCount a:first");
     return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
 };
 
-AmazonComParser.prototype.GetRating = function(responseText){
+AmazonComParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };
 
-AmazonComParser.prototype.GetTotalSearchResult = function(responseText){
+AmazonComParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    var result = totalSearchResult.substring(totalSearchResult.indexOf("of")+3, totalSearchResult.indexOf("results")-1).replace(/[^0-9]/g,'');
-    return result;
+    return totalSearchResult.substring(totalSearchResult.indexOf("of") + 3, totalSearchResult.indexOf("results") - 1);
 };

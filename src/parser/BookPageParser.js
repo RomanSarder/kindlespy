@@ -50,7 +50,7 @@ BookPageParser.prototype.GetGoogleImageSearchUrl = function(jqNodes, url, callba
     if(jqNodes === undefined || jqNodes.length == 0) {
         return callback(googleUrl);
     }
-    this._siteParser.GetGoogleImageSearchUrlRel(jqNodes, url, function(rel){
+    this._siteParser.getGoogleImageSearchUrlRel(jqNodes, url, function(rel){
         if (rel === undefined || rel.length<1)
             return callback(googleUrl);
         return callback(googleUrl + "searchbyimage?hl=en&image_url=" + rel);
@@ -59,35 +59,35 @@ BookPageParser.prototype.GetGoogleImageSearchUrl = function(jqNodes, url, callba
 
 BookPageParser.prototype.GetImageUrl = function(jqNodes){
     if(jqNodes === undefined || jqNodes.length == 0) return '';
-    var src = this._siteParser.GetImageUrlSrc(jqNodes);
+    var src = this._siteParser.getImageUrlSrc(jqNodes);
     if (src === undefined || src.length < 1) return '';
     return src;
 };
 
-BookPageParser.prototype.GetTitle = function(jqNodes) {
+BookPageParser.prototype.getTitle = function(jqNodes) {
     if(jqNodes === undefined || jqNodes.length == 0) return '';
-    return this._siteParser.GetTitle(jqNodes);
+    return this._siteParser.getTitle(jqNodes);
 };
 
-BookPageParser.prototype.GetDescription = function(jqNodes) {
+BookPageParser.prototype.getDescription = function(jqNodes) {
     if(jqNodes === undefined || jqNodes.length == 0) return '';
-    return this._siteParser.GetDescription(jqNodes);
+    return this._siteParser.getDescription(jqNodes);
 };
 
-BookPageParser.prototype.GetRating = function(jqNodes) {
+BookPageParser.prototype.getRating = function(jqNodes) {
     if(jqNodes === undefined || jqNodes.length == 0) return '';
-    return this._siteParser.GetRating(jqNodes);
+    return this._siteParser.getRating(jqNodes);
 };
 
-BookPageParser.prototype.GetReviews = function(jqNodes) {
+BookPageParser.prototype.getReviews = function(jqNodes) {
     if(jqNodes === undefined || jqNodes.length == 0) return '';
-    return this._siteParser.GetReviews(jqNodes);
+    return this._siteParser.getReviews(jqNodes);
 };
 
 BookPageParser.prototype.GetPrice = function(jqNodes) {
     var priceBlock = jqNodes.find('#priceBlock b.priceLarge');
     if(priceBlock && priceBlock.text().trim() !== '') {
-        if(priceBlock.text().trim() == "Free") return this._siteParser.FormatPrice("0" + this._siteParser.DecimalSeparator + "00");
+        if(priceBlock.text().trim() == "Free") return this._siteParser.formatPrice("0" + this._siteParser.DecimalSeparator + "00");
          return priceBlock.text().trim();
     }
     priceBlock = jqNodes.find('#kindle_meta_binding_winner .price');
@@ -156,22 +156,22 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
 
     $.get(url, function (responseText) {
         var jqResponseText = parseHtmlToJquery(responseText);
-        var entryTitle = _this.GetTitle(jqResponseText);
+        var entryTitle = _this.getTitle(jqResponseText);
         if (entryTitle == '') entryTitle = _this.GetAuthorTitle(jqResponseText);
         if (entryTitle === undefined) return;
-        var entryDescription = _this.GetDescription(jqResponseText);
-        if (!reviews) reviews = _this.GetReviews(jqResponseText);
+        var entryDescription = _this.getDescription(jqResponseText);
+        if (!reviews) reviews = _this.getReviews(jqResponseText);
         if (!price) price = _this.GetPrice(jqResponseText);
 
         var entrySalesRank = _this.GetSalesRank(jqResponseText);
         var entryEstSale = _this.GetEstSale(entrySalesRank);
-        var realPrice = _this._siteParser.ParsePrice(price);
+        var realPrice = _this._siteParser.parsePrice(price);
         var entrySalesRecv = _this.GetSalesRecv(entryEstSale, realPrice);
         var entryPrintLength = _this.GetPrintLength(jqResponseText);
         var entryAuthor = _this.GetAuthor(jqResponseText);
         var entryGoogleSearchUrl = _this.GetGoogleSearchUrlByTitleAndAuthor(entryTitle, entryAuthor);
         var entryImageUrl = _this.GetImageUrl(jqResponseText);
-        var entryRating = _this.GetRating(jqResponseText);
+        var entryRating = _this.getRating(jqResponseText);
         _this.GetGoogleImageSearchUrl(jqResponseText, url, function (entryGoogleImageSearchUrl) {
             _this.GetDateOfPublication(jqResponseText, function (entryDateOfPublication) {
                 if (typeof entryEstSale === "undefined") entryEstSale = "0";
@@ -186,7 +186,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                 return callback({
                     title: entryTitle,
                     description: entryDescription,
-                    price: (price == _this._siteParser.Free) ? _this._siteParser.Free : _this._siteParser.FormatPrice(realPrice),
+                    price: (price == _this._siteParser.Free) ? _this._siteParser.Free : _this._siteParser.formatPrice(realPrice),
                     estSale: entryEstSale,
                     salesRecv: entrySalesRecv,
                     reviews: reviews,

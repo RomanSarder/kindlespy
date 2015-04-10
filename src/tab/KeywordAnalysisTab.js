@@ -199,13 +199,13 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
 	}
 	/*End region get data for analysis*/
 	
-    $('#result2').html(SiteParser.FormatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
+    $('#result2').html(SiteParser.formatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result3').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
     $('#result4').html(AddCommas(Math.floor(pagesSum/ nTotalCnt)));
     $('#result5').html(AddCommas((ratingSum/ nTotalCnt).toFixed(1)));
     $('#result6').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
 
-    this.Analysis.SetBullets({
+    this.Analysis.setBullets({
         salesRankConclusionValue: salesRankConclusionValue,
         monthlyRevBook: monthlyRevBook
     });

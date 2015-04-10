@@ -32,7 +32,7 @@ var bookDataExample = {
 /**
  * Empty storage
  */
-BookStorage.prototype.Clear = function () {
+BookStorage.prototype.clear = function () {
     this._storage.clear();
 };
 
@@ -41,16 +41,16 @@ BookStorage.prototype.Clear = function () {
  * @param bookUrl
  * @param {function=} callback function() {...}
  */
-BookStorage.prototype.EnableTracking = function(bookUrl, callback) {
+BookStorage.prototype.enableTracking = function(bookUrl, callback) {
     callback = ValueOrDefault(callback, function() {});
     var _this = this;
     // search url in storage
-    this.GetBook(bookUrl, function(bookData) {
+    this.getBook(bookUrl, function(bookData) {
         var changeStatus = function(bookData){
             // change status to tracking
             bookData.trackingEnabled = true;
             // update data
-            _this.UpdateBookInStorage(bookUrl, bookData, callback);
+            _this.updateBookInStorage(bookUrl, bookData, callback);
         };
 
         if(bookData !== undefined) {
@@ -59,7 +59,7 @@ BookStorage.prototype.EnableTracking = function(bookUrl, callback) {
         }
 
         // if not found, add new item to storage
-        _this.InitBookFromUrl(bookUrl, changeStatus);
+        _this.initBookFromUrl(bookUrl, changeStatus);
     });
 };
 
@@ -68,15 +68,15 @@ BookStorage.prototype.EnableTracking = function(bookUrl, callback) {
  * @param bookUrl
  * @param {function=} callback function(bytesInUse) {...}
  */
-BookStorage.prototype.DisableTracking = function(bookUrl, callback) {
+BookStorage.prototype.disableTracking = function(bookUrl, callback) {
     callback = ValueOrDefault(callback, function() {});
     var _this = this;
     // search url in storage
-    this.GetBook(bookUrl, function(bookData) {
+    this.getBook(bookUrl, function(bookData) {
         if(bookData === undefined) return;
         // change status to not-tracking
         bookData.trackingEnabled = false;
-        _this.UpdateBookInStorage(bookUrl, bookData, callback);
+        _this.updateBookInStorage(bookUrl, bookData, callback);
     });
 };
 
@@ -86,20 +86,19 @@ BookStorage.prototype.DisableTracking = function(bookUrl, callback) {
  * @param bookUrl
  * @param callback function(object bookData) {...};
  */
-BookStorage.prototype.GetBook = function(bookUrl, callback) {
+BookStorage.prototype.getBook = function(bookUrl, callback) {
     var _this = this;
     this._storage.get('trackingData', function(items) {
         if(items !== undefined && items.trackingData !== undefined) {
-            var index = _this.FindUrlIndex(items.trackingData, bookUrl);
-            callback(items.trackingData[index]);
-            return;
+            var index = _this.findUrlIndex(items.trackingData, bookUrl);
+            return callback(items.trackingData[index]);
         }
 
-        callback(undefined);
+        return callback(undefined);
     });
 };
 
-BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
+BookStorage.prototype.initBookFromUrl = function(bookUrl, callback) {
     var bookParser = new BookPageParser(bookUrl);
     bookParser.GetBookData(bookUrl, null, null, function(book){
         var bookData = {
@@ -127,18 +126,17 @@ BookStorage.prototype.InitBookFromUrl = function(bookUrl, callback) {
  * Returns all books from the storage
  * @param {function} callback function(object bookData) {...};
  */
-BookStorage.prototype.GetAllBooks = function(callback) {
+BookStorage.prototype.getAllBooks = function(callback) {
     this._storage.get('trackingData', function(items) {
         if(items !== undefined && items.trackingData !== undefined) {
-            callback(items.trackingData);
-            return;
+            return callback(items.trackingData);
         }
 
-        callback(undefined);
+        return callback(undefined);
     });
 };
 
-BookStorage.prototype.FindUrlIndex = function(trackingData, url) {
+BookStorage.prototype.findUrlIndex = function(trackingData, url) {
     var index;
     for (var i = 0; i < trackingData.length; i++) {
         if (trackingData[i].url === url) {
@@ -156,12 +154,12 @@ BookStorage.prototype.FindUrlIndex = function(trackingData, url) {
  * @param bookData
  * @param callback function(integer bytesInUse) {...};
  */
-BookStorage.prototype.UpdateBookInStorage = function(bookUrl, bookData, callback) {
+BookStorage.prototype.updateBookInStorage = function(bookUrl, bookData, callback) {
     var _this = this;
     this._storage.get('trackingData', function(items) {
         if(items === undefined) items = {};
         if(items.trackingData === undefined) items.trackingData = [];
-        var index = _this.FindUrlIndex(items.trackingData, bookUrl);
+        var index = _this.findUrlIndex(items.trackingData, bookUrl);
         if(index === undefined) {
             items.trackingData.push(bookData);
         }else{
@@ -186,7 +184,7 @@ BookStorage.prototype.TrackData = function () {
             return;
         }
         _this._storage.set({lastUpdate:Date.now()}, function(bytesInUse) {
-            _this.GetAllBooks(function(/** Array */ books) {
+            _this.getAllBooks(function(/** Array */ books) {
                 if(books === undefined) return;
                 var today = new Date().setHours(0,0,0,0);
                 // iterate through all tracked books
@@ -209,7 +207,7 @@ BookStorage.prototype.TrackData = function () {
                         if((book.salesRankData.length % 30) === 0) {
                             book.trackingEnabled = false;
                         }
-                        _this.UpdateBookInStorage(book.url, book, function() { });
+                        _this.updateBookInStorage(book.url, book, function() { });
                     });
                 });
             });
@@ -221,14 +219,13 @@ BookStorage.prototype.TrackData = function () {
  * Returns number of books from the storage
  * @param {function} callback function(object bookData) {...};
  */
-BookStorage.prototype.GetNumberOfBooks = function(callback) {
+BookStorage.prototype.getNumberOfBooks = function(callback) {
     this._storage.get('trackingData', function(items) {
         if(items !== undefined && items.trackingData !== undefined) {
-            callback(items.trackingData.length);
-            return;
+            return callback(items.trackingData.length);
         }
 
-        callback(undefined);
+        return callback(undefined);
     });
 };
 
@@ -237,17 +234,14 @@ BookStorage.prototype.GetNumberOfBooks = function(callback) {
  * @param bookUrl
  * @param callback function(integer bytesInUse) {...};
  */
-BookStorage.prototype.RemoveBookInStorage = function(bookUrl, callback) {
+BookStorage.prototype.removeBookInStorage = function(bookUrl, callback) {
     var _this = this;
     this._storage.get('trackingData', function(items) {
         if(items === undefined) return;
         if(items.trackingData === undefined) return;
-        var index = _this.FindUrlIndex(items.trackingData, bookUrl);
+        var index = _this.findUrlIndex(items.trackingData, bookUrl);
         if(index !== undefined)
             items.trackingData.splice(index, 1);
         _this._storage.set(items, callback);
     });
 };
-function GetFormattedDate(d){
-    return d.getFullYear() + "-" + (('0'+(d.getMonth()+1)).slice(-2)) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ":" + d.getMilliseconds();
-}

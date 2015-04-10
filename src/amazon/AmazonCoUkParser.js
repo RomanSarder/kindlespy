@@ -17,7 +17,7 @@ function AmazonCoUkParser(){
     this.SearchResultsNumber = 16;
     this.AuthorResultsNumber = 16;
     this.Publisher = "Publisher";
-    this.searchKeys = new Array("to buy","to rent");
+    this.searchKeys = ["to buy","to rent"];
     this.NumberSign = "#";
     this.SearchPattern = "Kindle Edition";
     this.EstSalesScale = [
@@ -59,17 +59,19 @@ function AmazonCoUkParser(){
 AmazonCoUkParser.Zone = "co.uk";
 AmazonCoUkParser.Region = "UK";
 
-AmazonCoUkParser.prototype.GetTitle = function(responseText){
+AmazonCoUkParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
     if (titleNodes === undefined || titleNodes.length == 0) return '';
     return titleNodes[0].nodeValue.trim();
 };
-AmazonCoUkParser.prototype.GetDescription = function(jqNodes){
+
+AmazonCoUkParser.prototype.getDescription = function(jqNodes){
     return jqNodes.find("#outer_postBodyPS").text().trim();
 };
-AmazonCoUkParser.prototype.GetKindleEditionRow = function(jqNode) {
+
+AmazonCoUkParser.prototype.getKindleEditionRow = function(jqNode) {
     var retval;
     jqNode.find("li").each(function() {
         if($(this).text().indexOf("Kindle Edition")>0)
@@ -81,29 +83,29 @@ AmazonCoUkParser.prototype.GetKindleEditionRow = function(jqNode) {
     return retval;
 };
 
-AmazonCoUkParser.prototype.GetUrlFromKindleEditionRow = function(kindleEditionRow) {
+AmazonCoUkParser.prototype.getUrlFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("a:first").attr("href");
 };
 
-AmazonCoUkParser.prototype.GetPriceFromKindleEditionRow = function(kindleEditionRow) {
+AmazonCoUkParser.prototype.getPriceFromKindleEditionRow = function(kindleEditionRow) {
     return kindleEditionRow.find("span.bld");
 };
 
-AmazonCoUkParser.prototype.GetReviewsCountFromResult = function(resultItem) {
+AmazonCoUkParser.prototype.getReviewsCountFromResult = function(resultItem) {
     return resultItem.find(".rvwCnt > a:first").text();
 };
 
-AmazonCoUkParser.prototype.ParsePrice = function(price) {
+AmazonCoUkParser.prototype.parsePrice = function(price) {
     if(price == this.Free) return 0;
     if(!price) return 0;
-    return price.replace(/[^0-9\.]/g, '');
+    return HelperFunctions.parseFloat(price, this.DecimalSeparator);
 };
 
-AmazonCoUkParser.prototype.FormatPrice = function(price) {
+AmazonCoUkParser.prototype.formatPrice = function(price) {
     return this.CurrencySign + price;
 };
 
-AmazonCoUkParser.prototype.GetGoogleImageSearchUrlRel = function(responseText, url, callback) {
+AmazonCoUkParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
     var path = url.split("/");
     if(path.length > 5){
         this.GetResponseTextFromAmazonComParser(path[5], function(htmlFromAmazonCom){
@@ -121,11 +123,11 @@ AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCod
     $.get(urlAmazonCom, callback);
 };
 
-AmazonCoUkParser.prototype.GetImageUrlSrc = function(responseText) {
+AmazonCoUkParser.prototype.getImageUrlSrc = function(responseText) {
     return responseText.find('#prodImage').attr('src');
 };
 
-AmazonCoUkParser.prototype.GetReviews = function(responseText) {
+AmazonCoUkParser.prototype.getReviews = function(responseText) {
     var rl_reviews = responseText.find("#acr .acrCount a:first");
     if (rl_reviews.length)
         return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
@@ -133,13 +135,13 @@ AmazonCoUkParser.prototype.GetReviews = function(responseText) {
         return  "0";
 };
 
-AmazonCoUkParser.prototype.GetRating = function(responseText){
+AmazonCoUkParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
     if(ratingString === undefined && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };
 
-AmazonCoUkParser.prototype.GetTotalSearchResult = function(responseText){
+AmazonCoUkParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
     var result = totalSearchResult.substring(totalSearchResult.indexOf("of")+3, totalSearchResult.indexOf("results")-1).replace(/[^0-9]/g,'');
     return result;
