@@ -4,7 +4,6 @@
 
 
 var defaultSetting = {
-    "version": "0.0.0",
     "IsWaitForPulling" : false,
     "IsPulling" : false,
     "CurrentUrl" : "",
@@ -212,19 +211,6 @@ function onMessageReceived(request, sender, callback){
         return callback({TotalResults:setting.TotalResults});
     }
 }
-
-chrome.runtime.sendMessage({action:'getVersion'}, function (version){
-    var currentVersion = version;
-    var savedVersion = getSettings().version;
-
-    if (typeof savedVersion === "undefined" || currentVersion !== savedVersion)
-    {
-        defaultSetting.version = currentVersion;
-        setSettings(defaultSetting);
-    }
-});
-
-
 //______________________________________________________________________________________________________________________
 var Url;
 var ParentUrl; // trimmed Url
