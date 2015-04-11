@@ -4,60 +4,60 @@
  */
 
 function AmazonCoUkParser(){
-    this.MainUrl = "http://www.amazon." + AmazonCoUkParser.Zone;
-    this.CompletionUrl = "http://completion.amazon." + AmazonCoUkParser.Zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=3";
-    this.Region = AmazonCoUkParser.Region;
-    this.ParamUrlBestSellers = "154606011";
-    this.AreYouAnAuthorPattern = "Are You an Author";
-    this.Free = 'Free';
-    this.CurrencySign = "&pound;";
-    this.CurrencySignForExport = "\u00A3";
-    this.ThousandSeparator = ",";
-    this.DecimalSeparator = ".";
-    this.SearchResultsNumber = 16;
-    this.AuthorResultsNumber = 16;
-    this.Publisher = "Publisher";
+    this.mainUrl = "http://www.amazon." + AmazonCoUkParser.zone;
+    this.completionUrl = "http://completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=3";
+    this.region = AmazonCoUkParser.region;
+    this.paramUrlBestSellers = "154606011";
+    this.areYouAnAuthorPattern = "Are You an Author";
+    this.free = 'free';
+    this.currencySign = "&pound;";
+    this.currencySignForExport = "\u00A3";
+    this.thousandSeparator = ",";
+    this.decimalSeparator = ".";
+    this.searchResultsNumber = 16;
+    this.authorResultsNumber = 16;
+    this.publisher = "publisher";
     this.searchKeys = ["to buy","to rent"];
-    this.NumberSign = "#";
-    this.SearchPattern = "Kindle Edition";
-    this.EstSalesScale = [
-        {"min": 1, "max": 5, "EstSale": 60000},
-        {"min": 6, "max": 10, "EstSale": 52500},
-        {"min": 11, "max": 20, "EstSale": 45000},
-        {"min": 21, "max": 35, "EstSale": 37500},
-        {"min": 36, "max": 100, "EstSale": 27500},
-        {"min": 101, "max": 200, "EstSale": 15000},
-        {"min": 201, "max": 350, "EstSale": 6000},
-        {"min": 351, "max": 500, "EstSale": 3000},
-        {"min": 501, "max": 750, "EstSale": 2250},
-        {"min": 751, "max": 1500, "EstSale": 1650},
-        {"min": 1501, "max": 3000, "EstSale": 1275},
-        {"min": 3001, "max": 4000, "EstSale": 1050},
-        {"min": 4001, "max": 5000, "EstSale": 850},
-        {"min": 5001, "max": 6000, "EstSale": 750},
-        {"min": 6001, "max": 7000, "EstSale": 625},
-        {"min": 7001, "max": 8000, "EstSale": 500},
-        {"min": 8001, "max": 9000, "EstSale": 375},
-        {"min": 9001, "max": 10000, "EstSale": 300},
-        {"min": 10001, "max": 12000, "EstSale": 215},
-        {"min": 12001, "max": 15000, "EstSale": 175},
-        {"min": 15001, "max": 17500, "EstSale": 155},
-        {"min": 17501, "max": 20000, "EstSale": 143},
-        {"min": 20001, "max": 25000, "EstSale": 123},
-        {"min": 25001, "max": 30000, "EstSale": 100},
-        {"min": 30001, "max": 35000, "EstSale": 70},
-        {"min": 35001, "max": 50000, "EstSale": 55},
-        {"min": 50001, "max": 65000, "EstSale": 25},
-        {"min": 65001, "max": 80000, "EstSale": 13},
-        {"min": 80001, "max": 100000, "EstSale": 8},
-        {"min": 100001, "max": 200000, "EstSale": 2},
-        {"min": 200001, "max": 500000, "EstSale": 1},
-        {"min": 500001, "max": -1, "EstSale": 1}
+    this.numberSign = "#";
+    this.searchPattern = "Kindle Edition";
+    this.estSalesScale = [
+        {min: 1, max: 5, estSale: 60000},
+        {min: 6, max: 10, estSale: 52500},
+        {min: 11, max: 20, estSale: 45000},
+        {min: 21, max: 35, estSale: 37500},
+        {min: 36, max: 100, estSale: 27500},
+        {min: 101, max: 200, estSale: 15000},
+        {min: 201, max: 350, estSale: 6000},
+        {min: 351, max: 500, estSale: 3000},
+        {min: 501, max: 750, estSale: 2250},
+        {min: 751, max: 1500, estSale: 1650},
+        {min: 1501, max: 3000, estSale: 1275},
+        {min: 3001, max: 4000, estSale: 1050},
+        {min: 4001, max: 5000, estSale: 850},
+        {min: 5001, max: 6000, estSale: 750},
+        {min: 6001, max: 7000, estSale: 625},
+        {min: 7001, max: 8000, estSale: 500},
+        {min: 8001, max: 9000, estSale: 375},
+        {min: 9001, max: 10000, estSale: 300},
+        {min: 10001, max: 12000, estSale: 215},
+        {min: 12001, max: 15000, estSale: 175},
+        {min: 15001, max: 17500, estSale: 155},
+        {min: 17501, max: 20000, estSale: 143},
+        {min: 20001, max: 25000, estSale: 123},
+        {min: 25001, max: 30000, estSale: 100},
+        {min: 30001, max: 35000, estSale: 70},
+        {min: 35001, max: 50000, estSale: 55},
+        {min: 50001, max: 65000, estSale: 25},
+        {min: 65001, max: 80000, estSale: 13},
+        {min: 80001, max: 100000, estSale: 8},
+        {min: 100001, max: 200000, estSale: 2},
+        {min: 200001, max: 500000, estSale: 1},
+        {min: 500001, max: -1, estSale: 1}
     ];
 }
 
-AmazonCoUkParser.Zone = "co.uk";
-AmazonCoUkParser.Region = "UK";
+AmazonCoUkParser.zone = "co.uk";
+AmazonCoUkParser.region = "UK";
 
 AmazonCoUkParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
@@ -96,13 +96,13 @@ AmazonCoUkParser.prototype.getReviewsCountFromResult = function(resultItem) {
 };
 
 AmazonCoUkParser.prototype.parsePrice = function(price) {
-    if(price == this.Free) return 0;
+    if(price == this.free) return 0;
     if(!price) return 0;
-    return HelperFunctions.parseFloat(price, this.DecimalSeparator);
+    return HelperFunctions.parseFloat(price, this.decimalSeparator);
 };
 
 AmazonCoUkParser.prototype.formatPrice = function(price) {
-    return this.CurrencySign + price;
+    return this.currencySign + price;
 };
 
 AmazonCoUkParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {

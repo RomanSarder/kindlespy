@@ -16,7 +16,7 @@ SearchResultsPage.name = 'search';
 SearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = ValueOrDefault(callback, function(){});
     var _this = this;
-    var itemsPerPage = siteParser.SearchResultsNumber;
+    var itemsPerPage = siteParser.searchResultsNumber;
     this.SearchKeyword = search;
 
     if(this.SearchResultsPager === undefined) {

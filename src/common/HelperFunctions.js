@@ -74,15 +74,15 @@ function GetSiteParser(url){
     var fullUrl = new URL(url);
     var hostname = fullUrl.hostname;
     if(hostname.indexOf('www.amazon.') == -1) return undefined;
-    if(hostname.indexOf(AmazonComParser.Zone) != -1)
+    if(hostname.indexOf(AmazonComParser.zone) != -1)
         return new AmazonComParser();
-    if(hostname.indexOf(AmazonCoUkParser.Zone) != -1)
+    if(hostname.indexOf(AmazonCoUkParser.zone) != -1)
         return new AmazonCoUkParser();
-    if(hostname.indexOf(AmazonDeParser.Zone) != -1)
+    if(hostname.indexOf(AmazonDeParser.zone) != -1)
         return new AmazonDeParser();
-    if(hostname.indexOf(AmazonFrParser.Zone) != -1)
+    if(hostname.indexOf(AmazonFrParser.zone) != -1)
         return new AmazonFrParser();
-    if(hostname.indexOf(AmazonCaParser.Zone) != -1)
+    if(hostname.indexOf(AmazonCaParser.zone) != -1)
         return new AmazonCaParser();
 }
 
@@ -122,8 +122,8 @@ function GetCategoryFromBookData(bookData){
  * @returns {boolean}
  */
 function IsBestSellersPage(Url){
-    return (Url.indexOf(SiteParser.MainUrl +"/Best-Sellers-Kindle-Store") >= 0 && Url.indexOf("digital-text") > 0)
-        || (Url.indexOf(SiteParser.MainUrl +"/gp/bestsellers") >= 0 && Url.indexOf("digital-text") > 0);
+    return (Url.indexOf(SiteParser.mainUrl +"/Best-Sellers-Kindle-Store") >= 0 && Url.indexOf("digital-text") > 0)
+        || (Url.indexOf(SiteParser.mainUrl +"/gp/bestsellers") >= 0 && Url.indexOf("digital-text") > 0);
 }
 function IsBestSellersPageFromCategoryKind(categoryKind){
     return categoryKind.indexOf("Seller") != -1;
@@ -133,7 +133,7 @@ function IsBestSellersPageFromCategoryKind(categoryKind){
  * @returns {boolean}
  */
 function IsSearchPage(Url){
-    return Url.indexOf(SiteParser.MainUrl +"/s/")==0 && Url.indexOf("digital-text") > 0;
+    return Url.indexOf(SiteParser.mainUrl +"/s/")==0 && Url.indexOf("digital-text") > 0;
 }
 function IsSearchPageFromCategoryKind(categoryKind){
     return categoryKind.indexOf("Search") != -1;
@@ -143,7 +143,7 @@ function IsSearchPageFromCategoryKind(categoryKind){
  * @returns {boolean}
  */
 function IsAuthorPage(html, siteParser){
-    return html.indexOf(siteParser.AreYouAnAuthorPattern) >= 0 && html.indexOf("ap-author-name") >= 0;
+    return html.indexOf(siteParser.areYouAnAuthorPattern) >= 0 && html.indexOf("ap-author-name") >= 0;
 }
 /**
  * Return bool value page is author page.
@@ -151,7 +151,7 @@ function IsAuthorPage(html, siteParser){
  * @returns {boolean}
  */
 function IsAuthorSearchResultPage(Url){
-    return Url.indexOf(SiteParser.MainUrl +"/s") == 0 && Url.indexOf("field-author") > 0 && Url.indexOf("digital-text") > 0;
+    return Url.indexOf(SiteParser.mainUrl +"/s") == 0 && Url.indexOf("field-author") > 0 && Url.indexOf("digital-text") > 0;
 }
 /**
  * Return bool value page is single page.
@@ -161,7 +161,7 @@ function IsAuthorSearchResultPage(Url){
 function IsSingleBookPage(Url){
     var fullUrl = Url.split("/");
     var mainUrl = fullUrl[0] +"//"+ fullUrl[2];
-    return (mainUrl.indexOf(SiteParser.MainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
+    return (mainUrl.indexOf(SiteParser.mainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
 }
 
 /**
@@ -241,5 +241,5 @@ function isTop100Free(){
 }
 
 function getSearchUrl(keyword){
-    return SiteParser.MainUrl + "/s/url=search-alias%3Ddigital-text&field-keywords=" + encodeURI(keyword);
+    return SiteParser.mainUrl + "/s/url=search-alias%3Ddigital-text&field-keywords=" + encodeURI(keyword);
 }

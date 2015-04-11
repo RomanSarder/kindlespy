@@ -50,9 +50,9 @@ MainTab.prototype.ExportToCsv = function(data){
             x[index + 1][1] = bookData[index].Title;
             x[index + 1][2] = bookData[index].Author;
             x[index + 1][3] = bookData[index].DateOfPublication;
-            x[index + 1][4] = bookData[index].Price.replace(SiteParser.CurrencySign, SiteParser.CurrencySignForExport);
+            x[index + 1][4] = bookData[index].Price.replace(SiteParser.currencySign, SiteParser.currencySignForExport);
             x[index + 1][5] = AddCommas(bookData[index].EstSales);
-            x[index + 1][6] = SiteParser.CurrencySignForExport + " " + AddCommas(Math.round(bookData[index].SalesRecv));
+            x[index + 1][6] = SiteParser.currencySignForExport + " " + AddCommas(Math.round(bookData[index].SalesRecv));
             x[index + 1][7] = bookData[index].Reviews;
             x[index + 1][8] = bookData[index].SalesRank;
             x[index + 1][9] = bookData[index].PrintLength;
@@ -143,7 +143,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
                 "<td style='padding-left:15px; width:30px;'>" +obj[i].PrintLength + "</td>" +
                 "<td style='width:50px;'>"+ obj[i].Price +"</td>" +
                 "<td style='width:60px;' align='center'>" + AddCommas(obj[i].EstSales) +"</td>" +
-                "<td style='width:80px;'><div style='float:left'> "+ siteParser.CurrencySign +" </div> <div style='float:right'>"+ AddCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
+                "<td style='width:80px;'><div style='float:left'> "+ siteParser.currencySign +" </div> <div style='float:right'>"+ AddCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
                 "<td style='width:50px;' align='right'>"+ obj[i].Reviews +"</td>" +
                 "<td style='width:80px;padding-right : 10px;' align='right'>"+ obj[i].SalesRank +"</td>"+
                 "</tr>";
@@ -151,14 +151,14 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            salesRankSum += HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator);
+            salesRankSum += HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator);
             salesRecvSum += parseInt(obj[i].SalesRecv);
-            if (price.indexOf("Free") >= 0)
+            if (price.indexOf("free") >= 0)
                 priceSum = 0;
             else
-                priceSum += HelperFunctions.parseFloat(price, siteParser.DecimalSeparator);
+                priceSum += HelperFunctions.parseFloat(price, siteParser.decimalSeparator);
 
-            reviewSum += HelperFunctions.parseInt(review, siteParser.DecimalSeparator);
+            reviewSum += HelperFunctions.parseInt(review, siteParser.decimalSeparator);
 
             nTotalCnt ++;
 
@@ -195,14 +195,14 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
     /*Start region: get data for analysis*/
 	var salesRank20index = Math.min(19, obj.length-1);
-    var salesRank20 = HelperFunctions.parseInt(obj[salesRank20index].SalesRank || 0, siteParser.DecimalSeparator);
+    var salesRank20 = HelperFunctions.parseInt(obj[salesRank20index].SalesRank || 0, siteParser.decimalSeparator);
 	
 	var monthlyRev20 = 0;
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
 	for (var i = 0; i < 20 && i < obj.length; i++) {
         monthlyRev20 += parseInt(obj[i].SalesRecv);
-		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator)) == 1) salesRankConclusionValue ++;
+		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
 		if (obj[i].SalesRecv > 500) monthlyRevBook ++;
 	}
 	var avgMonthlyRev20 = monthlyRev20/(Math.min(20, obj.length));

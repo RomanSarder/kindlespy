@@ -31,9 +31,9 @@ SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxRes
         url[index] = $(result).find("a:first").attr("href");
         if(!url[index]) url[index] = "";
         var kprice = $(result).find('div').filter(function () {
-            return $(this).text() == siteParser.SearchPattern || $(this).children("a:contains(" + siteParser.SearchPattern+ ")").length > 0;
+            return $(this).text() == siteParser.searchPattern || $(this).children("a:contains(" + siteParser.searchPattern+ ")").length > 0;
         }).parent();
-        price[index] = siteParser.CurrencySign + "0" + siteParser.DecimalSeparator + "00";
+        price[index] = siteParser.currencySign + "0" + siteParser.decimalSeparator + "00";
         if($(kprice).length > 0)
             var prices = kprice.find('span.s-price');
         var el_price;
@@ -63,7 +63,7 @@ SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxRes
     });
     if(counter == 0) return 0;
 
-    var totalResults = HelperFunctions.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.DecimalSeparator);
+    var totalResults = HelperFunctions.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.decimalSeparator);
     saveTotalResults(totalResults);
 
     url.forEach(function(item, i) {

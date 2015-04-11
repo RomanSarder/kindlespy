@@ -8,15 +8,15 @@ var Storage = new BookStorage();
 var columnGetterFunctions = [];
 columnGetterFunctions['no'] = function(a){return parseInt(a.No)};
 columnGetterFunctions['pageno'] = function(a){
-    var printLength = HelperFunctions.parseInt(a.PrintLength, SiteParser.DecimalSeparator);
+    var printLength = HelperFunctions.parseInt(a.PrintLength, SiteParser.decimalSeparator);
     return isNaN(printLength) ? 0 : printLength;
 };
 columnGetterFunctions['title-book'] = function(a){return a.Title};
-columnGetterFunctions['price'] = function(a){return HelperFunctions.parseFloat(a.Price, SiteParser.DecimalSeparator)};
+columnGetterFunctions['price'] = function(a){return HelperFunctions.parseFloat(a.Price, SiteParser.decimalSeparator)};
 columnGetterFunctions['est-sales'] = function(a){return a.EstSales};
 columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv};
-columnGetterFunctions['reviews'] = function(a){return HelperFunctions.parseInt(a.Reviews, SiteParser.DecimalSeparator)};
-columnGetterFunctions['sales-rank'] = function(a){return HelperFunctions.parseInt(a.SalesRank, SiteParser.DecimalSeparator)};
+columnGetterFunctions['reviews'] = function(a){return HelperFunctions.parseInt(a.Reviews, SiteParser.decimalSeparator)};
+columnGetterFunctions['sales-rank'] = function(a){return HelperFunctions.parseInt(a.SalesRank, SiteParser.decimalSeparator)};
 
 var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
@@ -507,12 +507,12 @@ function UpdateTrackedBookView(bookData){
     var sumRank=0;
     var points = bookData.salesRankData.length;
     for(var j=0; j<points;j++){
-        sumRank += HelperFunctions.parseInt(bookData.salesRankData[j].salesRank, SiteParser.DecimalSeparator);
+        sumRank += HelperFunctions.parseInt(bookData.salesRankData[j].salesRank, SiteParser.decimalSeparator);
     }
     var avgSalesRank = sumRank/points;
     var bookPageParser = new BookPageParser(bookData.url);
     var estSale = bookPageParser.GetEstSale(avgSalesRank);
-    var realPrice = HelperFunctions.parseFloat(bookData.price, SiteParser.DecimalSeparator);
+    var realPrice = HelperFunctions.parseFloat(bookData.price, SiteParser.decimalSeparator);
     var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
     var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
 
@@ -687,7 +687,7 @@ function GetSearchKeywordFullData(list, processItemFunction){
         var pageUrl = getSearchUrl(item);
         $.get(pageUrl, function(responseText){
             var jqResponse = parseHtmlToJquery(responseText);
-            var totalResults = HelperFunctions.parseInt(SiteParser.getTotalSearchResult(jqResponse), SiteParser.DecimalSeparator);
+            var totalResults = HelperFunctions.parseInt(SiteParser.getTotalSearchResult(jqResponse), SiteParser.decimalSeparator);
             var color = algorithm.getCompetitionColor(totalResults);
             return processItemFunction({
                 keyword: item,
@@ -724,7 +724,7 @@ function AppendSearchKeywordsTable(item){
 function GetSearchKeywordsList(callback){
     var q = encodeURI($("#search-text").val());
     $.ajax({
-        url: SiteParser.CompletionUrl + "&q=" + q,
+        url: SiteParser.completionUrl + "&q=" + q,
         method: "GET",
         dataType: "json",
         success: function (responseJson) {
@@ -921,23 +921,23 @@ function LoadInfos()
 }
 
 function InitRegionSelector(){
-    $("#regionSelector").val(SiteParser.Region);
+    $("#regionSelector").val(SiteParser.region);
     $("#regionSelector").change(function() {
         var url;
         switch ($("#regionSelector").val()){
-            case AmazonComParser.Region:
+            case AmazonComParser.region:
                 url = "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore";
                 break;
-            case AmazonCoUkParser.Region:
+            case AmazonCoUkParser.region:
                 url = "http://www.amazon.co.uk/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/341689031/ref=zg_bs_nav_kinc_1_kinc";
                 break;
-            case AmazonDeParser.Region:
+            case AmazonDeParser.region:
                 url = "http://www.amazon.de/gp/bestsellers/digital-text/530886031/ref=zg_bs_nav_kinc_1_kinc";
                 break;
-            case AmazonFrParser.Region:
+            case AmazonFrParser.region:
                 url = "http://www.amazon.fr/gp/bestsellers/digital-text/695398031/";
                 break;
-            case AmazonCaParser.Region:
+            case AmazonCaParser.region:
                 url = "http://www.amazon.ca/gp/bestsellers/digital-text/2980423011/";
                 break;
         }

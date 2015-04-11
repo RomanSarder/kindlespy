@@ -96,7 +96,7 @@ $(window).ready(function () {
     setInterval("BookStore.trackData()", 2*60*60*1000);
 
     if (SiteParser === undefined) return;
-    if (Url.indexOf(SiteParser.MainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;
+    if (Url.indexOf(SiteParser.mainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;
     CurrentPage = getPageFromCurrentPage();
     if (CurrentPage === undefined) return;
 
@@ -162,7 +162,7 @@ function parseDataFromBookPageAndSend(pullingToken, num, url, price, parenturl, 
     callback = ValueOrDefault(callback, function(){});
     if (pullingToken != PullingToken) return;
     var parser = new BookPageParser(null, SiteParser);
-    if(parser.isNotValid()) return callback();
+    if (parser.isNotValid()) return callback();
     parser.GetBookData(url, price, reviews, function(pageData) {
         // check if we still on the same search keywords page and didn't start a new pulling with new params
         if (pullingToken != PullingToken) return;

@@ -13,14 +13,14 @@ BookPageParser.prototype.isNotValid = function (){
 BookPageParser.prototype.GetDateOfPublication = function(jqNodes, callback) {
     var pubdate = jqNodes.find('#pubdate').val();
     if(pubdate === undefined){
-        var publisherElement = jqNodes.find('#productDetailsTable div.content li:contains(' + SiteParser.Publisher + ')');
+        var publisherElement = jqNodes.find('#productDetailsTable div.content li:contains(' + SiteParser.publisher + ')');
         var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
 
         return callback(dateOfPublication);
     }
 
     $.ajax({
-        url: this._siteParser.MainUrl + "/gp/product/features/ebook-synopsis/formatDate.html",
+        url: this._siteParser.mainUrl + "/gp/product/features/ebook-synopsis/formatDate.html",
         data: { datetime: pubdate },
         dataType: "json",
         success: function (responseJson) {
@@ -87,7 +87,7 @@ BookPageParser.prototype.getReviews = function(jqNodes) {
 BookPageParser.prototype.GetPrice = function(jqNodes) {
     var priceBlock = jqNodes.find('#priceBlock b.priceLarge');
     if(priceBlock && priceBlock.text().trim() !== '') {
-        if(priceBlock.text().trim() == "Free") return this._siteParser.formatPrice("0" + this._siteParser.DecimalSeparator + "00");
+        if(priceBlock.text().trim() == "free") return this._siteParser.formatPrice("0" + this._siteParser.decimalSeparator + "00");
          return priceBlock.text().trim();
     }
     priceBlock = jqNodes.find('#kindle_meta_binding_winner .price');
@@ -105,16 +105,16 @@ BookPageParser.prototype.GetSalesRank = function(jqNodes) {
     if(salesRankNodes === undefined || salesRankNodes.length < 2) return '0';
     var salesRankString = salesRankNodes[1].nodeValue.trim();
     if(( salesRankString === undefined) || (salesRankString == "")) return '0';
-    return salesRankString.substring(salesRankString.indexOf(this._siteParser.NumberSign) + this._siteParser.NumberSign.length, salesRankString.indexOf(' '));
+    return salesRankString.substring(salesRankString.indexOf(this._siteParser.numberSign) + this._siteParser.numberSign.length, salesRankString.indexOf(' '));
 };
 
 BookPageParser.prototype.GetEstSale = function(salesRank) {
-    var data = this._siteParser.EstSalesScale;
+    var data = this._siteParser.estSalesScale;
     if (typeof salesRank === "undefined") return 1;
-    var sale = salesRank.toString().replace(this._siteParser.ThousandSeparator, "");
+    var sale = salesRank.toString().replace(this._siteParser.thousandSeparator, "");
 
     for (var i = 0; i < data.length; i++) {
-        if (sale >= data[i].min && sale <= data[i].max) return data[i].EstSale;
+        if (sale >= data[i].min && sale <= data[i].max) return data[i].estSale;
     }
 
     return "0";
@@ -186,7 +186,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
                 return callback({
                     title: entryTitle,
                     description: entryDescription,
-                    price: (price == _this._siteParser.Free) ? _this._siteParser.Free : _this._siteParser.formatPrice(realPrice),
+                    price: (price == _this._siteParser.free) ? _this._siteParser.free : _this._siteParser.formatPrice(realPrice),
                     estSale: entryEstSale,
                     salesRecv: entrySalesRecv,
                     reviews: reviews,

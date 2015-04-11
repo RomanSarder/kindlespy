@@ -47,7 +47,7 @@ KeywordAnalysisTab.prototype.ExportToCsv = function(data){
         {
             x[index + 1][0] = (index + 1).toString();
             x[index + 1][1] = bookData[index].Title;
-            x[index + 1][2] = bookData[index].Price.replace(SiteParser.CurrencySign, SiteParser.CurrencySignForExport);
+            x[index + 1][2] = bookData[index].Price.replace(SiteParser.currencySign, SiteParser.currencySignForExport);
             x[index + 1][3] = bookData[index].PrintLength;
             x[index + 1][4] = this.IsKeywordInText(bookData[index].Category, bookData[index].Title);
             x[index + 1][5] = this.IsKeywordInText(bookData[index].Category, bookData[index].Description);
@@ -133,7 +133,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
         {
             var kwt = this.IsKeywordInText(obj[i].Category, obj[i].Title);
             var kwd = this.IsKeywordInText(obj[i].Category, obj[i].Description);
-            salesRankConclusion = this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator));
+            salesRankConclusion = this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator));
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow' style='min-width:280px;max-width:280px;'><a href="+obj[i].Url+" target='_blank'>" + obj[i].Title + "</a></td>" +
@@ -142,20 +142,20 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
                 "<td class='bg-" + this.GetKWColor(kwt) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwt + "</td>" +
                 "<td class='bg-" + this.GetKWColor(kwd) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwd + "</td>" +
                 "<td class='bg-" + this.GetRatingColor(obj[i].Rating) + "' style='padding-left:20px;min-width:20px;max-width:20px;padding-right:20px;'>" + Number(obj[i].Rating).toFixed(1) +"</td>" +
-                "<td class='bg-" + this.GetReviewColor(HelperFunctions.parseInt(obj[i].Reviews, siteParser.DecimalSeparator)) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ obj[i].Reviews +"</td>" +
+                "<td class='bg-" + this.GetReviewColor(HelperFunctions.parseInt(obj[i].Reviews, siteParser.decimalSeparator)) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ obj[i].Reviews +"</td>" +
                 "<td class='bg-" + this.GetSalesRankColor(salesRankConclusion) + "' align='right' style='padding-left:31px;width:70px;'>"+ obj[i].SalesRank +"</td>"+
                 "</tr>";
 
             var price = "" + obj[i].Price;
             var review = "" + obj[i].Reviews;
 
-            salesRankSum += HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator);
-            if (price.indexOf("Free") >= 0)
+            salesRankSum += HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator);
+            if (price.indexOf("free") >= 0)
                 priceSum = 0;
             else
-                priceSum += HelperFunctions.parseFloat(price, siteParser.DecimalSeparator);
+                priceSum += HelperFunctions.parseFloat(price, siteParser.decimalSeparator);
 
-            reviewSum += HelperFunctions.parseInt(review, siteParser.DecimalSeparator);
+            reviewSum += HelperFunctions.parseInt(review, siteParser.decimalSeparator);
             pagesSum += $.isNumeric(obj[i].PrintLength) ? parseInt(obj[i].PrintLength) : 0;
             ratingSum += parseFloat(obj[i].Rating);
 
@@ -194,7 +194,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
 	for (var i = 0; i < 20 && i < obj.length; i++) {
-		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.DecimalSeparator)) == 1) salesRankConclusionValue++;
+		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue++;
 		if (obj[i].SalesRecv > 500) monthlyRevBook++;
 	}
 	/*End region get data for analysis*/

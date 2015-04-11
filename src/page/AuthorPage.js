@@ -15,7 +15,7 @@ AuthorPage.name = 'author';
 AuthorPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = ValueOrDefault(callback, function(){});
     var _this = this;
-    var itemsPerPage = siteParser.AuthorResultsNumber;
+    var itemsPerPage = siteParser.authorResultsNumber;
     if(this.AuthorPager === undefined) {
         this.AuthorPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
             var jqResponseText = parseHtmlToJquery(responseText);
