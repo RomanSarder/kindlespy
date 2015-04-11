@@ -6,9 +6,12 @@ function SearchResultsPage(){
         return SearchResultsPage.prototype._singletonInstance;
     SearchResultsPage.prototype._singletonInstance = this;
 
-    this.SearchResultsPager;
-    this.SearchKeyword;
+    this.name = SearchResultsPage.name;
+    this.SearchResultsPager = undefined;
+    this.SearchKeyword = undefined;
 }
+
+SearchResultsPage.name = 'search';
 
 SearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = ValueOrDefault(callback, function(){});

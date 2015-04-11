@@ -13,7 +13,6 @@ SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxRes
     var url = [];
     var price = [];
     var review = [];
-    var category = category;
 
     var index = 0;
     var counter = 0;
@@ -64,15 +63,8 @@ SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxRes
     });
     if(counter == 0) return 0;
 
-//    if (typeof category === undefined)
-//    {
-//        category = ParseString(jqNodes, 'entityHeader', '>', '<');
-//        var tmpSplit =category.split("by");
-//        if (tmpSplit.length > 1)
-//            category = tmpSplit[1];
-//    }
     var totalResults = HelperFunctions.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.DecimalSeparator);
-    ContentScript.sendMessage({type:"save-TotalResults", TotalResults: totalResults});
+    saveTotalResults(totalResults);
 
     url.forEach(function(item, i) {
         if (url[i] !== undefined && url[i].length > 0

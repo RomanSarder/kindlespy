@@ -142,8 +142,8 @@ function IsSearchPageFromCategoryKind(categoryKind){
  * Return bool value page is author page.
  * @returns {boolean}
  */
-function IsAuthorPage(){
-    return document.documentElement.innerHTML.indexOf(SiteParser.AreYouAnAuthorPattern) >= 0 && document.documentElement.innerHTML.indexOf("ap-author-name") >= 0;
+function IsAuthorPage(html, siteParser){
+    return html.indexOf(siteParser.AreYouAnAuthorPattern) >= 0 && html.indexOf("ap-author-name") >= 0;
 }
 /**
  * Return bool value page is author page.

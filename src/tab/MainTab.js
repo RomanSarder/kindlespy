@@ -12,14 +12,14 @@ function MainTab(){
 }
 
 MainTab.prototype.SavePageNum = function(){
-    Popup.sendMessage({type: "save-PageNum", tab: 'MainTab', PageNum: this.PageNum});
+    Popup.sendMessage({type: "save-pageNum", tab: 'MainTab', PageNum: this.PageNum});
 };
 
 MainTab.prototype.LoadPageNum = function(callback){
     var _this = this;
     callback = ValueOrDefault(callback, function() {});
-    Popup.sendMessage({type: "get-PageNum", tab: 'MainTab'}, function(response){
-        _this.PageNum = parseInt(response.PageNum);
+    Popup.sendMessage({type: "get-pageNum", tab: 'MainTab'}, function(pageNum){
+        _this.PageNum = parseInt(pageNum);
         callback();
     });
 };

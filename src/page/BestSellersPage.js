@@ -5,7 +5,11 @@ function BestSellersPage(){
     if ( BestSellersPage.prototype._singletonInstance )
         return BestSellersPage.prototype._singletonInstance;
     BestSellersPage.prototype._singletonInstance = this;
+
+    this.name = BestSellersPage.name;
 }
+
+BestSellersPage.name = 'best-seller';
 
 BestSellersPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = ValueOrDefault(callback, function(){});

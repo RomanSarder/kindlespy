@@ -6,8 +6,11 @@ function AuthorSearchResultsPage(){
         return AuthorSearchResultsPage.prototype._singletonInstance;
     AuthorSearchResultsPage.prototype._singletonInstance = this;
 
-    this.AuthorSearchResultsPager;
+    this.name = AuthorSearchResultsPage.name;
+    this.AuthorSearchResultsPager = undefined;
 }
+
+AuthorSearchResultsPage.name = 'author-search';
 
 AuthorSearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = ValueOrDefault(callback, function(){});

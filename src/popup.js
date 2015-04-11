@@ -25,7 +25,7 @@ $(window).ready(function () {
     $('#LinkBackTo').click(function () {
         $('#data-body').css("overflow-y", "auto");
         ActiveTab = new MainTab();
-        frun();
+        checkUrlAndLoad();
     });
     $('#enableTracking').click(function () {
         $('#enableTracking').prop('disabled', true);
@@ -110,18 +110,17 @@ Popup.sendMessage = function(message, callback){
 
 function getObjArray(callback){
     callback = ValueOrDefault(callback, function(){});
-    Popup.sendMessage({type: "get-settings"}, function(response) {
-        var settings = response.settings;
-        var settingLen = settings.Book.length;
+    Popup.sendMessage({type: "get-settings"}, function(settings) {
+        var settingLen = settings.books.length;
 
         obj = [];
         for (var i = 0; i < settingLen; i++)
         {
-            var settingTmp = {"No": settings.Book[i].No, "Url": settings.Book[i].Url, "ParentUrl": settings.Book[i].ParentUrl, "NextUrl": settings.Book[i].NextUrl,  "Title": settings.Book[i].Title, "Description": settings.Book[i].Description, "Price": settings.Book[i].Price, "EstSales": settings.Book[i].EstSales, "SalesRecv": settings.Book[i].SalesRecv, "Reviews": settings.Book[i].Reviews, "SalesRank": settings.Book[i].SalesRank, "Category": settings.Book[i].Category, "CategoryKind": settings.Book[i].CategoryKind, "PrintLength": settings.Book[i].PrintLength, "Author": settings.Book[i].Author, "DateOfPublication": settings.Book[i].DateOfPublication, "GoogleSearchUrl": settings.Book[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.Book[i].GoogleImageSearchUrl, "Rating": settings.Book[i].Rating };
+            var settingTmp = {"No": settings.books[i].No, "Url": settings.books[i].Url, "ParentUrl": settings.books[i].ParentUrl, "NextUrl": settings.books[i].NextUrl,  "Title": settings.books[i].Title, "Description": settings.books[i].Description, "Price": settings.books[i].Price, "EstSales": settings.books[i].EstSales, "SalesRecv": settings.books[i].SalesRecv, "Reviews": settings.books[i].Reviews, "SalesRank": settings.books[i].SalesRank, "Category": settings.books[i].Category, "CategoryKind": settings.books[i].CategoryKind, "PrintLength": settings.books[i].PrintLength, "Author": settings.books[i].Author, "DateOfPublication": settings.books[i].DateOfPublication, "GoogleSearchUrl": settings.books[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.books[i].GoogleImageSearchUrl, "Rating": settings.books[i].Rating };
             obj.push(settingTmp);
         }
 
-        return callback({obj: obj, isWaitForPulling: settings.IsWaitForPulling, isPulling: settings.IsPulling});
+        return callback({obj: obj, isWaitingForPulling: settings.isWaitingForPulling, isPulling: settings.isPulling});
     });
 }
 
@@ -136,13 +135,13 @@ function AutoAddFunc()
         SetupHeader(obj[0].Category, obj[0].CategoryKind);
 
         if (IsErrorWindow) {
-            frun();
+            checkUrlAndLoad();
             return;
         }
 
         if (ActiveTab.IsPaged) {
             ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
-            if (result.isWaitForPulling) $('.img-load').show();
+            if (result.isWaitingForPulling) $('.img-load').show();
             else {
                 $('.img-load').hide();
             }
@@ -606,7 +605,7 @@ function SetupClickListeners(){
     BestSellerLink.click(function() {
         $('#data-body').css("overflow-y" , "auto");
         ActiveTab = new MainTab();
-        frun();
+        checkUrlAndLoad();
     });
 
     var linkRankTrackingResultList = $('#RankTrackingResultList');
@@ -667,7 +666,7 @@ function SearchKeywordsPage() {
         ActiveTab = new MainTab();
         var search = $(this).attr('keyword');
         Popup.sendMessage({type: "start-analyze-search-keywords", keyword: search});
-        frun();
+        checkUrlAndLoad();
     });
 }
 
@@ -744,18 +743,12 @@ var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;
 
-    var pullResultsButton = $('#PullResult');
-    pullResultsButton.click(function () {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, { page: ActiveTab.PageNum }, function (response) {
-            });
-        });
-
+    $('#PullResult').click(function () {
         SetActivePage(ActiveTab.PageNum + 1);
+        Popup.sendMessage({type: 'pull-data', page: ActiveTab.PageNum}, function(){});
     });
 
-    var exportButton = $('#Export');
-    exportButton.click(function() {
+    $('#Export').click(function() {
         ActiveTab.ExportToCsv({ bookData: obj, cloudData: clouds });
     });
 
@@ -763,8 +756,7 @@ function SetupStaticClickListeners() {
         ActiveTab.ExportToCsv({bookData: obj, cloudData: clouds });
     });
 
-    var helpButton = $('#Help');
-    helpButton.click(function(){
+    $('#Help').click(function(){
         chrome.tabs.create({ url: 'http://www.kdspy.com/help/' });
     });
 
@@ -795,9 +787,8 @@ function LoadData(obj) {
 }
 
 function checkIsDataLoaded(){
-    Popup.sendMessage({type: "get-settings"}, function(response) {
-        var settings = response.settings;
-        if(settings.Book.length == 0){
+    Popup.sendMessage({type: "get-settings"}, function(settings) {
+        if(settings.books.length == 0){
             IsErrorWindow = true;
             resetCss();
             $('#main-header').html('');
@@ -873,31 +864,30 @@ function SetActivePage(pageNum)
     ActiveTab.InsertData(pageNum-1, obj, SiteParser);
 }
 
-function frun()
+function checkUrlAndLoad()
 {
-
-    Popup.sendMessage({type: "get-current-Tab"}, function(response) {
-        if (response === undefined || response.URL.indexOf("http://www.amazon.") < 0) //Go To Amazone Page
+    Popup.sendMessage({type: "get-current-url"}, function(url) {
+        if (url === undefined || url.indexOf("http://www.amazon.") < 0)
         {
+            //Go To Amazon Page
             chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
             window.close();
             return;
         }
-        else
-        {   /////////////////////load//////////////////////////
-            CurrentPageUrl = response.URL;
-            SiteParser = GetSiteParser(CurrentPageUrl);
-            Popup.sendMessage({type: "save-UrlParams", MainUrl: SiteParser.MainUrl, ParamUrlBestSellers: SiteParser.ParamUrlBestSellers});
-            InitRegionSelector();
-            Popup.sendMessage({type: "get-type-page"}, function(result) {
-                if(result.TYPE == 'single') {
-                    ActiveTab = new RankTrackingTab();
-                    RankTrackingSingleShow(CurrentPageUrl);
-                    return;
-                }
-                LoadInfos();
-            });
-        }
+
+        // load
+        CurrentPageUrl = url;
+        SiteParser = GetSiteParser(CurrentPageUrl);
+        InitRegionSelector();
+        Popup.sendMessage({type: "get-type-page"}, function(pageName) {
+            if (pageName == 'single') {
+                ActiveTab = new RankTrackingTab();
+                RankTrackingSingleShow(CurrentPageUrl);
+                return;
+            }
+
+            LoadInfos();
+        });
     });
 }
 
@@ -963,6 +953,4 @@ function LoadAdvertisementBanner()
     });
 }
 
-Popup.sendMessage({type: "set-current-Tab"}, function(response) {
-    frun();
-});
+checkUrlAndLoad();

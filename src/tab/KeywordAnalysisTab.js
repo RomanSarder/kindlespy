@@ -13,14 +13,14 @@ function KeywordAnalysisTab(){
 }
 
 KeywordAnalysisTab.prototype.SavePageNum = function(){
-    Popup.sendMessage({type: "save-PageNum", tab: 'KeywordAnalysisTab', PageNum: this.PageNum});
+    Popup.sendMessage({type: "save-pageNum", tab: 'KeywordAnalysisTab', PageNum: this.PageNum});
 };
 
 KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
     var _this = this;
     callback = ValueOrDefault(callback, function() {});
-    Popup.sendMessage({type: "get-PageNum", tab: 'KeywordAnalysisTab'}, function(response){
-        _this.PageNum = parseInt(response.PageNum);
+    Popup.sendMessage({type: "get-pageNum", tab: 'KeywordAnalysisTab'}, function(pageNum){
+        _this.PageNum = parseInt(pageNum);
         callback();
     });
 };

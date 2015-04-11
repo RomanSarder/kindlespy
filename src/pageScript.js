@@ -2,215 +2,75 @@
  * Created by Andrey Klochkov on 10.04.2015.
  */
 
+var pageSettings = new Settings();
 
-var defaultSetting = {
-    "IsWaitForPulling" : false,
-    "IsPulling" : false,
-    "CurrentUrl" : "",
-    "PageNum" : {MainTab: "1", KeywordAnalysisTab: "1"},
-    "MainUrl": "http://www.amazon.com/",
-    "ParamUrlBestSellers" : "154606011",
-    "TYPE" : "", // can be 'single' or empty
-    "TotalResults":"",
-    "Book":
-        [
-            //{"No": "", "Url":"", "ParentUrl":"", "NextUrl": "", "Title":"", "Description":"", "Price": "", "EstSales": "", "SalesRecv": "", "Reviews": "", "SalesRank": "", "Category": "", "CategoryKind":"Seller", "PrintLength":"", "Author":"", "DateOfPublication":"", "GoogleSearchUrl":"", "GoogleImageSearchUrl":"", "Rating":"",
-            // PullingToken: ''}
-        ]
-};
-
-var customStorage={};
-function getStorage(){
-    return customStorage;
-}
-
-function getSettings()
+function saveBook(book)
 {
-    var a = getStorage().settings;
-    return a = a ? JSON.parse(a) : defaultSetting
-}
+    var settings = pageSettings.getSettings();
 
-function setSettings(value){
-    getStorage().settings = JSON.stringify(value);
-}
-
-function RemoveSettings(url, parentUrl, IsFree)
-{
-    var setting = getSettings();
-
-    var bookInfolen = setting.Book.length;
-
-
-    var bIsFind = false;
-
-    for (var i = bookInfolen - 1; i >=0 ; i--)
+    for (var i = 0; i < settings.books.length; i++)
     {
-        if (parentUrl === setting.Book[i].ParentUrl)
+        if (settings.books[i].Title === book.Title && settings.books[i].CategoryKind === book.CategoryKind)
         {
-            setting.Book.splice(i, 1);
+            settings.books[i] = book;
+            return;
         }
     }
-    setting = defaultSetting;
-    setSettings(setting);
+
+    settings.books.push(book);
 }
 
-function SaveSettings(num, url, parentUrl, nextUrl, title, description, price, estsales, salesRecv, Reviews, salesRank, category, categoryKind, printLength, author, dateOfPublication, googleSearchUrl, googleImageSearchUrl, rating)
-{
-    var setting = getSettings();
-
-    var bookInfolen = setting.Book.length;
-
-
-    var bIsFind = false;
-
-    var nTmp = 0;
-    for (var i = 0; i < bookInfolen; i++)
-    {
-        if (title === setting.Book[i].Title && categoryKind === setting.Book[i].CategoryKind)
-        {
-            setting.Book[i].No = num;
-            setting.Book[i].Title = title;
-            setting.Book[i].Description = description;
-            setting.Book[i].Price = price;
-            setting.Book[i].EstSales = estsales;
-            setting.Book[i].SalesRecv = salesRecv;
-            setting.Book[i].Reviews = Reviews;
-            setting.Book[i].SalesRank = salesRank;
-            setting.Book[i].Category = category;
-            setting.Book[i].Url = url;
-            setting.Book[i].PrintLength = printLength;
-            setting.Book[i].Author = author;
-            setting.Book[i].DateOfPublication = dateOfPublication;
-            setting.Book[i].GoogleSearchUrl = googleSearchUrl;
-            setting.Book[i].GoogleImageSearchUrl = googleImageSearchUrl;
-            setting.Book[i].Rating = rating;
-
-            bIsFind = true;
-            //break;
-        }
-
-    }
-
-    if (!bIsFind)
-    {
-        var settingTmp = {"No": num, "Url": url, "ParentUrl": parentUrl, "NextUrl": nextUrl,  "Title": title, "Description": description, "Price": price, "EstSales": estsales, "SalesRecv": salesRecv, "Reviews": Reviews, "SalesRank": salesRank, "Category": category, "CategoryKind": categoryKind, "PrintLength": printLength, "Author":author, "DateOfPublication":dateOfPublication, "GoogleSearchUrl":googleSearchUrl, "GoogleImageSearchUrl":googleImageSearchUrl, "Rating":rating};
-
-        setting.Book.push(settingTmp);
-    }
-
-    setSettings(setting);
+function saveTotalResults(value){
+    pageSettings.getSettings().totalResults = value;
 }
-
-function SavePageNum(pageNum, tabName)
-{
-    var setting = getSettings();
-    setting.PageNum[tabName] = pageNum;
-    setSettings(setting);
-}
-function SaveUrlParams(url, urlParamBestSellers)
-{
-    var setting = getSettings();
-    setting.MainUrl = url;
-    setting.ParamUrlBestSellers = urlParamBestSellers;
-    setSettings(setting);
-}
-
-function SaveTotalResults(totalResults)
-{
-    var setting = getSettings();
-    setting.TotalResults = totalResults;
-    setSettings(setting);
-}
-
-var CurrentTabUrl;
-var CurrentTabID;
 
 chrome.runtime.onMessage.addListener(onMessageReceived);
 
 function onMessageReceived(request, sender, callback){
     callback = ValueOrDefault(callback, function(){});
-    if(request.page !== undefined)
+    //popup
+    if(request.type === 'pull-data')
         return callback(startPulling(request.page));
 
-    if ("start-analyze-search-keywords" === request.type)
-    {
-        return callback(startPullingSearchPage(request.keyword));
+    //popup
+    if (request.type === "start-analyze-search-keywords") {
+        clearSearchResults();
+        startPullingSearchPage(getSearchUrl(request.keyword));
+        return callback();
     }
 
-    if ("remove-settings" === request.type)
-    {
-        RemoveSettings(request.Url, request.ParentUrl, request.IsFree);
-        return callback({});
+    //popup
+    if (request.type === "get-settings") {
+        return callback(pageSettings.getSettings());
     }
 
-    if ("get-settings" === request.type)
-    {
-        return callback({
-            settings: getSettings()
-        });
+    //popup
+    if (request.type === "save-pageNum") {
+        pageSettings.getSettings().pageNum[request.tab] = request.pageNum;
+        return callback();
     }
 
-    if ("save-settings" === request.type)
-    {
-        SaveSettings(request.No, request.URL, request.ParentURL, request.NextUrl, request.Title, request.Description, request.Price, request.EstSales, request.SalesRecv, request.Reviews, request.SalesRank, request.Category, request.CategoryKind, request.PrintLength, request.Author, request.DateOfPublication, request.GoogleSearchUrl, request.GoogleImageSearchUrl, request.Rating);
-        return callback({});
+    //popup
+    if (request.type === "get-pageNum") {
+        return callback(pageSettings.getSettings().pageNum[request.tab]);
     }
 
-    if ("save-PageNum" === request.type)
-    {
-        SavePageNum(request.PageNum, request.tab);
-        return callback({});
+    //popup
+    if (request.type === "get-current-url") {
+        return callback(location.href);
     }
 
-    if ("get-PageNum" === request.type)
-    {
-        var setting = getSettings();
-        return callback({PageNum:setting.PageNum[request.tab]});
+    //popup
+    if (request.type === "get-type-page") {
+        return callback(CurrentPage.name);
     }
 
-    if ("save-UrlParams" === request.type)
-    {
-        SaveUrlParams(request.MainUrl, request.ParamUrlBestSellers);
-        return callback({});
-    }
-
-    if ("set-current-Tab" === request.type)
-    {
-        CurrentTabUrl = location.href;
-        return callback({});
-    }
-
-    if ("get-current-Tab" === request.type)
-    {
-        return callback({URL: CurrentTabUrl, ID: CurrentTabID});
-    }
-
-    if ("set-type-page" === request.type)
-    {
-        var setting = getSettings();
-        setting.TYPE = request.TYPE;
-        setSettings(setting);
-        return callback({});
-    }
-
-    if ("get-type-page" === request.type)
-    {
-        var setting = getSettings();
-        return callback({TYPE:setting.TYPE});
-    }
-
-    if ("save-TotalResults" === request.type)
-    {
-        SaveTotalResults(request.TotalResults);
-        return callback({});
-    }
-
-    if ("get-TotalResults" === request.type)
-    {
-        var setting = getSettings();
-        return callback({TotalResults:setting.TotalResults});
+    //popup
+    if (request.type === "get-totalResults") {
+        return callback(pageSettings.getSettings().totalResults);
     }
 }
+
 //______________________________________________________________________________________________________________________
 var Url;
 var ParentUrl; // trimmed Url
@@ -221,14 +81,10 @@ var PullingToken = 0;
 var CurrentPage;
 var ParserAsyncRunner = new AsyncRunner();
 ParserAsyncRunner.itemFinished = function(){
-    var settings = getSettings();
-    settings.IsWaitForPulling = false;
-    setSettings(settings);
+    pageSettings.getSettings().isWaitingForPulling = false;
 };
 ParserAsyncRunner.finished = function(){
-    var settings = getSettings();
-    settings.IsPulling = false;
-    setSettings(settings);
+    pageSettings.getSettings().isPulling = false;
 };
 
 $(window).ready(function () {
@@ -247,9 +103,8 @@ $(window).ready(function () {
     // Amazon search form
     $("#nav-searchbar, .nav-searchbar").submit(function()
     {
-        ClearSearchResults(function(){
-            setTimeout("processWhenDone()", 500);
-        });
+        clearSearchResults();
+        setTimeout(processWhenDone, 500);
     });
 
     PullingToken = new Date().getTime();
@@ -257,38 +112,30 @@ $(window).ready(function () {
 });
 
 function getPageFromCurrentPage(){
-    if(IsAuthorPage()){
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'author'});
+    if(IsAuthorPage(document.documentElement.innerHTML, SiteParser)){
         return new AuthorPage();
     }
     if(IsAuthorSearchResultPage(location.href)){
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'author-search'});
         return new AuthorSearchResultsPage();
     }
     if (IsBestSellersPage(location.href)){
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'best-seller'});
         return new BestSellersPage();
     }
     if(IsSearchPage(location.href)){
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
         return new SearchResultsPage();
     }
     if (IsSingleBookPage(location.href)){
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'single'});
         return new SingleBookPage();
     }
 }
 
-function ClearSearchResults(callback){
-    callback = ValueOrDefault(callback, function(){});
+function clearSearchResults(){
     PullingToken = 0;
-    ContentScript.sendMessage({type: "remove-settings", ParentUrl: ParentUrl}, function(){
-        var searchResultPage = new SearchResultsPage();
-        if (searchResultPage.SearchResultsPager) searchResultPage.SearchResultsPager.stop();
-        searchResultPage.SearchResultsPager = undefined;
-        PagesPulled = 0;
-        callback();
-    });
+    pageSettings.removeSettings();
+    var searchResultPage = new SearchResultsPage();
+    if (searchResultPage.SearchResultsPager) searchResultPage.SearchResultsPager.stop();
+    searchResultPage.SearchResultsPager = undefined;
+    PagesPulled = 0;
 }
 
 function ContentScript(){
@@ -300,22 +147,14 @@ ContentScript.sendMessage = function(message, callback){
 
 function processWhenDone() {
 	var search = GetParameterByName(location.href, "field-keywords");
-	if(search.trim()=="" || $("#bcKwText").text() !== '"'+search+'"' || 
-		$("#bcKwText").css("visibility")!= "visible"){
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
-        setTimeout("processWhenDone()", 500);
-    }else {
-        Url = location.href;
-        ParentUrl = Url;
-        if (ParentUrl.indexOf("/s/") < 0) {
-            return;
-        }
-        var _Pos = Url.lastIndexOf('/');
-        ParentUrl = Url.replace(/\&page=[0-9]+/, "");
-        ContentScript.sendMessage({type: "remove-settings", Url: "", ParentUrl: ParentUrl, IsFree: false});
-        PullingToken = new Date().getTime();
-        startPulling(1);
+	if (search.trim() == ""
+        || $("#bcKwText").text() !== '"'+search+'"'
+        || $("#bcKwText").css("visibility") != "visible")
+    {
+        return setTimeout(processWhenDone, 500);
     }
+
+    startPullingSearchPage(location.href);
 }
 
 function parseDataFromBookPageAndSend(pullingToken, num, url, price, parenturl, nextUrl, reviews, category, categoryKind, callback)
@@ -325,34 +164,31 @@ function parseDataFromBookPageAndSend(pullingToken, num, url, price, parenturl, 
     var parser = new BookPageParser(null, SiteParser);
     if(parser.isNotValid()) return callback();
     parser.GetBookData(url, price, reviews, function(pageData) {
-        ContentScript.sendMessage({type: "get-settings"}, function (response) {
-            // check if we still on the same search keywords page and didn't start a new pulling with new params
-            if (pullingToken != PullingToken) return;
-            ContentScript.sendMessage({
-                type: "save-settings",
-                No: num,
-                URL: url,
-                ParentURL: parenturl,
-                NextUrl: nextUrl,
-                Title: pageData.title,
-                Description: pageData.description,
-                Price: pageData.price,
-                EstSales: pageData.estSale,
-                SalesRecv: pageData.salesRecv,
-                Reviews: pageData.reviews,
-                SalesRank: pageData.salesRank,
-                Category: category,
-                CategoryKind: categoryKind,
-                PrintLength: pageData.printLength,
-                Author: pageData.author,
-                DateOfPublication: pageData.dateOfPublication,
-                GoogleSearchUrl: pageData.googleSearchUrl,
-                GoogleImageSearchUrl: pageData.googleImageSearchUrl,
-                Rating: pageData.rating
-            }, function(response){
-                return callback();
-            });
+        // check if we still on the same search keywords page and didn't start a new pulling with new params
+        if (pullingToken != PullingToken) return;
+        saveBook({
+            No: num,
+            URL: url,
+            ParentURL: parenturl,
+            NextUrl: nextUrl,
+            Title: pageData.title,
+            Description: pageData.description,
+            Price: pageData.price,
+            EstSales: pageData.estSale,
+            SalesRecv: pageData.salesRecv,
+            Reviews: pageData.reviews,
+            SalesRank: pageData.salesRank,
+            Category: category,
+            CategoryKind: categoryKind,
+            PrintLength: pageData.printLength,
+            Author: pageData.author,
+            DateOfPublication: pageData.dateOfPublication,
+            GoogleSearchUrl: pageData.googleSearchUrl,
+            GoogleImageSearchUrl: pageData.googleImageSearchUrl,
+            Rating: pageData.rating
         });
+
+        return callback();
     });
 }
 
@@ -361,21 +197,17 @@ function startPulling(pageNumber){
     if (pageNumber <= PagesPulled) return;
     PagesPulled = pageNumber;
     var searchKeyword = GetParameterByName(Url, "field-keywords");
-    var settings = getSettings();
-    settings.IsWaitForPulling = true;
-    settings.IsPulling = true;
-    setSettings(settings);
+    var settings = pageSettings.getSettings();
+    settings.isWaitingForPulling = true;
+    settings.isPulling = true;
 
     CurrentPage.LoadData(PullingToken, SiteParser, ParentUrl, searchKeyword, pageNumber);
 }
 
-function startPullingSearchPage(keyword){
-    ClearSearchResults(function(){
-        PullingToken = new Date().getTime();
-        Url = getSearchUrl(keyword);
-        ParentUrl = trimCurrentUrl(Url);
-        CurrentPage = new SearchResultsPage();
-        ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
-        startPulling(1);
-    });
+function startPullingSearchPage(url){
+    Url = url;
+    ParentUrl = trimCurrentUrl(Url);
+    CurrentPage = new SearchResultsPage();
+    PullingToken = new Date().getTime();
+    startPulling(1);
 }

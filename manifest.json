@@ -38,6 +38,7 @@
                 "src/common/Pager.js",
                 "src/common/BookStorage.js",
                 "src/common/AsyncRunner.js",
+                "src/common/Settings.js",
                 "src/parser/BookPageParser.js",
                 "src/parser/SearchPageParser.js",
                 "src/amazon/AmazonComParser.js",
