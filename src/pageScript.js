@@ -305,7 +305,7 @@ function processWhenDone() {
         ContentScript.sendMessage({type: "set-type-page", TYPE: 'search'});
         setTimeout("processWhenDone()", 500);
     }else {
-        var Url = location.href;
+        Url = location.href;
         ParentUrl = Url;
         if (ParentUrl.indexOf("/s/") < 0) {
             return;
@@ -313,6 +313,7 @@ function processWhenDone() {
         var _Pos = Url.lastIndexOf('/');
         ParentUrl = Url.replace(/\&page=[0-9]+/, "");
         ContentScript.sendMessage({type: "remove-settings", Url: "", ParentUrl: ParentUrl, IsFree: false});
+        PullingToken = new Date().getTime();
         startPulling(1);
     }
 }
