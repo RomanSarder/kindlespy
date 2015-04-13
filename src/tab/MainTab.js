@@ -12,7 +12,7 @@ function MainTab(){
 }
 
 MainTab.prototype.SavePageNum = function(){
-    Popup.sendMessage({type: "save-pageNum", tab: 'MainTab', PageNum: this.PageNum});
+    Popup.sendMessage({type: "save-pageNum", tab: 'MainTab', pageNum: this.PageNum});
 };
 
 MainTab.prototype.LoadPageNum = function(callback){

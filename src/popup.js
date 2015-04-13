@@ -110,17 +110,17 @@ Popup.sendMessage = function(message, callback){
 
 function getObjArray(callback){
     callback = ValueOrDefault(callback, function(){});
-    Popup.sendMessage({type: "get-settings"}, function(settings) {
-        var settingLen = settings.books.length;
+    Popup.sendMessage({type: "get-data"}, function(data) {
+        //var booksLength = data.books.length;
+        //
+        //obj = [];
+        //for (var i = 0; i < booksLength; i++)
+        //{
+        //    var settingTmp = {"No": data.books[i].No, "Url": data.books[i].Url, "ParentUrl": data.books[i].ParentUrl, "NextUrl": data.books[i].NextUrl,  "Title": data.books[i].Title, "Description": data.books[i].Description, "Price": data.books[i].Price, "EstSales": data.books[i].EstSales, "SalesRecv": data.books[i].SalesRecv, "Reviews": data.books[i].Reviews, "SalesRank": data.books[i].SalesRank, "Category": data.books[i].Category, "CategoryKind": data.books[i].CategoryKind, "PrintLength": data.books[i].PrintLength, "Author": data.books[i].Author, "DateOfPublication": data.books[i].DateOfPublication, "GoogleSearchUrl": data.books[i].GoogleSearchUrl, "GoogleImageSearchUrl": data.books[i].GoogleImageSearchUrl, "Rating": data.books[i].Rating };
+        //    obj.push(settingTmp);
+        //}
 
-        obj = [];
-        for (var i = 0; i < settingLen; i++)
-        {
-            var settingTmp = {"No": settings.books[i].No, "Url": settings.books[i].Url, "ParentUrl": settings.books[i].ParentUrl, "NextUrl": settings.books[i].NextUrl,  "Title": settings.books[i].Title, "Description": settings.books[i].Description, "Price": settings.books[i].Price, "EstSales": settings.books[i].EstSales, "SalesRecv": settings.books[i].SalesRecv, "Reviews": settings.books[i].Reviews, "SalesRank": settings.books[i].SalesRank, "Category": settings.books[i].Category, "CategoryKind": settings.books[i].CategoryKind, "PrintLength": settings.books[i].PrintLength, "Author": settings.books[i].Author, "DateOfPublication": settings.books[i].DateOfPublication, "GoogleSearchUrl": settings.books[i].GoogleSearchUrl, "GoogleImageSearchUrl": settings.books[i].GoogleImageSearchUrl, "Rating": settings.books[i].Rating };
-            obj.push(settingTmp);
-        }
-
-        return callback({obj: obj, isWaitingForPulling: settings.isWaitingForPulling, isPulling: settings.isPulling});
+        return callback({obj: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
     });
 }
 
@@ -684,7 +684,7 @@ function startSearchKeywords(){
 function GetSearchKeywordFullData(list, processItemFunction){
     var algorithm = new SearchAnalysisAlgorithm();
     list.forEach(function(item){
-        var pageUrl = getSearchUrl(item);
+        var pageUrl = getSearchUrl(item, SiteParser);
         $.get(pageUrl, function(responseText){
             var jqResponse = parseHtmlToJquery(responseText);
             var totalResults = HelperFunctions.parseInt(SiteParser.getTotalSearchResult(jqResponse), SiteParser.decimalSeparator);
@@ -787,21 +787,23 @@ function LoadData(obj) {
 }
 
 function checkIsDataLoaded(){
-    Popup.sendMessage({type: "get-settings"}, function(settings) {
-        if(settings.books.length == 0){
+    Popup.sendMessage({type: "get-data"}, function(settings) {
+        if (settings.books.length == 0){
             IsErrorWindow = true;
             resetCss();
             $('#main-header').html('');
             $('.table-head').html('');
 
-            if(settings.TYPE == '' || settings.TYPE == undefined) $('#no-supported-area').show();
-            else $('#no-data-found-content').show();
+            Popup.sendMessage({type: "get-type-page"}, function(pageName) {
+                if (pageName === '' || pageName === undefined) $('#no-supported-area').show();
+                else $('#no-data-found-content').show();
 
-            $('#ExportBtn').show();
-            $('#NoDataFooter').show();
-            $('#AdPanel').show();
+                $('#ExportBtn').show();
+                $('#NoDataFooter').show();
+                $('#AdPanel').show();
 
-            LoadAdvertisementBanner();
+                LoadAdvertisementBanner();
+            });
         }
     });
 }

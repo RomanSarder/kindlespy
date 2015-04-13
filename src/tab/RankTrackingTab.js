@@ -71,4 +71,4 @@ RankTrackingTab.prototype.ExportToCsv = function(data){
             link.click();
         }
     });
-}
+};

@@ -2,8 +2,7 @@
  * Created by Andrey Klochkov on 02.04.15.
  */
 
-function SearchPageParser(){
-
+function SearchPageParser(kindleSpy){
 }
 
 SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, category, siteParser, type)
@@ -64,14 +63,14 @@ SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxRes
     if(counter == 0) return 0;
 
     var totalResults = HelperFunctions.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.decimalSeparator);
-    saveTotalResults(totalResults);
+    kindleSpy.saveTotalResults(totalResults);
 
     url.forEach(function(item, i) {
         if (url[i] !== undefined && url[i].length > 0
             && price[i] !== undefined && price[i].length > 0){
-            ParserAsyncRunner.start(function(callback){
+            kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
-                    parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);
+                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);
                 }
                 setTimeout(wrapper, i*1000);
             })

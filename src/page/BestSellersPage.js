@@ -18,9 +18,8 @@ BestSellersPage.prototype.LoadData = function(pullingToken, siteParser, parentUr
     if(isTop100Free())
         pageUrl += '&tf=1';
     $.get(pageUrl, function(responseText){
-        // no need jQuery here
-        //var jqResponseText = parseHtmlToJquery(responseText);
-        _this.ParsePage(pullingToken, responseText, ParentUrl);
+        // no need jQuery here: // var jqResponseText = parseHtmlToJquery(responseText);
+        _this.ParsePage(pullingToken, responseText, parentUrl);
         return callback();
     });
 };
@@ -55,9 +54,9 @@ BestSellersPage.prototype.ParsePage = function(pullingToken, responseText, paren
 
     url.forEach(function(item, i) {
         if(url[i] !== undefined){
-            ParserAsyncRunner.start(function(callback){
+            kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
-                    parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
+                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
                 }
                 setTimeout(wrapper, i*1000);
             })

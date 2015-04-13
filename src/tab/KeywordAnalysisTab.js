@@ -13,7 +13,7 @@ function KeywordAnalysisTab(){
 }
 
 KeywordAnalysisTab.prototype.SavePageNum = function(){
-    Popup.sendMessage({type: "save-pageNum", tab: 'KeywordAnalysisTab', PageNum: this.PageNum});
+    Popup.sendMessage({type: "save-pageNum", tab: 'KeywordAnalysisTab', pageNum: this.PageNum});
 };
 
 KeywordAnalysisTab.prototype.LoadPageNum = function(callback){

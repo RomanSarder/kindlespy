@@ -2,8 +2,8 @@
  * Created by Andrey Klochkov on 12.04.2015.
  */
 
-function Settings(){
-    this.defaultSettings = {
+function DataStorage(){
+    this.defaultData = {
         isWaitingForPulling: false,
         isPulling: false,
         pageNum: {
@@ -18,16 +18,17 @@ function Settings(){
             ]
     };
 
-    this.storage = {};
+    this.data = undefined;
 }
 
-Settings.prototype.getSettings = function(){
-    if(this.storage.settings === undefined)
+DataStorage.prototype.get = function(){
+    if(this.data === undefined)
     // clone object
-        this.storage.settings = JSON.parse(JSON.stringify(this.defaultSettings));
-    return this.storage.settings;
+        this.data = JSON.parse(JSON.stringify(this.defaultData));
+    return this.data;
 };
 
-Settings.prototype.removeSettings = function(){
-    this.storage.settings = undefined;
+DataStorage.prototype.remove = function(){
+    this.data = undefined;
 };
+

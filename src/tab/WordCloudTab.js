@@ -66,4 +66,4 @@ WordCloudTab.prototype.ExportToCsv = function(data){
     link.setAttribute("href", encodedUri);
     link.setAttribute("download", "wc-"+GetCategoryFromBookData(data.bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
     link.click();
-}
+};

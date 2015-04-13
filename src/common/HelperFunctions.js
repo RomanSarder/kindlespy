@@ -118,28 +118,32 @@ function GetCategoryFromBookData(bookData){
 }
 /**
  * Return bool value page is best sellers.
- * @param Url
+ * @param url
+ * @param siteParser
  * @returns {boolean}
  */
-function IsBestSellersPage(Url){
-    return (Url.indexOf(SiteParser.mainUrl +"/Best-Sellers-Kindle-Store") >= 0 && Url.indexOf("digital-text") > 0)
-        || (Url.indexOf(SiteParser.mainUrl +"/gp/bestsellers") >= 0 && Url.indexOf("digital-text") > 0);
+function IsBestSellersPage(url, siteParser){
+    return (url.indexOf(siteParser.mainUrl +"/Best-Sellers-Kindle-Store") >= 0 && url.indexOf("digital-text") > 0)
+        || (url.indexOf(siteParser.mainUrl +"/gp/bestsellers") >= 0 && url.indexOf("digital-text") > 0);
 }
 function IsBestSellersPageFromCategoryKind(categoryKind){
     return categoryKind.indexOf("Seller") != -1;
 }/**
  * Return bool value page is search page.
- * @param Url
+ * @param url
+ * @param siteParser
  * @returns {boolean}
  */
-function IsSearchPage(Url){
-    return Url.indexOf(SiteParser.mainUrl +"/s/")==0 && Url.indexOf("digital-text") > 0;
+function IsSearchPage(url, siteParser){
+    return url.indexOf(siteParser.mainUrl +"/s/")==0 && url.indexOf("digital-text") > 0;
 }
 function IsSearchPageFromCategoryKind(categoryKind){
     return categoryKind.indexOf("Search") != -1;
 }
 /**
  * Return bool value page is author page.
+ * @param html
+ * @param siteParser
  * @returns {boolean}
  */
 function IsAuthorPage(html, siteParser){
@@ -147,21 +151,23 @@ function IsAuthorPage(html, siteParser){
 }
 /**
  * Return bool value page is author page.
- * @param Url
+ * @param url
+ * @param siteParser
  * @returns {boolean}
  */
-function IsAuthorSearchResultPage(Url){
-    return Url.indexOf(SiteParser.mainUrl +"/s") == 0 && Url.indexOf("field-author") > 0 && Url.indexOf("digital-text") > 0;
+function IsAuthorSearchResultPage(url, siteParser){
+    return url.indexOf(siteParser.mainUrl +"/s") == 0 && url.indexOf("field-author") > 0 && url.indexOf("digital-text") > 0;
 }
 /**
  * Return bool value page is single page.
- * @param Url
+ * @param url
+ * @param siteParser
  * @returns {boolean}
  */
-function IsSingleBookPage(Url){
-    var fullUrl = Url.split("/");
+function IsSingleBookPage(url, siteParser){
+    var fullUrl = url.split("/");
     var mainUrl = fullUrl[0] +"//"+ fullUrl[2];
-    return (mainUrl.indexOf(SiteParser.mainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
+    return (mainUrl.indexOf(siteParser.mainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
 }
 
 /**
@@ -215,7 +221,7 @@ function BuildHeaderHtml(rankTrackingNum){
         '<div style="float:right">' +
         '<a id="BestSellerLink" href="#"></a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
         '<span style="display: none;" id="KeywordAnalysisMenu"><a id="KeywordAnalysis" href="#">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span>' +
-        '<a id="TitleWordCloud" href="#">Titles Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
+        '<a id="TitleWordCloud" href="#">Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
         '<a id="RankTrackingResultList" href="#">Rank Tracking (' + rankTrackingNum + ')</a>' +
         '</div>';
     return headerHtml;
@@ -240,6 +246,6 @@ function isTop100Free(){
     return location.href.indexOf('tf=1') != -1;
 }
 
-function getSearchUrl(keyword){
-    return SiteParser.mainUrl + "/s/url=search-alias%3Ddigital-text&field-keywords=" + encodeURI(keyword);
+function getSearchUrl(keyword, siteParser){
+    return siteParser.mainUrl + "/s/url=search-alias%3Ddigital-text&field-keywords=" + encodeURI(keyword);
 }

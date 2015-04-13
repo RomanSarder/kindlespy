@@ -12,5 +12,5 @@ function SearchKeywordsTab(){
 
 SearchKeywordsTab.prototype.Load = function(data){
 
-}
+};
 

@@ -34,11 +34,12 @@
             "run_at": "document_start",
             "js": [
                 "libs/jquery-2.0.3.min.js",
+                "browser-api/Chrome.js",
                 "src/common/HelperFunctions.js",
                 "src/common/Pager.js",
                 "src/common/BookStorage.js",
                 "src/common/AsyncRunner.js",
-                "src/common/Settings.js",
+                "src/common/DataStorage.js",
                 "src/parser/BookPageParser.js",
                 "src/parser/SearchPageParser.js",
                 "src/amazon/AmazonComParser.js",

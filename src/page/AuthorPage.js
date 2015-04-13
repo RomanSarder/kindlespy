@@ -65,22 +65,17 @@ AuthorPage.prototype.ParsePage = function(pullingToken, startIndex, maxResults, 
     });
     if(counter == 0) return 0;
 
-    //category = this.GetAuthorCategory(jqNodes).trim();
-
-    //if (typeof category === "undefined" || category.length < 1)
-    //{
-        category = jqNodes.find("#entityHeader").text().trim();
-        var tmpSplit =category.split("by");
-        if (tmpSplit.length > 1)
-            category = tmpSplit[1];
-    //}
+    category = jqNodes.find("#entityHeader").text().trim();
+    var tmpSplit =category.split("by");
+    if (tmpSplit.length > 1)
+        category = tmpSplit[1];
 
     url.forEach(function(item, i) {
         if (url[i] !== undefined && url[i].length > 0
             && price[i] !== undefined && price[i].length > 0){
-            ParserAsyncRunner.start(function(callback){
+            kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
-                    parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
+                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
                 }
                 setTimeout(wrapper, i*1000);
             })

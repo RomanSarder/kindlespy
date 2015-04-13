@@ -13,7 +13,7 @@ BookPageParser.prototype.isNotValid = function (){
 BookPageParser.prototype.GetDateOfPublication = function(jqNodes, callback) {
     var pubdate = jqNodes.find('#pubdate').val();
     if(pubdate === undefined){
-        var publisherElement = jqNodes.find('#productDetailsTable div.content li:contains(' + SiteParser.publisher + ')');
+        var publisherElement = jqNodes.find('#productDetailsTable div.content li:contains(' + this._siteParser.publisher + ')');
         var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
 
         return callback(dateOfPublication);
