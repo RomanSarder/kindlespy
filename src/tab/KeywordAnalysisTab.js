@@ -13,7 +13,7 @@ function KeywordAnalysisTab(){
 }
 
 KeywordAnalysisTab.prototype.SavePageNum = function(){
-    Popup.sendMessage({type: "save-pageNum", tab: 'KeywordAnalysisTab', pageNum: this.PageNum});
+    Popup.sendMessage({type: "save-pageNum", tab: 'KeywordAnalysisTab', PageNum: this.PageNum});
 };
 
 KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
@@ -100,7 +100,7 @@ KeywordAnalysisTab.prototype.ExportToCsv = function(data){
     link.click();
 }
 
-KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
+KeywordAnalysisTab.prototype.InsertData = function(pageNumber, books, siteParser)
 {
     var category = "";
     var categoryKind = "";
@@ -113,58 +113,58 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
     var nTotalCnt = 0;
     var salesRankConclusion = 0;
 
-    for(var i = obj.length - 1; i >= 0 ; i --)
+    for(var i = books.length - 1; i >= 0 ; i --)
     {
-        if (typeof obj[i].SalesRank === "undefined" || obj[i].SalesRank.length < 1)
+        if (typeof books[i].SalesRank === "undefined" || books[i].SalesRank.length < 1)
         {
-            obj.splice(i, 1);
+            books.splice(i, 1);
             continue;
         }
 
-        if (typeof obj[i].Title === "undefined" || obj[i].Title.length < 1)
+        if (typeof books[i].Title === "undefined" || books[i].Title.length < 1)
         {
-            obj.splice(i, 1);
+            books.splice(i, 1);
             continue;
         }
     }
 
-    for(var i = 0; i < obj.length; i ++) {
+    for(var i = 0; i < books.length; i ++) {
         if (Math.floor(i / 20) <= pageNumber)
         {
-            var kwt = this.IsKeywordInText(obj[i].Category, obj[i].Title);
-            var kwd = this.IsKeywordInText(obj[i].Category, obj[i].Description);
-            salesRankConclusion = this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator));
+            var kwt = this.IsKeywordInText(books[i].Category, books[i].Title);
+            var kwd = this.IsKeywordInText(books[i].Category, books[i].Description);
+            salesRankConclusion = this.GetSalesRankConclusion(HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator));
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
-                "<td class='wow' style='min-width:280px;max-width:280px;'><a href="+obj[i].Url+" target='_blank'>" + obj[i].Title + "</a></td>" +
-                "<td style='min-width:50px;max-width:50px;padding-left:5px;padding-right:5px;'>"+ obj[i].Price +"</td>" +
-                "<td class='bg-" + this.GetPagesColor(obj[i].PrintLength) + "' style='padding-left:18px;min-width:22px;max-width:22px;padding-right:18px;'>" +obj[i].PrintLength + "</td>" +
+                "<td class='wow' style='min-width:280px;max-width:280px;'><a href="+books[i].Url+" target='_blank'>" + books[i].Title + "</a></td>" +
+                "<td style='min-width:50px;max-width:50px;padding-left:5px;padding-right:5px;'>"+ books[i].Price +"</td>" +
+                "<td class='bg-" + this.GetPagesColor(books[i].PrintLength) + "' style='padding-left:18px;min-width:22px;max-width:22px;padding-right:18px;'>" +books[i].PrintLength + "</td>" +
                 "<td class='bg-" + this.GetKWColor(kwt) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwt + "</td>" +
                 "<td class='bg-" + this.GetKWColor(kwd) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwd + "</td>" +
-                "<td class='bg-" + this.GetRatingColor(obj[i].Rating) + "' style='padding-left:20px;min-width:20px;max-width:20px;padding-right:20px;'>" + Number(obj[i].Rating).toFixed(1) +"</td>" +
-                "<td class='bg-" + this.GetReviewColor(HelperFunctions.parseInt(obj[i].Reviews, siteParser.decimalSeparator)) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ obj[i].Reviews +"</td>" +
-                "<td class='bg-" + this.GetSalesRankColor(salesRankConclusion) + "' align='right' style='padding-left:31px;width:70px;'>"+ obj[i].SalesRank +"</td>"+
+                "<td class='bg-" + this.GetRatingColor(books[i].Rating) + "' style='padding-left:20px;min-width:20px;max-width:20px;padding-right:20px;'>" + Number(books[i].Rating).toFixed(1) +"</td>" +
+                "<td class='bg-" + this.GetReviewColor(HelperFunctions.parseInt(books[i].Reviews, siteParser.decimalSeparator)) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ books[i].Reviews +"</td>" +
+                "<td class='bg-" + this.GetSalesRankColor(salesRankConclusion) + "' align='right' style='padding-left:31px;width:70px;'>"+ books[i].SalesRank +"</td>"+
                 "</tr>";
 
-            var price = "" + obj[i].Price;
-            var review = "" + obj[i].Reviews;
+            var price = "" + books[i].Price;
+            var review = "" + books[i].Reviews;
 
-            salesRankSum += HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator);
+            salesRankSum += HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator);
             if (price.indexOf("free") >= 0)
                 priceSum = 0;
             else
                 priceSum += HelperFunctions.parseFloat(price, siteParser.decimalSeparator);
 
             reviewSum += HelperFunctions.parseInt(review, siteParser.decimalSeparator);
-            pagesSum += $.isNumeric(obj[i].PrintLength) ? parseInt(obj[i].PrintLength) : 0;
-            ratingSum += parseFloat(obj[i].Rating);
+            pagesSum += $.isNumeric(books[i].PrintLength) ? parseInt(books[i].PrintLength) : 0;
+            ratingSum += parseFloat(books[i].Rating);
 
             nTotalCnt ++;
 
             if (category == "")
             {
-                categoryKind = obj[i].CategoryKind;
-                category = obj[i].Category;
+                categoryKind = books[i].CategoryKind;
+                category = books[i].Category;
             }
         }
     }
@@ -179,7 +179,7 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
 
     if (pageNumber >= 4)
     {
-        $('#result1').html(1 + "-" + (obj.length));
+        $('#result1').html(1 + "-" + (books.length));
         $('#PullResult').html("");
     }
     else
@@ -193,9 +193,9 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, obj, siteParser)
 	/*Start region: get data for analysis*/
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
-	for (var i = 0; i < 20 && i < obj.length; i++) {
-		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue++;
-		if (obj[i].SalesRecv > 500) monthlyRevBook++;
+	for (var i = 0; i < 20 && i < books.length; i++) {
+		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue++;
+		if (books[i].SalesRecv > 500) monthlyRevBook++;
 	}
 	/*End region get data for analysis*/
 	

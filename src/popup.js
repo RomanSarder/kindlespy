@@ -1,6 +1,5 @@
-var obj = [];
+var booksData = [];
 var clouds = [];
-var CurrentPageUrl = "";
 var ActiveTab = new MainTab();
 var IsErrorWindow = false;
 var SiteParser;
@@ -111,28 +110,19 @@ Popup.sendMessage = function(message, callback){
 function getObjArray(callback){
     callback = ValueOrDefault(callback, function(){});
     Popup.sendMessage({type: "get-data"}, function(data) {
-        //var booksLength = data.books.length;
-        //
-        //obj = [];
-        //for (var i = 0; i < booksLength; i++)
-        //{
-        //    var settingTmp = {"No": data.books[i].No, "Url": data.books[i].Url, "ParentUrl": data.books[i].ParentUrl, "NextUrl": data.books[i].NextUrl,  "Title": data.books[i].Title, "Description": data.books[i].Description, "Price": data.books[i].Price, "EstSales": data.books[i].EstSales, "SalesRecv": data.books[i].SalesRecv, "Reviews": data.books[i].Reviews, "SalesRank": data.books[i].SalesRank, "Category": data.books[i].Category, "CategoryKind": data.books[i].CategoryKind, "PrintLength": data.books[i].PrintLength, "Author": data.books[i].Author, "DateOfPublication": data.books[i].DateOfPublication, "GoogleSearchUrl": data.books[i].GoogleSearchUrl, "GoogleImageSearchUrl": data.books[i].GoogleImageSearchUrl, "Rating": data.books[i].Rating };
-        //    obj.push(settingTmp);
-        //}
-
-        return callback({obj: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
+        return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
     });
 }
 
 function AutoAddFunc()
 {
     getObjArray(function(result) {
-        obj = result.obj;
-        obj.sort(compare);
+        booksData = result.books;
+        booksData.sort(compare);
 
-        if (obj.length <= 0) return;
+        if (booksData.length <= 0) return;
 
-        SetupHeader(obj[0].Category, obj[0].CategoryKind);
+        SetupHeader(booksData[0].Category, booksData[0].CategoryKind);
 
         if (IsErrorWindow) {
             checkUrlAndLoad();
@@ -140,12 +130,12 @@ function AutoAddFunc()
         }
 
         if (ActiveTab.IsPaged) {
-            ActiveTab.InsertData(ActiveTab.PageNum - 1, obj, SiteParser);
+            ActiveTab.InsertData(ActiveTab.PageNum - 1, booksData, SiteParser);
             if (result.isWaitingForPulling) $('.img-load').show();
             else {
                 $('.img-load').hide();
             }
-            if (result.isPulling && obj.length < 20){
+            if (result.isPulling && booksData.length < 20){
                 $('.status-img div').hide();
                 $('.bullet-progress').show();
             }
@@ -419,7 +409,7 @@ function KwdAnalysisListShow() {
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(tableHead);
 
-    ActiveTab.InsertData(ActiveTab.PageNum-1, obj, SiteParser);
+    ActiveTab.InsertData(ActiveTab.PageNum-1, booksData, SiteParser);
 }
 var prevBookUrl;
 function resetTrackingBookPage(bookUrl) {
@@ -748,13 +738,11 @@ function SetupStaticClickListeners() {
         Popup.sendMessage({type: 'pull-data', page: ActiveTab.PageNum}, function(){});
     });
 
-    $('#Export').click(function() {
-        ActiveTab.ExportToCsv({ bookData: obj, cloudData: clouds });
-    });
-
-    $('#ExportWordCloud').click(function(){
-        ActiveTab.ExportToCsv({bookData: obj, cloudData: clouds });
-    });
+    var exportToCsvFunction = function() {
+        ActiveTab.ExportToCsv({ bookData: booksData, cloudData: clouds });
+    };
+    $('#Export').click(exportToCsvFunction);
+    $('#ExportWordCloud').click(exportToCsvFunction);
 
     $('#Help').click(function(){
         chrome.tabs.create({ url: 'http://www.kdspy.com/help/' });
@@ -863,7 +851,7 @@ function SetActivePage(pageNum)
     $('#TitleWordCloud').text("Word Cloud (" + (pageNum) * 20 + ")");
     ActiveTab.PageNum = pageNum;
     ActiveTab.SavePageNum();
-    ActiveTab.InsertData(pageNum-1, obj, SiteParser);
+    ActiveTab.InsertData(pageNum-1, booksData, SiteParser);
 }
 
 function checkUrlAndLoad()
@@ -878,13 +866,12 @@ function checkUrlAndLoad()
         }
 
         // load
-        CurrentPageUrl = url;
-        SiteParser = GetSiteParser(CurrentPageUrl);
+        SiteParser = GetSiteParser(url);
         InitRegionSelector();
         Popup.sendMessage({type: "get-type-page"}, function(pageName) {
             if (pageName == 'single') {
                 ActiveTab = new RankTrackingTab();
-                RankTrackingSingleShow(CurrentPageUrl);
+                RankTrackingSingleShow(url);
                 return;
             }
 
@@ -908,9 +895,9 @@ function LoadInfos()
     new MainTab().LoadPageNum(function(){
         new KeywordAnalysisTab().LoadPageNum(function(){
             getObjArray(function(result){
-                obj = result.obj;
-                obj.sort(compare);
-                LoadData(obj);
+                booksData = result.books;
+                booksData.sort(compare);
+                LoadData(booksData);
                 LoadAdvertisementBanner();
             });
         });

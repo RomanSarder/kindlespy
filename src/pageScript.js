@@ -119,7 +119,7 @@ KindleSpy.prototype.parseDataFromBookPageAndSend = function(pullingToken, num, u
         if (pullingToken != _this.pullingToken) return;
         _this.saveBook({
             No: num,
-            URL: url,
+            Url: url,
             ParentURL: parentUrl,
             NextUrl: nextUrl,
             Title: pageData.title,

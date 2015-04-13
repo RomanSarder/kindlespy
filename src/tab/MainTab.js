@@ -105,7 +105,7 @@ MainTab.prototype.ExportToCsv = function(data){
     link.click();
 };
 
-MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
+MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
     var category = "";
     var categoryKind = "";
     var salesRankSum = 0;
@@ -116,43 +116,43 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     var nTotalCnt = 0;
     var cellCnt = 0;
  
-    for(var i = obj.length - 1; i >= 0 ; i --)
+    for(var i = books.length - 1; i >= 0 ; i --)
     {
-        if (typeof obj[i].SalesRank === "undefined" || obj[i].SalesRank.length < 1)
+        if (typeof books[i].SalesRank === "undefined" || books[i].SalesRank.length < 1)
         {
-            obj.splice(i, 1);
+            books.splice(i, 1);
             continue;
         }
 
-        if (typeof obj[i].Title === "undefined" || obj[i].Title.length < 1)
+        if (typeof books[i].Title === "undefined" || books[i].Title.length < 1)
         {
-            obj.splice(i, 1);
+            books.splice(i, 1);
             continue;
         }
     }
 
-    for(var i = 0; i < obj.length; i ++) {
+    for(var i = 0; i < books.length; i ++) {
         if (Math.floor(i / 20) <= pageNumber)
         {
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
-                "<td class='wow'><a href="+obj[i].Url+" target='_blank'>" + obj[i].Title + "</a></td>" +
-                "<td style='width:50px;'><a class='RankTrackingResultSingle' href='" + "#" + "' bookUrl='" + obj[i].Url + "'>T</a> " + " | " +
-                "<a target='_blank' href='" + obj[i].GoogleSearchUrl + "' >S</a> " + " | " +
-                "<a target='_blank' href='" + obj[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
-                "<td style='padding-left:15px; width:30px;'>" +obj[i].PrintLength + "</td>" +
-                "<td style='width:50px;'>"+ obj[i].Price +"</td>" +
-                "<td style='width:60px;' align='center'>" + AddCommas(obj[i].EstSales) +"</td>" +
-                "<td style='width:80px;'><div style='float:left'> "+ siteParser.currencySign +" </div> <div style='float:right'>"+ AddCommas(Math.round(obj[i].SalesRecv)) +"</div></td>" +
-                "<td style='width:50px;' align='right'>"+ obj[i].Reviews +"</td>" +
-                "<td style='width:80px;padding-right : 10px;' align='right'>"+ obj[i].SalesRank +"</td>"+
+                "<td class='wow'><a href="+books[i].Url+" target='_blank'>" + books[i].Title + "</a></td>" +
+                "<td style='width:50px;'><a class='RankTrackingResultSingle' href='" + "#" + "' bookUrl='" + books[i].Url + "'>T</a> " + " | " +
+                "<a target='_blank' href='" + books[i].GoogleSearchUrl + "' >S</a> " + " | " +
+                "<a target='_blank' href='" + books[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
+                "<td style='padding-left:15px; width:30px;'>" +books[i].PrintLength + "</td>" +
+                "<td style='width:50px;'>"+ books[i].Price +"</td>" +
+                "<td style='width:60px;' align='center'>" + AddCommas(books[i].EstSales) +"</td>" +
+                "<td style='width:80px;'><div style='float:left'> "+ siteParser.currencySign +" </div> <div style='float:right'>"+ AddCommas(Math.round(books[i].SalesRecv)) +"</div></td>" +
+                "<td style='width:50px;' align='right'>"+ books[i].Reviews +"</td>" +
+                "<td style='width:80px;padding-right : 10px;' align='right'>"+ books[i].SalesRank +"</td>"+
                 "</tr>";
 
-            var price = "" + obj[i].Price;
-            var review = "" + obj[i].Reviews;
+            var price = "" + books[i].Price;
+            var review = "" + books[i].Reviews;
 
-            salesRankSum += HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator);
-            salesRecvSum += parseInt(obj[i].SalesRecv);
+            salesRankSum += HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator);
+            salesRecvSum += parseInt(books[i].SalesRecv);
             if (price.indexOf("free") >= 0)
                 priceSum = 0;
             else
@@ -164,8 +164,8 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
             if (category == "")
             {
-                categoryKind = obj[i].CategoryKind;
-                category = obj[i].Category;
+                categoryKind = books[i].CategoryKind;
+                category = books[i].Category;
             }
         }
     }
@@ -180,7 +180,7 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
 
     if (pageNumber >= 4)
     {
-        $('#result1').html(1 + "-" + (obj.length));
+        $('#result1').html(1 + "-" + (books.length));
         $('#PullResult').html("");
     }
     else
@@ -194,18 +194,18 @@ MainTab.prototype.InsertData = function(pageNumber, obj, siteParser){
     addEventListenerForSingleResultBook();
 
     /*Start region: get data for analysis*/
-	var salesRank20index = Math.min(19, obj.length-1);
-    var salesRank20 = HelperFunctions.parseInt(obj[salesRank20index].SalesRank || 0, siteParser.decimalSeparator);
+	var salesRank20index = Math.min(19, books.length-1);
+    var salesRank20 = HelperFunctions.parseInt(books[salesRank20index].SalesRank || 0, siteParser.decimalSeparator);
 	
 	var monthlyRev20 = 0;
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
-	for (var i = 0; i < 20 && i < obj.length; i++) {
-        monthlyRev20 += parseInt(obj[i].SalesRecv);
-		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(obj[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
-		if (obj[i].SalesRecv > 500) monthlyRevBook ++;
+	for (var i = 0; i < 20 && i < books.length; i++) {
+        monthlyRev20 += parseInt(books[i].SalesRecv);
+		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
+		if (books[i].SalesRecv > 500) monthlyRevBook ++;
 	}
-	var avgMonthlyRev20 = monthlyRev20/(Math.min(20, obj.length));
+	var avgMonthlyRev20 = monthlyRev20/(Math.min(20, books.length));
 	/*End region get data for analysis*/
     
 	$('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
