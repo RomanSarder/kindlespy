@@ -13,20 +13,19 @@ function KeywordAnalysisTab(){
 }
 
 KeywordAnalysisTab.prototype.SavePageNum = function(){
-    Popup.sendMessage({type: "save-pageNum", tab: 'KeywordAnalysisTab', pageNum: this.pageNum});
+    Api.sendMessageToActiveTab({type: "save-pageNum", tab: 'KeywordAnalysisTab', pageNum: this.pageNum});
 };
 
 KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
     var _this = this;
     callback = Helper.valueOrDefault(callback, function() {});
-    Popup.sendMessage({type: "get-pageNum", tab: 'KeywordAnalysisTab'}, function(pageNum){
+    Api.sendMessageToActiveTab({type: "get-pageNum", tab: 'KeywordAnalysisTab'}, function(pageNum){
         _this.pageNum = parseInt(pageNum);
         callback();
     });
 };
 
-KeywordAnalysisTab.prototype.ExportToCsv = function(data){
-    var bookData = data.bookData;
+KeywordAnalysisTab.prototype.ExportToCsv = function(bookData){
     var x = new Array(this.pageNum * 20 + 1);
     for (var i = 0; i < this.pageNum * 20 + 1; i++) {
         x[i] = new Array(9);
@@ -98,7 +97,7 @@ KeywordAnalysisTab.prototype.ExportToCsv = function(data){
     link.setAttribute("href", url);
     link.setAttribute("download", "ka-"+Helper.getCategoryFromBookData(bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
     link.click();
-}
+};
 
 KeywordAnalysisTab.prototype.InsertData = function(pageNumber, books, siteParser)
 {

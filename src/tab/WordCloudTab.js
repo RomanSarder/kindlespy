@@ -15,8 +15,8 @@ WordCloudTab.wordSort = function(a, b){
     return 0;
 };
 
-WordCloudTab.prototype.ExportToCsv = function(data){
-    var cloudData = data.cloudData;
+WordCloudTab.prototype.ExportToCsv = function(bookData){
+    var cloudData = this.clouds;
     var x = new Array(cloudData.length + 1);
 
     for (var i = 0; i < cloudData.length + 1; i++) {
@@ -69,7 +69,7 @@ WordCloudTab.prototype.ExportToCsv = function(data){
     var yyyy = today.getFullYear();
     var link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "wc-"+Helper.getCategoryFromBookData(data.bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
+    link.setAttribute("download", "wc-"+Helper.getCategoryFromBookData(bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
     link.click();
 };
 
@@ -95,7 +95,11 @@ WordCloudTab.prototype.shuffle = function(array) {
     return array;
 };
 
-WordCloudTab.prototype.WordsInfoUpdate = function(){
+/**
+ * Word cloud HTML generator - created by Jang
+ * @returns {{info: string, content: string, words: string}}
+ */
+WordCloudTab.prototype.wordsInfoUpdate = function(){
     var xPathRes = document.evaluate ( "/html/body/div/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var InnerTexts = "";
 

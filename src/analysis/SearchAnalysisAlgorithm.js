@@ -48,7 +48,7 @@ SearchAnalysisAlgorithm.prototype.setPotentialBullet = function(value){
 
 SearchAnalysisAlgorithm.prototype.setCompetitionBullet = function(){
     var _this = this;
-    Popup.sendMessage({type: "get-totalResults"}, function(totalResults){
+    Api.sendMessageToActiveTab({type: "get-totalResults"}, function(totalResults){
         var competitionColor =  _this.getCompetitionColor(parseInt(totalResults));
         var bullet = $('#bullet-3');
         bullet.removeClass().addClass('bullet-' + competitionColor);

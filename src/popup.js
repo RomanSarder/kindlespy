@@ -5,54 +5,21 @@ var IsErrorWindow = false;
 var SiteParser;
 var Storage = new BookStorage();
 var columnGetterFunctions = [];
-columnGetterFunctions['no'] = function(a){return parseInt(a.No)};
-columnGetterFunctions['pageno'] = function(a){
-    var printLength = Helper.parseInt(a.PrintLength, SiteParser.decimalSeparator);
+columnGetterFunctions['no'] = function(book){return parseInt(book.No)};
+columnGetterFunctions['pageno'] = function(book){
+    var printLength = Helper.parseInt(book.PrintLength, SiteParser.decimalSeparator);
     return isNaN(printLength) ? 0 : printLength;
 };
-columnGetterFunctions['title-book'] = function(a){return a.Title};
-columnGetterFunctions['price'] = function(a){return Helper.parseFloat(a.Price, SiteParser.decimalSeparator)};
-columnGetterFunctions['est-sales'] = function(a){return a.EstSales};
-columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv};
-columnGetterFunctions['reviews'] = function(a){return Helper.parseInt(a.Reviews, SiteParser.decimalSeparator)};
-columnGetterFunctions['sales-rank'] = function(a){return Helper.parseInt(a.SalesRank, SiteParser.decimalSeparator)};
+columnGetterFunctions['title-book'] = function(book){return book.Title};
+columnGetterFunctions['price'] = function(book){return Helper.parseFloat(book.Price, SiteParser.decimalSeparator)};
+columnGetterFunctions['est-sales'] = function(book){return book.EstSales};
+columnGetterFunctions['sales-rev'] = function(book){return book.SalesRecv};
+columnGetterFunctions['reviews'] = function(book){return Helper.parseInt(book.Reviews, SiteParser.decimalSeparator)};
+columnGetterFunctions['sales-rank'] = function(book){return Helper.parseInt(book.SalesRank, SiteParser.decimalSeparator)};
 
 var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
 
-$(window).ready(function () {
-    $('#LinkBackTo').click(function () {
-        $('#data-body').css("overflow-y", "auto");
-        ActiveTab = new MainTab();
-        checkUrlAndLoad();
-    });
-    $('#enableTracking').click(function () {
-        $('#enableTracking').prop('disabled', true);
-        $('#LinkBackTo').hide();
-        var _this = this;
-        Storage.enableTracking($(_this).data().url, function() {
-            $('#enableTracking').prop('disabled', false);
-            $('#LinkBackTo').show();
-            RankTrackingSingleShow($(_this).data().url);
-        });
-    });
-    $('#disableTracking').click(function () {
-        var _this = this;
-        Storage.disableTracking($(_this).data().url, function(bytesInUse) {
-            RankTrackingSingleShow($(_this).data().url);
-        });
-    });
-
-    $('#bullet-1, #bullet-2, #bullet-3').tooltipster({
-        animation: 'fade',
-        theme: 'tooltip-theme',
-        maxWidth:200,
-        updateAnimation: false,
-        position: 'top'
-    });
-
-    SetupStaticClickListeners();
-});
 
 function resetCss(){
     // header
@@ -95,21 +62,9 @@ function resetCss(){
     $('#AdPanel').hide();
 }
 
-function Popup(){
-}
-
-Popup.sendMessage = function(message, callback){
-    callback = Helper.valueOrDefault(callback, function(){});
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
-            return callback(response);
-        });
-    });
-};
-
 function getObjArray(callback){
     callback = Helper.valueOrDefault(callback, function(){});
-    Popup.sendMessage({type: "get-data"}, function(data) {
+    Api.sendMessageToActiveTab({type: "get-data"}, function(data) {
         return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
     });
 }
@@ -118,7 +73,6 @@ function AutoAddFunc()
 {
     getObjArray(function(result) {
         booksData = result.books;
-        booksData.sort(compare);
 
         if (booksData.length <= 0) return;
 
@@ -147,221 +101,6 @@ function AutoAddFunc()
     });
     setTimeout(AutoAddFunc, 1000);
 }
-
-//function wordSort(a, b)
-//{
-//    if (parseInt(a.Len) < parseInt(b.Len))
-//        return -1;
-//    if (parseInt(a.Len) > parseInt(b.Len))
-//        return 1;
-//    return 0;
-//}
-//
-//function shuffle(array) {
-//    var currentIndex = array.length
-//        , temporaryValue
-//        , randomIndex
-//        ;
-//
-//    // While there remain elements to shuffle...
-//    while (0 !== currentIndex) {
-//
-//        // Pick a remaining element...
-//        randomIndex = Math.floor(Math.random() * currentIndex);
-//        currentIndex -= 1;
-//
-//        // And swap it with the current element.
-//        temporaryValue = array[currentIndex];
-//        array[currentIndex] = array[randomIndex];
-//        array[randomIndex] = temporaryValue;
-//    }
-//
-//    return array;
-//}
-//
-//function WordsInfoUpdate()
-//{
-//    var xPathRes = document.evaluate ( "/html/body/div/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-//    var InnerTexts = "";
-//
-//    if (xPathRes.length < 1)
-//        return;
-//
-//    for (var i = 0; i < xPathRes.snapshotLength; i++) {
-//        if (i > ActiveTab.pageNum * 20)
-//            break;
-//
-//        InnerTexts += xPathRes.snapshotItem (i).innerText + " ";
-//    }
-//
-//    InnerTexts = InnerTexts.toLowerCase();
-//
-//    InnerTexts = InnerTexts.replace(/ the /g, ' ');
-//    InnerTexts = InnerTexts.replace(/the /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ a /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ of /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ i /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ and /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ in /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ at /g, ' ');
-//    InnerTexts = InnerTexts.replace(/-/g, ' ');
-//    InnerTexts = InnerTexts.replace(/\d+/g, ' ');
-//    InnerTexts = InnerTexts.replace(/ and /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ to /g, ' ');
-//    InnerTexts = InnerTexts.replace(/to /g, ' ');
-//    InnerTexts = InnerTexts.replace(/:/g, ' ');
-//    InnerTexts = InnerTexts.replace(/ at /g, ' ');
-//    InnerTexts = InnerTexts.replace(/at /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ for /g, ' ');
-//    InnerTexts = InnerTexts.replace(/we /g, ' ');
-//    InnerTexts = InnerTexts.replace(/you /g, ' ');
-//    InnerTexts = InnerTexts.replace(/me /g, ' ');
-//    InnerTexts = InnerTexts.replace(/'/g, ' ');
-//    InnerTexts = InnerTexts.replace(/ our /g, ' ');
-//    InnerTexts = InnerTexts.replace(/,/g, ' ');
-//    InnerTexts = InnerTexts.replace(/will /g, ' ');
-//    InnerTexts = InnerTexts.replace(/ will /g, ' ');
-//    InnerTexts = InnerTexts.replace(/[()]/g, ' ');
-//    InnerTexts = InnerTexts.replace(/[{}]/g, ' ');
-//    InnerTexts = InnerTexts.replace(/\[/g, ' ');
-//    InnerTexts = InnerTexts.replace(/\]/g, ' ');
-//    InnerTexts = InnerTexts.replace(/&/g, ' ');
-//    InnerTexts = InnerTexts.replace(/\//g, ' ');
-//    InnerTexts = InnerTexts.replace(/!/g, ' ');
-//
-//    var words = InnerTexts.split(" ");
-//
-//    clouds = [];
-//
-//    for (var i = 0; i < words.length; i++)
-//    {
-//        if ((typeof words[i] === "undefined") || (words[i].length < 1))
-//            continue;
-//
-//        var found = false;
-//        for(var j = 0; j < clouds.length; j++) {
-//            if (clouds[j].Word == words[i]) {
-//                found = true;
-//                break;
-//            }
-//        }
-//
-//        if (!found)
-//        {
-//            var nDuplicateCnt = 0
-//            for (var n = 0; n < words.length; n++)
-//            {
-//                if (words[i] === words[n])
-//                    nDuplicateCnt++;
-//            }
-//
-//            clouds.push({"Len":nDuplicateCnt, "Word": words[i]});
-//        }
-//
-//    }
-//
-//    clouds.sort(wordSort);
-//
-//    var nCnt = 0;
-//
-//    var InfoHtml = "<div style=\"font-size:11px;color:#a8a8a8;padding-top: 1px\">" + "Showing top 50 of " + (clouds.length - 1) + " possible words:</div>";
-//
-//    $('.info.list_books').html(InfoHtml);
-//    var level = [];
-//
-//    var nlevelIndex = 0;
-//    for (var i = clouds.length - 1; i >= 0; i--)
-//    {
-//        var found = false;
-//        for(var j = 0; j < clouds.length; j++) {
-//            if (clouds[j].Len == level[i]) {
-//                found = true;
-//                break;
-//            }
-//        }
-//
-//        if (!found)
-//        {
-//            if (clouds[i].Word.length > 2)
-//            {
-//                level[nlevelIndex] = clouds[i].Len;
-//                nlevelIndex++;
-//            }
-//        }
-//
-//        if (nlevelIndex >= 6)
-//            break;
-//    }
-//
-//    var ColudLevel = 1;
-//    var contentHtml = "";
-//    nCnt = 0;
-//
-//    var ShuffleArray = [];
-//
-//    for (var i = clouds.length - 1; i >= 0; i--)
-//    {
-//        ColudLevel = 6;
-//        for (var j = 0; j < level.length; j++)
-//        {
-//            if (clouds[i].Len === level[j])
-//            {
-//                ColudLevel = j + 1;
-//                break;
-//            }
-//        }
-//
-//        if (clouds[i].Word.length > 2)
-//        {
-//            if (clouds[i].Len < 2)
-//                ShuffleArray.push({Level:6, Word:clouds[i].Word, Len:clouds[i].Len});
-//            else
-//                ShuffleArray.push({Level:ColudLevel, Word:clouds[i].Word, Len:clouds[i].Len});
-//        }
-//
-//        if (nCnt >= 50)
-//            break;
-//
-//        nCnt++;
-//    }
-//
-//    ShuffleArray = shuffle(ShuffleArray);
-//
-//    for (var i = 0; i < ShuffleArray.length; i++)
-//    {
-//        contentHtml += "<span class=\"occurcnt\"><span class=\"best" + ShuffleArray[i].Level + "\">" + "&nbsp;" + ShuffleArray[i].Word + "</span>(" + ShuffleArray[i].Len + ")&nbsp;</span>";
-//    }
-//
-//    $('#word-cloud-content').html(contentHtml);
-//
-//    var wordsHTML = "";
-//    nCnt = 1;
-//    for (var i = clouds.length - 1; i >= 0; i--)
-//    {
-//        if (clouds[i].Word.length > 2)
-//        {
-//            wordsHTML += (nCnt + ". <b style='padding-right : 15px;'>" + clouds[i].Word + "</b>&nbsp;&nbsp;&nbsp;&nbsp;");
-//            if (nCnt >= 5)
-//                break;
-//
-//            nCnt++;
-//        }
-//    }
-//
-//    $('.table-head').html("");
-//
-//    resetCss();
-//
-//    $('#Words').html(wordsHTML);
-//    $('#main-header').show();
-//    $('#word-cloud-content').show();
-//    $('.info.list_books').show();
-//    $('#WordCloudFooter').show();
-//    $('#ExportBtnWordCloud').show();
-//    $('#AdPanel').show();
-//
-//    LoadAdvertisementBanner();
-//}
 
 function RankTrackingListShow() {
     var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
@@ -588,7 +327,7 @@ function SetupClickListeners(){
     var linkTitleWord = $('#TitleWordCloud');
     linkTitleWord.click(function() {
         ActiveTab = new WordCloudTab(ActiveTab.pageNum);
-        var cloud = ActiveTab.WordsInfoUpdate();
+        var cloud = ActiveTab.wordsInfoUpdate();
 
         resetCss();
         $('.table-head').html("");
@@ -669,7 +408,7 @@ function SearchKeywordsPage() {
     $('table[name="data-keyword-search"] tbody').on('click', '.keyword-analyze', function(){
         ActiveTab = new MainTab();
         var search = $(this).attr('keyword');
-        Popup.sendMessage({type: "start-analyze-search-keywords", keyword: search});
+        Api.sendMessageToActiveTab({type: "start-analyze-search-keywords", keyword: search});
         checkUrlAndLoad();
     });
 }
@@ -749,7 +488,7 @@ function SetupStaticClickListeners() {
 
     $('#PullResult').click(function () {
         SetActivePage(ActiveTab.pageNum + 1);
-        Popup.sendMessage({type: 'pull-data', page: ActiveTab.pageNum}, function(){});
+        Api.sendMessageToActiveTab({type: 'pull-data', page: ActiveTab.pageNum});
     });
 
     var exportToCsvFunction = function() {
@@ -789,14 +528,14 @@ function LoadData(obj) {
 }
 
 function checkIsDataLoaded(){
-    Popup.sendMessage({type: "get-data"}, function(settings) {
+    Api.sendMessageToActiveTab({type: "get-data"}, function(settings) {
         if (settings.books.length == 0){
             IsErrorWindow = true;
             resetCss();
             $('#main-header').html('');
             $('.table-head').html('');
 
-            Popup.sendMessage({type: "get-type-page"}, function(pageName) {
+            Api.sendMessageToActiveTab({type: "get-type-page"}, function(pageName) {
                 if (pageName === '' || pageName === undefined) $('#no-supported-area').show();
                 else $('#no-data-found-content').show();
 
@@ -870,7 +609,7 @@ function SetActivePage(pageNum)
 
 function checkUrlAndLoad()
 {
-    Popup.sendMessage({type: "get-current-url"}, function(url) {
+    Api.sendMessageToActiveTab({type: "get-current-url"}, function(url) {
         if (url === undefined || url.indexOf("http://www.amazon.") < 0)
         {
             //Go To Amazon Page
@@ -882,7 +621,7 @@ function checkUrlAndLoad()
         // load
         SiteParser = Helper.getSiteParser(url);
         InitRegionSelector();
-        Popup.sendMessage({type: "get-type-page"}, function(pageName) {
+        Api.sendMessageToActiveTab({type: "get-type-page"}, function(pageName) {
             if (pageName == 'SingleBookPage') {
                 ActiveTab = new RankTrackingTab();
                 RankTrackingSingleShow(url);
@@ -910,7 +649,6 @@ function LoadInfos()
         new KeywordAnalysisTab().LoadPageNum(function(){
             getObjArray(function(result){
                 booksData = result.books;
-                booksData.sort(compare);
                 LoadData(booksData);
                 LoadAdvertisementBanner();
             });
@@ -956,4 +694,39 @@ function LoadAdvertisementBanner()
     });
 }
 
+$(window).ready(function () {
+    $('#LinkBackTo').click(function () {
+        $('#data-body').css("overflow-y", "auto");
+        ActiveTab = new MainTab();
+        checkUrlAndLoad();
+    });
+    $('#enableTracking').click(function () {
+        $('#enableTracking').prop('disabled', true);
+        $('#LinkBackTo').hide();
+        var _this = this;
+        Storage.enableTracking($(_this).data().url, function() {
+            $('#enableTracking').prop('disabled', false);
+            $('#LinkBackTo').show();
+            RankTrackingSingleShow($(_this).data().url);
+        });
+    });
+    $('#disableTracking').click(function () {
+        var _this = this;
+        Storage.disableTracking($(_this).data().url, function(bytesInUse) {
+            RankTrackingSingleShow($(_this).data().url);
+        });
+    });
+
+    $('#bullet-1, #bullet-2, #bullet-3').tooltipster({
+        animation: 'fade',
+        theme: 'tooltip-theme',
+        maxWidth:200,
+        updateAnimation: false,
+        position: 'top'
+    });
+
+    SetupStaticClickListeners();
+});
+
+// run this when show the popup
 checkUrlAndLoad();
