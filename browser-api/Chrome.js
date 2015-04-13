@@ -31,3 +31,7 @@ Api.sendMessageToActiveTab = function(message, callback){
         });
     });
 };
+
+Api.openNewTab = function(url){
+    chrome.tabs.create({url: url});
+};

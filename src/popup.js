@@ -62,16 +62,16 @@ function resetCss(){
     $('#AdPanel').hide();
 }
 
-function getObjArray(callback){
+function getData(callback){
     callback = Helper.valueOrDefault(callback, function(){});
     Api.sendMessageToActiveTab({type: "get-data"}, function(data) {
         return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
     });
 }
 
-function AutoAddFunc()
+function refreshData()
 {
-    getObjArray(function(result) {
+    getData(function(result) {
         booksData = result.books;
 
         if (booksData.length <= 0) return;
@@ -99,7 +99,7 @@ function AutoAddFunc()
             }
         }
     });
-    setTimeout(AutoAddFunc, 1000);
+    setTimeout(refreshData, 1000);
 }
 
 function RankTrackingListShow() {
@@ -486,6 +486,30 @@ var isStaticLinkInitialized = false;
 function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;
 
+    $('#LinkBackTo').click(function () {
+        $('#data-body').css("overflow-y", "auto");
+        ActiveTab = new MainTab();
+        checkUrlAndLoad();
+    });
+
+    $('#enableTracking').click(function () {
+        $('#enableTracking').prop('disabled', true);
+        $('#LinkBackTo').hide();
+        var _this = this;
+        Storage.enableTracking($(_this).data().url, function() {
+            $('#enableTracking').prop('disabled', false);
+            $('#LinkBackTo').show();
+            RankTrackingSingleShow($(_this).data().url);
+        });
+    });
+
+    $('#disableTracking').click(function () {
+        var _this = this;
+        Storage.disableTracking($(_this).data().url, function(bytesInUse) {
+            RankTrackingSingleShow($(_this).data().url);
+        });
+    });
+
     $('#PullResult').click(function () {
         SetActivePage(ActiveTab.pageNum + 1);
         Api.sendMessageToActiveTab({type: 'pull-data', page: ActiveTab.pageNum});
@@ -498,7 +522,7 @@ function SetupStaticClickListeners() {
     $('#ExportWordCloud').click(exportToCsvFunction);
 
     $('#Help').click(function(){
-        chrome.tabs.create({ url: 'http://www.kdspy.com/help/' });
+        Api.openNewTab('http://www.kdspy.com/help/');
     });
 
     isStaticLinkInitialized = true;
@@ -613,7 +637,7 @@ function checkUrlAndLoad()
         if (url === undefined || url.indexOf("http://www.amazon.") < 0)
         {
             //Go To Amazon Page
-            chrome.tabs.create({url: "https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html", active:true});
+            Api.openNewTab('https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html');
             window.close();
             return;
         }
@@ -647,7 +671,7 @@ function LoadInfos()
 {
     new MainTab().LoadPageNum(function(){
         new KeywordAnalysisTab().LoadPageNum(function(){
-            getObjArray(function(result){
+            getData(function(result){
                 booksData = result.books;
                 LoadData(booksData);
                 LoadAdvertisementBanner();
@@ -656,7 +680,7 @@ function LoadInfos()
     });
 
     if (!isRefreshStarted) {
-        setTimeout(AutoAddFunc, 1000);
+        setTimeout(refreshData, 1000);
         isRefreshStarted = true;
     }
 }
@@ -683,7 +707,7 @@ function InitRegionSelector(){
                 break;
         }
 
-        chrome.tabs.create({url: url, active:true});
+        Api.openNewTab(url);
     });
 }
 
@@ -695,27 +719,6 @@ function LoadAdvertisementBanner()
 }
 
 $(window).ready(function () {
-    $('#LinkBackTo').click(function () {
-        $('#data-body').css("overflow-y", "auto");
-        ActiveTab = new MainTab();
-        checkUrlAndLoad();
-    });
-    $('#enableTracking').click(function () {
-        $('#enableTracking').prop('disabled', true);
-        $('#LinkBackTo').hide();
-        var _this = this;
-        Storage.enableTracking($(_this).data().url, function() {
-            $('#enableTracking').prop('disabled', false);
-            $('#LinkBackTo').show();
-            RankTrackingSingleShow($(_this).data().url);
-        });
-    });
-    $('#disableTracking').click(function () {
-        var _this = this;
-        Storage.disableTracking($(_this).data().url, function(bytesInUse) {
-            RankTrackingSingleShow($(_this).data().url);
-        });
-    });
 
     $('#bullet-1, #bullet-2, #bullet-3').tooltipster({
         animation: 'fade',
