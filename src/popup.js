@@ -869,7 +869,7 @@ function checkUrlAndLoad()
         SiteParser = GetSiteParser(url);
         InitRegionSelector();
         Popup.sendMessage({type: "get-type-page"}, function(pageName) {
-            if (pageName == 'single') {
+            if (pageName == 'SingleBookPage') {
                 ActiveTab = new RankTrackingTab();
                 RankTrackingSingleShow(url);
                 return;
