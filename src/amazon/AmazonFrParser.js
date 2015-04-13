@@ -98,7 +98,7 @@ AmazonFrParser.prototype.getReviewsCountFromResult = function(resultItem) {
 AmazonFrParser.prototype.parsePrice = function(price) {
     if(price == this.free) return 0;
     if(!price) return 0;
-    return HelperFunctions.parseFloat(price, this.decimalSeparator);
+    return Helper.parseFloat(price, this.decimalSeparator);
 };
 
 AmazonFrParser.prototype.formatPrice = function(price) {

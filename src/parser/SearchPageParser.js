@@ -62,7 +62,7 @@ SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxRes
     });
     if(counter == 0) return 0;
 
-    var totalResults = HelperFunctions.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.decimalSeparator);
+    var totalResults = Helper.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.decimalSeparator);
     kindleSpy.saveTotalResults(totalResults);
 
     url.forEach(function(item, i) {

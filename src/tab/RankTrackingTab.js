@@ -26,7 +26,7 @@ RankTrackingTab.prototype.ExportToCsv = function(data){
 
             for(var index = 0; index < bookData.salesRankData.length; index ++) {
                 x[index + 1][0] = new Date(bookData.salesRankData[index].date).toDateString();
-                x[index + 1][1] = AddCommas(bookData.salesRankData[index].salesRank);
+                x[index + 1][1] = Helper.addCommas(bookData.salesRankData[index].salesRank);
             }
 
             var csvContent = "\uFEFF";

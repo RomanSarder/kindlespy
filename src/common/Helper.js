@@ -2,18 +2,18 @@
  * Created by Andrey Klochkov on 09.08.14.
  */
 
-function HelperFunctions(){
+function Helper(){
 }
 
-HelperFunctions.parseFloat = function(string, decimalSeparator){
-    decimalSeparator = ValueOrDefault(decimalSeparator, '.');
+Helper.parseFloat = function(string, decimalSeparator){
+    decimalSeparator = Helper.valueOrDefault(decimalSeparator, '.');
     // leave only numbers and decimal separator
     var numbersWithLocalDecimalSeparator = string.trim().replace(new RegExp('[^0-9' + decimalSeparator + ']','g'), '');
     return parseFloat(numbersWithLocalDecimalSeparator.replace(decimalSeparator, '.'));
 };
 
-HelperFunctions.parseInt = function(string, decimalSeparator){
-    decimalSeparator = ValueOrDefault(decimalSeparator, '.');
+Helper.parseInt = function(string, decimalSeparator){
+    decimalSeparator = Helper.valueOrDefault(decimalSeparator, '.');
     // leave only numbers and decimal separator
     return parseInt(string.trim().replace(new RegExp('[^0-9' + decimalSeparator + ']','g'), ''));
 };
@@ -24,7 +24,7 @@ HelperFunctions.parseInt = function(string, decimalSeparator){
  * @param name parameter name
  * @returns {string} parameter value
   */
-function GetParameterByName(url, name) {
+Helper.getParameterByName = function(url, name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(url);
@@ -37,7 +37,7 @@ function GetParameterByName(url, name) {
  * @param defaultValue default param value
  * @returns default value if parameter is not set
   */
-function ValueOrDefault(param, defaultValue){
+Helper.valueOrDefault = function(param, defaultValue){
     return typeof param === "undefined" ? defaultValue : param;
 }
 
@@ -49,7 +49,7 @@ function ValueOrDefault(param, defaultValue){
  * @param endChar
  * @returns {string}
  */
-function ParseString(text, pattern, startChar, endChar)
+Helper.parseString = function(text, pattern, startChar, endChar)
 {
     var pos = text.indexOf(pattern);
     if (pos < 0) return "";
@@ -70,7 +70,7 @@ function ParseString(text, pattern, startChar, endChar)
  * @param url
  * @returns {object} SiteParser
   */
-function GetSiteParser(url){
+Helper.getSiteParser = function(url){
     var fullUrl = new URL(url);
     var hostname = fullUrl.hostname;
     if(hostname.indexOf('www.amazon.') == -1) return undefined;
@@ -91,7 +91,7 @@ function GetSiteParser(url){
  * @param str
  * @returns {string}
  */
-function AddCommas(str)
+Helper.addCommas = function(str)
 {
     str += '';
     x = str.split('.');
@@ -109,8 +109,8 @@ function AddCommas(str)
  * @param bookData
  * @returns {string}
  */
-function GetCategoryFromBookData(bookData){
-    bookData = ValueOrDefault(bookData, []);
+Helper.getCategoryFromBookData = function(bookData){
+    bookData = Helper.valueOrDefault(bookData, []);
     if(bookData.length > 0)
         return bookData[0].Category;
 
@@ -122,11 +122,11 @@ function GetCategoryFromBookData(bookData){
  * @param siteParser
  * @returns {boolean}
  */
-function IsBestSellersPage(url, siteParser){
+Helper.isBestSellersPage = function(url, siteParser){
     return (url.indexOf(siteParser.mainUrl +"/Best-Sellers-Kindle-Store") >= 0 && url.indexOf("digital-text") > 0)
         || (url.indexOf(siteParser.mainUrl +"/gp/bestsellers") >= 0 && url.indexOf("digital-text") > 0);
 }
-function IsBestSellersPageFromCategoryKind(categoryKind){
+Helper.isBestSellersPageFromCategoryKind = function(categoryKind){
     return categoryKind.indexOf("Seller") != -1;
 }/**
  * Return bool value page is search page.
@@ -134,10 +134,10 @@ function IsBestSellersPageFromCategoryKind(categoryKind){
  * @param siteParser
  * @returns {boolean}
  */
-function IsSearchPage(url, siteParser){
+Helper.isSearchPage = function(url, siteParser){
     return url.indexOf(siteParser.mainUrl +"/s/")==0 && url.indexOf("digital-text") > 0;
 }
-function IsSearchPageFromCategoryKind(categoryKind){
+Helper.isSearchPageFromCategoryKind = function(categoryKind){
     return categoryKind.indexOf("Search") != -1;
 }
 /**
@@ -146,7 +146,7 @@ function IsSearchPageFromCategoryKind(categoryKind){
  * @param siteParser
  * @returns {boolean}
  */
-function IsAuthorPage(html, siteParser){
+Helper.isAuthorPage = function(html, siteParser){
     return html.indexOf(siteParser.areYouAnAuthorPattern) >= 0 && html.indexOf("ap-author-name") >= 0;
 }
 /**
@@ -155,7 +155,7 @@ function IsAuthorPage(html, siteParser){
  * @param siteParser
  * @returns {boolean}
  */
-function IsAuthorSearchResultPage(url, siteParser){
+Helper.isAuthorSearchResultPage = function(url, siteParser){
     return url.indexOf(siteParser.mainUrl +"/s") == 0 && url.indexOf("field-author") > 0 && url.indexOf("digital-text") > 0;
 }
 /**
@@ -164,7 +164,7 @@ function IsAuthorSearchResultPage(url, siteParser){
  * @param siteParser
  * @returns {boolean}
  */
-function IsSingleBookPage(url, siteParser){
+Helper.isSingleBookPage = function(url, siteParser){
     var fullUrl = url.split("/");
     var mainUrl = fullUrl[0] +"//"+ fullUrl[2];
     return (mainUrl.indexOf(siteParser.mainUrl) >=0 && fullUrl[4].indexOf("dp") >= 0);
@@ -175,21 +175,21 @@ function IsSingleBookPage(url, siteParser){
  * @param html
  * @returns {jQuery}
  */
-function parseHtmlToJquery(html){
+Helper.parseHtmlToJquery = function(html){
     html = $.trim(html);
     html = html.replace(/src=/gi, "data-src=");
     return $(html);
 }
 
-function SetupHeader(category, categoryKind){
+Helper.setupHeader = function(category, categoryKind){
     $('#KeywordAnalysisMenu').hide();
-    if (IsBestSellersPageFromCategoryKind(categoryKind)){
+    if (Helper.isBestSellersPageFromCategoryKind(categoryKind)){
         $("#CategoryKind").html("Best Sellers in");
         $("#title").html(category + ':');
         $('#BestSellerLink').html('Best Seller Rankings');
         return;
     }
-    if(IsSearchPageFromCategoryKind(categoryKind)){
+    if(Helper.isSearchPageFromCategoryKind(categoryKind)){
         $("#CategoryKind").html("Keyword:");
         $("#title").html(category);
         $('#KeywordAnalysisMenu').show();
@@ -201,21 +201,21 @@ function SetupHeader(category, categoryKind){
     $('#BestSellerLink').html('Author Titles');
 }
 
-function SetupFooter(categoryKind){
+Helper.setupFooter = function(categoryKind){
     $('#Conclusion').hide();
     $('#AdPanel').hide();
-    if (IsBestSellersPageFromCategoryKind(categoryKind)){
+    if (Helper.isBestSellersPageFromCategoryKind(categoryKind)){
         $('#Conclusion').show();
         return;
     }
-    if(IsSearchPageFromCategoryKind(categoryKind)){
+    if(Helper.isSearchPageFromCategoryKind(categoryKind)){
         $('#Conclusion').show();
         return;
     }
     $('#AdPanel').show();
 }
 
-function BuildHeaderHtml(rankTrackingNum){
+Helper.buildHeaderHtml = function(rankTrackingNum){
     var headerHtml = '<div style="float:left;font-size:14px;padding-left:11px;" id="CategoryKind"></div>' +
         '<div style="float:left;font-size:14px;padding-left:6px;font-weight:bold" id="title"></div>' +
         '<div style="float:right">' +
@@ -227,7 +227,7 @@ function BuildHeaderHtml(rankTrackingNum){
     return headerHtml;
 }
 
-function trimCurrentUrl(currentPageUrl){
+Helper.trimCurrentUrl = function(currentPageUrl){
     var currentUrl = currentPageUrl;
     if(currentPageUrl.indexOf('/s/') >= 0)
     {
@@ -242,10 +242,10 @@ function trimCurrentUrl(currentPageUrl){
     return currentUrl;
 }
 
-function isTop100Free(){
+Helper.isTop100Free = function(){
     return location.href.indexOf('tf=1') != -1;
 }
 
-function getSearchUrl(keyword, siteParser){
+Helper.getSearchUrl = function(keyword, siteParser){
     return siteParser.mainUrl + "/s/url=search-alias%3Ddigital-text&field-keywords=" + encodeURI(keyword);
 }

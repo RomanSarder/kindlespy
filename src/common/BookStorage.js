@@ -42,7 +42,7 @@ BookStorage.prototype.clear = function () {
  * @param {function=} callback function() {...}
  */
 BookStorage.prototype.enableTracking = function(bookUrl, callback) {
-    callback = ValueOrDefault(callback, function() {});
+    callback = Helper.valueOrDefault(callback, function() {});
     var _this = this;
     // search url in storage
     this.getBook(bookUrl, function(bookData) {
@@ -69,7 +69,7 @@ BookStorage.prototype.enableTracking = function(bookUrl, callback) {
  * @param {function=} callback function(bytesInUse) {...}
  */
 BookStorage.prototype.disableTracking = function(bookUrl, callback) {
-    callback = ValueOrDefault(callback, function() {});
+    callback = Helper.valueOrDefault(callback, function() {});
     var _this = this;
     // search url in storage
     this.getBook(bookUrl, function(bookData) {

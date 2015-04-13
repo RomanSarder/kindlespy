@@ -92,7 +92,7 @@ AmazonCaParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url
 };
 
 AmazonCaParser.prototype.getImageUrlSrc = function(responseText) {
-    return ParseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
+    return Helper.parseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
 AmazonCaParser.prototype.getReviews = function(responseText) {

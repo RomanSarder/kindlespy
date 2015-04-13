@@ -13,12 +13,12 @@ function AuthorPage(){
 AuthorPage.name = 'author';
 
 AuthorPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
-    callback = ValueOrDefault(callback, function(){});
+    callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.authorResultsNumber;
     if(this.AuthorPager === undefined) {
         this.AuthorPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
-            var jqResponseText = parseHtmlToJquery(responseText);
+            var jqResponseText = Helper.parseHtmlToJquery(responseText);
             return _this.ParsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, siteParser);
         }, function(url, page){
             return url + '?page=' + page;
@@ -86,5 +86,5 @@ AuthorPage.prototype.ParsePage = function(pullingToken, startIndex, maxResults, 
 };
 
 AuthorPage.prototype.GetAuthorCategory = function(responseText){
-    return ParseString(responseText, 'EntityName', '<b>', '</b>');
+    return Helper.parseString(responseText, 'EntityName', '<b>', '</b>');
 };

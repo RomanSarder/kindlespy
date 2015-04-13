@@ -13,12 +13,12 @@ function AuthorSearchResultsPage(){
 AuthorSearchResultsPage.name = 'author-search';
 
 AuthorSearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
-    callback = ValueOrDefault(callback, function(){});
+    callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.authorResultsNumber;
     if(_this.AuthorSearchResultsPager === undefined) {
         _this.AuthorSearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
-            var jqResponseText = parseHtmlToJquery(responseText);
+            var jqResponseText = Helper.parseHtmlToJquery(responseText);
             var category = jqResponseText.find("#s-result-count > span > span").text().trim().replace(/"/g,'');
             return new SearchPageParser().ParsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, category, siteParser, "Author");
         }, function(url, page){

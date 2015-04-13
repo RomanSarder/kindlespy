@@ -98,7 +98,7 @@ AmazonCoUkParser.prototype.getReviewsCountFromResult = function(resultItem) {
 AmazonCoUkParser.prototype.parsePrice = function(price) {
     if(price == this.free) return 0;
     if(!price) return 0;
-    return HelperFunctions.parseFloat(price, this.decimalSeparator);
+    return Helper.parseFloat(price, this.decimalSeparator);
 };
 
 AmazonCoUkParser.prototype.formatPrice = function(price) {
@@ -109,7 +109,7 @@ AmazonCoUkParser.prototype.getGoogleImageSearchUrlRel = function(responseText, u
     var path = url.split("/");
     if(path.length > 5){
         this.GetResponseTextFromAmazonComParser(path[5], function(htmlFromAmazonCom){
-            var jqHtml = parseHtmlToJquery(htmlFromAmazonCom);
+            var jqHtml = Helper.parseHtmlToJquery(htmlFromAmazonCom);
              return callback((jqHtml!==null) ? jqHtml.find('#main-image').attr('rel') : '');
         });
         return;

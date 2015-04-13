@@ -12,10 +12,10 @@ function BestSellersPage(){
 BestSellersPage.name = 'best-seller';
 
 BestSellersPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
-    callback = ValueOrDefault(callback, function(){});
+    callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var pageUrl = parentUrl + "?pg=" + pageNumber;
-    if(isTop100Free())
+    if(Helper.isTop100Free())
         pageUrl += '&tf=1';
     $.get(pageUrl, function(responseText){
         // no need jQuery here: // var jqResponseText = parseHtmlToJquery(responseText);
@@ -65,19 +65,19 @@ BestSellersPage.prototype.ParsePage = function(pullingToken, responseText, paren
 };
 
 BestSellersPage.prototype.GetCategoryInfo = function(responseText){
-    return ParseString(responseText, 'class="category"', '>', '<');
+    return Helper.parseString(responseText, 'class="category"', '>', '<');
 };
 
 BestSellersPage.prototype.GetNoInfo = function(responseText){
-    return ParseString(responseText, 'class="zg_rankNumber"', ">", ".");
+    return Helper.parseString(responseText, 'class="zg_rankNumber"', ">", ".");
 };
 
 BestSellersPage.prototype.GetPriceInfo = function(responseText){
-    return ParseString(responseText,'class="price"', ">", "<");
+    return Helper.parseString(responseText,'class="price"', ">", "<");
 };
 
 BestSellersPage.prototype.GetPageUrl = function(responsneText){
-    return ParseString(responsneText, 'class="zg_title"', 'href="', '"');
+    return Helper.parseString(responsneText, 'class="zg_title"', 'href="', '"');
 };
 
 BestSellersPage.prototype.GetReviewrInfo = function(responseText){
@@ -91,7 +91,7 @@ BestSellersPage.prototype.GetReviewrInfo = function(responseText){
     {
         str = str.substr(pos + pattern.length);
 
-        review = ParseString(str, "product-reviews", '>', '<');
+        review = Helper.parseString(str, "product-reviews", '>', '<');
         if (typeof review !== "undefined" && review.length > 0) return review;
 
         pos = str.indexOf(pattern);

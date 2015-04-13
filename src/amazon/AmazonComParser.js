@@ -110,7 +110,7 @@ AmazonComParser.prototype.getGoogleImageSearchUrlRel = function(responseText, ur
 };
 
 AmazonComParser.prototype.getImageUrlSrc = function(responseText) {
-    return ParseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
+    return Helper.parseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
 AmazonComParser.prototype.getReviews = function(responseText) {

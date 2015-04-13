@@ -3,7 +3,7 @@
  */
 
 function BookPageParser(url, siteParser){
-    this._siteParser = siteParser ? siteParser : GetSiteParser(url);
+    this._siteParser = siteParser ? siteParser : Helper.getSiteParser(url);
 }
 
 BookPageParser.prototype.isNotValid = function (){
@@ -14,7 +14,7 @@ BookPageParser.prototype.GetDateOfPublication = function(jqNodes, callback) {
     var pubdate = jqNodes.find('#pubdate').val();
     if(pubdate === undefined){
         var publisherElement = jqNodes.find('#productDetailsTable div.content li:contains(' + this._siteParser.publisher + ')');
-        var dateOfPublication = ParseString(publisherElement.text(), '', '(', ')');
+        var dateOfPublication = Helper.parseString(publisherElement.text(), '', '(', ')');
 
         return callback(dateOfPublication);
     }
@@ -144,7 +144,7 @@ BookPageParser.prototype.GetSalesRankFromUrl = function(url, callback) {
     var _this = this;
 
     $.get(url, function (responseText) {
-        var jqResponse = parseHtmlToJquery(responseText);
+        var jqResponse = Helper.parseHtmlToJquery(responseText);
         var salesRank = _this.GetSalesRank(jqResponse);
         if (!salesRank) salesRank = "1";
         callback(salesRank);
@@ -155,7 +155,7 @@ BookPageParser.prototype.GetBookData = function(url, price, reviews, callback) {
     var _this = this;
 
     $.get(url, function (responseText) {
-        var jqResponseText = parseHtmlToJquery(responseText);
+        var jqResponseText = Helper.parseHtmlToJquery(responseText);
         var entryTitle = _this.getTitle(jqResponseText);
         if (entryTitle == '') entryTitle = _this.GetAuthorTitle(jqResponseText);
         if (entryTitle === undefined) return;

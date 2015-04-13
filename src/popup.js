@@ -7,15 +7,15 @@ var Storage = new BookStorage();
 var columnGetterFunctions = [];
 columnGetterFunctions['no'] = function(a){return parseInt(a.No)};
 columnGetterFunctions['pageno'] = function(a){
-    var printLength = HelperFunctions.parseInt(a.PrintLength, SiteParser.decimalSeparator);
+    var printLength = Helper.parseInt(a.PrintLength, SiteParser.decimalSeparator);
     return isNaN(printLength) ? 0 : printLength;
 };
 columnGetterFunctions['title-book'] = function(a){return a.Title};
-columnGetterFunctions['price'] = function(a){return HelperFunctions.parseFloat(a.Price, SiteParser.decimalSeparator)};
+columnGetterFunctions['price'] = function(a){return Helper.parseFloat(a.Price, SiteParser.decimalSeparator)};
 columnGetterFunctions['est-sales'] = function(a){return a.EstSales};
 columnGetterFunctions['sales-rev'] = function(a){return a.SalesRecv};
-columnGetterFunctions['reviews'] = function(a){return HelperFunctions.parseInt(a.Reviews, SiteParser.decimalSeparator)};
-columnGetterFunctions['sales-rank'] = function(a){return HelperFunctions.parseInt(a.SalesRank, SiteParser.decimalSeparator)};
+columnGetterFunctions['reviews'] = function(a){return Helper.parseInt(a.Reviews, SiteParser.decimalSeparator)};
+columnGetterFunctions['sales-rank'] = function(a){return Helper.parseInt(a.SalesRank, SiteParser.decimalSeparator)};
 
 var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
@@ -99,7 +99,7 @@ function Popup(){
 }
 
 Popup.sendMessage = function(message, callback){
-    callback = ValueOrDefault(callback, function(){});
+    callback = Helper.valueOrDefault(callback, function(){});
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
             return callback(response);
@@ -108,7 +108,7 @@ Popup.sendMessage = function(message, callback){
 };
 
 function getObjArray(callback){
-    callback = ValueOrDefault(callback, function(){});
+    callback = Helper.valueOrDefault(callback, function(){});
     Popup.sendMessage({type: "get-data"}, function(data) {
         return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
     });
@@ -122,7 +122,7 @@ function AutoAddFunc()
 
         if (booksData.length <= 0) return;
 
-        SetupHeader(booksData[0].Category, booksData[0].CategoryKind);
+        Helper.setupHeader(booksData[0].Category, booksData[0].CategoryKind);
 
         if (IsErrorWindow) {
             checkUrlAndLoad();
@@ -491,24 +491,24 @@ function UpdateTrackedBookView(bookData){
     $('#singleResult1').html(bookData.currentSalesRank);
     $('#singleResult2').html(bookData.price);
     $('#singleResult3').html(bookData.pages);
-    $('#singleResult4').html(AddCommas(bookData.estSales));
-    $('#singleResult5').html(SiteParser.formatPrice(AddCommas(Math.round(bookData.estSalesRev))));
+    $('#singleResult4').html(Helper.addCommas(bookData.estSales));
+    $('#singleResult5').html(SiteParser.formatPrice(Helper.addCommas(Math.round(bookData.estSalesRev))));
     $('#singleResult6').html(bookData.numberOfReviews);
     var sumRank=0;
     var points = bookData.salesRankData.length;
     for(var j=0; j<points;j++){
-        sumRank += HelperFunctions.parseInt(bookData.salesRankData[j].salesRank, SiteParser.decimalSeparator);
+        sumRank += Helper.parseInt(bookData.salesRankData[j].salesRank, SiteParser.decimalSeparator);
     }
     var avgSalesRank = sumRank/points;
     var bookPageParser = new BookPageParser(bookData.url);
     var estSale = bookPageParser.GetEstSale(avgSalesRank);
-    var realPrice = HelperFunctions.parseFloat(bookData.price, SiteParser.decimalSeparator);
+    var realPrice = Helper.parseFloat(bookData.price, SiteParser.decimalSeparator);
     var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
     var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
 
     $('#days').html(points);
-    $('#AvgSalesRank').html(AddCommas(Math.floor(avgSalesRank)));
-    $('#EstDailyRev').html(SiteParser.formatPrice(AddCommas(EstDailyRev)));
+    $('#AvgSalesRank').html(Helper.addCommas(Math.floor(avgSalesRank)));
+    $('#EstDailyRev').html(SiteParser.formatPrice(Helper.addCommas(EstDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', '').replace('AA278', ''));
     $('#ExportBtnWordCloud').attr('book-url', bookData.url);
@@ -688,10 +688,10 @@ function startSearchKeywords(){
 function GetSearchKeywordFullData(list, processItemFunction){
     var algorithm = new SearchAnalysisAlgorithm();
     list.forEach(function(item){
-        var pageUrl = getSearchUrl(item, SiteParser);
+        var pageUrl = Helper.getSearchUrl(item, SiteParser);
         $.get(pageUrl, function(responseText){
-            var jqResponse = parseHtmlToJquery(responseText);
-            var totalResults = HelperFunctions.parseInt(SiteParser.getTotalSearchResult(jqResponse), SiteParser.decimalSeparator);
+            var jqResponse = Helper.parseHtmlToJquery(responseText);
+            var totalResults = Helper.parseInt(SiteParser.getTotalSearchResult(jqResponse), SiteParser.decimalSeparator);
             var color = algorithm.getCompetitionColor(totalResults);
             return processItemFunction({
                 keyword: item,
@@ -817,9 +817,9 @@ function UpdateTable(obj)
         num = (num === undefined)?0:num;
 
         $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');
-        $('#main-header').html(BuildHeaderHtml(num));
-        SetupHeader(obj[0].Category, obj[0].CategoryKind);
-        SetupFooter(obj[0].CategoryKind);
+        $('#main-header').html(Helper.buildHeaderHtml(num));
+        Helper.setupHeader(obj[0].Category, obj[0].CategoryKind);
+        Helper.setupFooter(obj[0].CategoryKind);
 
         SetupClickListeners();
     });
@@ -880,7 +880,7 @@ function checkUrlAndLoad()
         }
 
         // load
-        SiteParser = GetSiteParser(url);
+        SiteParser = Helper.getSiteParser(url);
         InitRegionSelector();
         Popup.sendMessage({type: "get-type-page"}, function(pageName) {
             if (pageName == 'SingleBookPage') {

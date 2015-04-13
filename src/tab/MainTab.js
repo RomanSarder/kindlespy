@@ -17,7 +17,7 @@ MainTab.prototype.SavePageNum = function(){
 
 MainTab.prototype.LoadPageNum = function(callback){
     var _this = this;
-    callback = ValueOrDefault(callback, function() {});
+    callback = Helper.valueOrDefault(callback, function() {});
     Popup.sendMessage({type: "get-pageNum", tab: 'MainTab'}, function(pageNum){
         _this.pageNum = parseInt(pageNum);
         callback();
@@ -51,8 +51,8 @@ MainTab.prototype.ExportToCsv = function(data){
             x[index + 1][2] = bookData[index].Author;
             x[index + 1][3] = bookData[index].DateOfPublication;
             x[index + 1][4] = bookData[index].Price.replace(SiteParser.currencySign, SiteParser.currencySignForExport);
-            x[index + 1][5] = AddCommas(bookData[index].EstSales);
-            x[index + 1][6] = SiteParser.currencySignForExport + " " + AddCommas(Math.round(bookData[index].SalesRecv));
+            x[index + 1][5] = Helper.addCommas(bookData[index].EstSales);
+            x[index + 1][6] = SiteParser.currencySignForExport + " " + Helper.addCommas(Math.round(bookData[index].SalesRecv));
             x[index + 1][7] = bookData[index].Reviews;
             x[index + 1][8] = bookData[index].SalesRank;
             x[index + 1][9] = bookData[index].PrintLength;
@@ -101,7 +101,7 @@ MainTab.prototype.ExportToCsv = function(data){
     var yyyy = today.getFullYear();
     var link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "bs-"+GetCategoryFromBookData(bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
+    link.setAttribute("download", "bs-"+Helper.getCategoryFromBookData(bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
     link.click();
 };
 
@@ -142,8 +142,8 @@ MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
                 "<a target='_blank' href='" + books[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
                 "<td style='padding-left:15px; width:30px;'>" +books[i].PrintLength + "</td>" +
                 "<td style='width:50px;'>"+ books[i].Price +"</td>" +
-                "<td style='width:60px;' align='center'>" + AddCommas(books[i].EstSales) +"</td>" +
-                "<td style='width:80px;'><div style='float:left'> "+ siteParser.currencySign +" </div> <div style='float:right'>"+ AddCommas(Math.round(books[i].SalesRecv)) +"</div></td>" +
+                "<td style='width:60px;' align='center'>" + Helper.addCommas(books[i].EstSales) +"</td>" +
+                "<td style='width:80px;'><div style='float:left'> "+ siteParser.currencySign +" </div> <div style='float:right'>"+ Helper.addCommas(Math.round(books[i].SalesRecv)) +"</div></td>" +
                 "<td style='width:50px;' align='right'>"+ books[i].Reviews +"</td>" +
                 "<td style='width:80px;padding-right : 10px;' align='right'>"+ books[i].SalesRank +"</td>"+
                 "</tr>";
@@ -151,14 +151,14 @@ MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
             var price = "" + books[i].Price;
             var review = "" + books[i].Reviews;
 
-            salesRankSum += HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator);
+            salesRankSum += Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator);
             salesRecvSum += parseInt(books[i].SalesRecv);
             if (price.indexOf("free") >= 0)
                 priceSum = 0;
             else
-                priceSum += HelperFunctions.parseFloat(price, siteParser.decimalSeparator);
+                priceSum += Helper.parseFloat(price, siteParser.decimalSeparator);
 
-            reviewSum += HelperFunctions.parseInt(review, siteParser.decimalSeparator);
+            reviewSum += Helper.parseInt(review, siteParser.decimalSeparator);
 
             nTotalCnt ++;
 
@@ -195,25 +195,25 @@ MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
 
     /*Start region: get data for analysis*/
 	var salesRank20index = Math.min(19, books.length-1);
-    var salesRank20 = HelperFunctions.parseInt(books[salesRank20index].SalesRank || 0, siteParser.decimalSeparator);
+    var salesRank20 = Helper.parseInt(books[salesRank20index].SalesRank || 0, siteParser.decimalSeparator);
 	
 	var monthlyRev20 = 0;
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
 	for (var i = 0; i < 20 && i < books.length; i++) {
         monthlyRev20 += parseInt(books[i].SalesRecv);
-		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
+		if(this.GetSalesRankConclusion(Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
 		if (books[i].SalesRecv > 500) monthlyRevBook ++;
 	}
 	var avgMonthlyRev20 = monthlyRev20/(Math.min(20, books.length));
 	/*End region get data for analysis*/
     
-	$('#result2').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
-    $('#result3').html( siteParser.formatPrice(AddCommas(Math.floor(salesRecvSum / nTotalCnt))));
-    $('#result4').html(siteParser.formatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
-    $('#result5').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
-    $('#totalReSalesRecv').html(siteParser.formatPrice(AddCommas(salesRecvSum)));
-    this.Analysis = IsSearchPageFromCategoryKind(categoryKind)? new SearchAnalysisAlgorithm() : new CategoryAnalysisAlgorithm();
+	$('#result2').html(Helper.addCommas(Math.floor(salesRankSum / nTotalCnt)));
+    $('#result3').html( siteParser.formatPrice(Helper.addCommas(Math.floor(salesRecvSum / nTotalCnt))));
+    $('#result4').html(siteParser.formatPrice(Helper.addCommas((priceSum/nTotalCnt).toFixed(2))));
+    $('#result5').html(Helper.addCommas(Math.floor(reviewSum / nTotalCnt)));
+    $('#totalReSalesRecv').html(siteParser.formatPrice(Helper.addCommas(salesRecvSum)));
+    this.Analysis = Helper.isSearchPageFromCategoryKind(categoryKind)? new SearchAnalysisAlgorithm() : new CategoryAnalysisAlgorithm();
     this.Analysis.setBullets({salesRank20: salesRank20,
         avgMonthlyRev:avgMonthlyRev20,
         salesRankConclusionValue: salesRankConclusionValue,

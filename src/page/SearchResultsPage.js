@@ -14,14 +14,14 @@ function SearchResultsPage(){
 SearchResultsPage.name = 'search';
 
 SearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
-    callback = ValueOrDefault(callback, function(){});
+    callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.searchResultsNumber;
     this.SearchKeyword = search;
 
     if(this.SearchResultsPager === undefined) {
         this.SearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
-            var jqResponseText = parseHtmlToJquery(responseText);
+            var jqResponseText = Helper.parseHtmlToJquery(responseText);
             return new SearchPageParser().ParsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, search, siteParser, "Search");
         }, function(url, page){
             return url + '&page=' + page;

@@ -27,8 +27,8 @@ function KindleSpy(){
 KindleSpy.prototype.start = function(){
     var _this = this;
     _this.url = location.href;
-    _this.parentUrl = trimCurrentUrl(_this.url);
-    _this.siteParser = GetSiteParser(_this.url);
+    _this.parentUrl = Helper.trimCurrentUrl(_this.url);
+    _this.siteParser = Helper.getSiteParser(_this.url);
     _this.bookStorage = new BookStorage();
     _this.bookStorage.trackData();
     setInterval('kindleSpy.bookStorage.trackData()', 2*60*60*1000);
@@ -70,19 +70,19 @@ KindleSpy.prototype.saveTotalResults = function(value){
 };
 
 KindleSpy.prototype.getPageFromCurrentPage = function(){
-    if(IsAuthorPage(document.documentElement.innerHTML, this.siteParser)){
+    if(Helper.isAuthorPage(document.documentElement.innerHTML, this.siteParser)){
         return new AuthorPage();
     }
-    if(IsAuthorSearchResultPage(location.href, this.siteParser)){
+    if(Helper.isAuthorSearchResultPage(location.href, this.siteParser)){
         return new AuthorSearchResultsPage();
     }
-    if (IsBestSellersPage(location.href, this.siteParser)){
+    if (Helper.isBestSellersPage(location.href, this.siteParser)){
         return new BestSellersPage();
     }
-    if(IsSearchPage(location.href, this.siteParser)){
+    if(Helper.isSearchPage(location.href, this.siteParser)){
         return new SearchResultsPage();
     }
-    if (IsSingleBookPage(location.href, this.siteParser)){
+    if (Helper.isSingleBookPage(location.href, this.siteParser)){
         return new SingleBookPage();
     }
 };
@@ -97,7 +97,7 @@ KindleSpy.prototype.clearSearchResults = function(){
 };
 
 KindleSpy.prototype.waitingForSearchResults = function(){
-	var search = GetParameterByName(location.href, "field-keywords");
+	var search = Helper.getParameterByName(location.href, "field-keywords");
 	if (search.trim() == ""
         || $("#bcKwText").text() !== '"'+search+'"'
         || $("#bcKwText").css("visibility") != "visible")
@@ -109,7 +109,7 @@ KindleSpy.prototype.waitingForSearchResults = function(){
 };
 
 KindleSpy.prototype.parseDataFromBookPageAndSend = function(pullingToken, num, url, price, parentUrl, nextUrl, reviews, category, categoryKind, callback){
-    callback = ValueOrDefault(callback, function(){});
+    callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     if (pullingToken != _this.pullingToken) return;
     var parser = new BookPageParser(null, _this.siteParser);
@@ -146,7 +146,7 @@ KindleSpy.prototype.parseDataFromBookPageAndSend = function(pullingToken, num, u
 KindleSpy.prototype.startPulling = function(pageNumber){
     if (pageNumber <= this.pagesPulled) return;
     this.pagesPulled = pageNumber;
-    var searchKeyword = GetParameterByName(this.url, "field-keywords");
+    var searchKeyword = Helper.getParameterByName(this.url, "field-keywords");
     var data = this.pageData.get();
     data.isWaitingForPulling = true;
     data.isPulling = true;
@@ -156,7 +156,7 @@ KindleSpy.prototype.startPulling = function(pageNumber){
 
 KindleSpy.prototype.startPullingSearchPage = function(url){
     this.url = url;
-    this.parentUrl = trimCurrentUrl(this.url);
+    this.parentUrl = Helper.trimCurrentUrl(this.url);
     this.currentPage = new SearchResultsPage();
     this.pullingToken = new Date().getTime();
     this.startPulling(1);
@@ -172,14 +172,14 @@ $(window).ready(function () {
 Api.addListener(onMessageReceived);
 
 function onMessageReceived(request, callback){
-    callback = ValueOrDefault(callback, function(){});
+    callback = Helper.valueOrDefault(callback, function(){});
 
     if(request.type === 'pull-data')
         return callback(kindleSpy.startPulling(request.page));
 
     if (request.type === "start-analyze-search-keywords") {
         kindleSpy.clearSearchResults();
-        kindleSpy.startPullingSearchPage(getSearchUrl(request.keyword, kindleSpy.siteParser));
+        kindleSpy.startPullingSearchPage(Helper.getSearchUrl(request.keyword, kindleSpy.siteParser));
         return callback();
     }
 

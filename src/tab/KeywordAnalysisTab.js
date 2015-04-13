@@ -18,7 +18,7 @@ KeywordAnalysisTab.prototype.SavePageNum = function(){
 
 KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
     var _this = this;
-    callback = ValueOrDefault(callback, function() {});
+    callback = Helper.valueOrDefault(callback, function() {});
     Popup.sendMessage({type: "get-pageNum", tab: 'KeywordAnalysisTab'}, function(pageNum){
         _this.pageNum = parseInt(pageNum);
         callback();
@@ -96,7 +96,7 @@ KeywordAnalysisTab.prototype.ExportToCsv = function(data){
     var yyyy = today.getFullYear();
     var link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "ka-"+GetCategoryFromBookData(bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
+    link.setAttribute("download", "ka-"+Helper.getCategoryFromBookData(bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
     link.click();
 }
 
@@ -131,9 +131,10 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, books, siteParser
     for(var i = 0; i < books.length; i ++) {
         if (Math.floor(i / 20) <= pageNumber)
         {
+
             var kwt = this.IsKeywordInText(books[i].Category, books[i].Title);
             var kwd = this.IsKeywordInText(books[i].Category, books[i].Description);
-            salesRankConclusion = this.GetSalesRankConclusion(HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator));
+            salesRankConclusion = this.GetSalesRankConclusion(Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator));
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow' style='min-width:280px;max-width:280px;'><a href="+books[i].Url+" target='_blank'>" + books[i].Title + "</a></td>" +
@@ -142,20 +143,20 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, books, siteParser
                 "<td class='bg-" + this.GetKWColor(kwt) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwt + "</td>" +
                 "<td class='bg-" + this.GetKWColor(kwd) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwd + "</td>" +
                 "<td class='bg-" + this.GetRatingColor(books[i].Rating) + "' style='padding-left:20px;min-width:20px;max-width:20px;padding-right:20px;'>" + Number(books[i].Rating).toFixed(1) +"</td>" +
-                "<td class='bg-" + this.GetReviewColor(HelperFunctions.parseInt(books[i].Reviews, siteParser.decimalSeparator)) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ books[i].Reviews +"</td>" +
+                "<td class='bg-" + this.GetReviewColor(Helper.parseInt(books[i].Reviews, siteParser.decimalSeparator)) + "' style='min-width:50px;max-width:50px;padding-left:20px;padding-right:10px;' align='right'>"+ books[i].Reviews +"</td>" +
                 "<td class='bg-" + this.GetSalesRankColor(salesRankConclusion) + "' align='right' style='padding-left:31px;width:70px;'>"+ books[i].SalesRank +"</td>"+
                 "</tr>";
 
             var price = "" + books[i].Price;
             var review = "" + books[i].Reviews;
 
-            salesRankSum += HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator);
+            salesRankSum += Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator);
             if (price.indexOf("free") >= 0)
                 priceSum = 0;
             else
-                priceSum += HelperFunctions.parseFloat(price, siteParser.decimalSeparator);
+                priceSum += Helper.parseFloat(price, siteParser.decimalSeparator);
 
-            reviewSum += HelperFunctions.parseInt(review, siteParser.decimalSeparator);
+            reviewSum += Helper.parseInt(review, siteParser.decimalSeparator);
             pagesSum += $.isNumeric(books[i].PrintLength) ? parseInt(books[i].PrintLength) : 0;
             ratingSum += parseFloat(books[i].Rating);
 
@@ -194,16 +195,16 @@ KeywordAnalysisTab.prototype.InsertData = function(pageNumber, books, siteParser
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
 	for (var i = 0; i < 20 && i < books.length; i++) {
-		if(this.GetSalesRankConclusion(HelperFunctions.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue++;
+		if(this.GetSalesRankConclusion(Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue++;
 		if (books[i].SalesRecv > 500) monthlyRevBook++;
 	}
 	/*End region get data for analysis*/
 	
-    $('#result2').html(SiteParser.formatPrice(AddCommas((priceSum/nTotalCnt).toFixed(2))));
-    $('#result3').html(AddCommas(Math.floor(salesRankSum / nTotalCnt)));
-    $('#result4').html(AddCommas(Math.floor(pagesSum/ nTotalCnt)));
-    $('#result5').html(AddCommas((ratingSum/ nTotalCnt).toFixed(1)));
-    $('#result6').html(AddCommas(Math.floor(reviewSum / nTotalCnt)));
+    $('#result2').html(SiteParser.formatPrice(Helper.addCommas((priceSum/nTotalCnt).toFixed(2))));
+    $('#result3').html(Helper.addCommas(Math.floor(salesRankSum / nTotalCnt)));
+    $('#result4').html(Helper.addCommas(Math.floor(pagesSum/ nTotalCnt)));
+    $('#result5').html(Helper.addCommas((ratingSum/ nTotalCnt).toFixed(1)));
+    $('#result6').html(Helper.addCommas(Math.floor(reviewSum / nTotalCnt)));
 
     this.Analysis.setBullets({
         salesRankConclusionValue: salesRankConclusionValue,

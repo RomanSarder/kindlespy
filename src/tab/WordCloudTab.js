@@ -69,7 +69,7 @@ WordCloudTab.prototype.ExportToCsv = function(data){
     var yyyy = today.getFullYear();
     var link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "wc-"+GetCategoryFromBookData(data.bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
+    link.setAttribute("download", "wc-"+Helper.getCategoryFromBookData(data.bookData)+"-" + mm + "-" + dd + "-" + yyyy + ".csv");
     link.click();
 };
 
