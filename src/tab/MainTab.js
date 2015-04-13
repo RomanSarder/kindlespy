@@ -7,27 +7,27 @@ function MainTab(){
         return MainTab.prototype._singletonInstance;
     MainTab.prototype._singletonInstance = this;
 
-    this.PageNum = 1;
+    this.pageNum = 1;
     this.IsPaged = true;
 }
 
 MainTab.prototype.SavePageNum = function(){
-    Popup.sendMessage({type: "save-pageNum", tab: 'MainTab', pageNum: this.PageNum});
+    Popup.sendMessage({type: "save-pageNum", tab: 'MainTab', pageNum: this.pageNum});
 };
 
 MainTab.prototype.LoadPageNum = function(callback){
     var _this = this;
     callback = ValueOrDefault(callback, function() {});
     Popup.sendMessage({type: "get-pageNum", tab: 'MainTab'}, function(pageNum){
-        _this.PageNum = parseInt(pageNum);
+        _this.pageNum = parseInt(pageNum);
         callback();
     });
 };
 
 MainTab.prototype.ExportToCsv = function(data){
     var bookData = data.bookData;
-    var x = new Array(this.PageNum * 20 + 1);
-    for (var i = 0; i < this.PageNum * 20 + 1; i++) {
+    var x = new Array(this.pageNum * 20 + 1);
+    for (var i = 0; i < this.pageNum * 20 + 1; i++) {
         x[i] = new Array(11);
     }
 
@@ -44,7 +44,7 @@ MainTab.prototype.ExportToCsv = function(data){
     x[0][10] = "Book URL";
 
     for(var index = 0; index < bookData.length; index ++) {
-        if (Math.floor(index / 20) <= (this.PageNum - 1))
+        if (Math.floor(index / 20) <= (this.pageNum - 1))
         {
             x[index + 1][0] = (index + 1).toString();
             x[index + 1][1] = bookData[index].Title;

@@ -130,7 +130,7 @@ function AutoAddFunc()
         }
 
         if (ActiveTab.IsPaged) {
-            ActiveTab.InsertData(ActiveTab.PageNum - 1, booksData, SiteParser);
+            ActiveTab.InsertData(ActiveTab.pageNum - 1, booksData, SiteParser);
             if (result.isWaitingForPulling) $('.img-load').show();
             else {
                 $('.img-load').hide();
@@ -148,220 +148,220 @@ function AutoAddFunc()
     setTimeout(AutoAddFunc, 1000);
 }
 
-function wordSort(a, b)
-{
-    if (parseInt(a.Len) < parseInt(b.Len))
-        return -1;
-    if (parseInt(a.Len) > parseInt(b.Len))
-        return 1;
-    return 0;
-}
-
-function shuffle(array) {
-    var currentIndex = array.length
-        , temporaryValue
-        , randomIndex
-        ;
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-
-    return array;
-}
-
-function WordsInfoUpdate()
-{
-    var xPathRes = document.evaluate ( "/html/body/div/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    var InnerTexts = "";
-
-    if (xPathRes.length < 1)
-        return;
-
-    for (var i = 0; i < xPathRes.snapshotLength; i++) {
-        if (i > ActiveTab.PageNum * 20)
-            break;
-
-        InnerTexts += xPathRes.snapshotItem (i).innerText + " ";
-    }
-
-    InnerTexts = InnerTexts.toLowerCase();
-
-    InnerTexts = InnerTexts.replace(/ the /g, ' ');
-    InnerTexts = InnerTexts.replace(/the /g, ' ');
-    InnerTexts = InnerTexts.replace(/ a /g, ' ');
-    InnerTexts = InnerTexts.replace(/ of /g, ' ');
-    InnerTexts = InnerTexts.replace(/ i /g, ' ');
-    InnerTexts = InnerTexts.replace(/ and /g, ' ');
-    InnerTexts = InnerTexts.replace(/ in /g, ' ');
-    InnerTexts = InnerTexts.replace(/ at /g, ' ');
-    InnerTexts = InnerTexts.replace(/-/g, ' ');
-    InnerTexts = InnerTexts.replace(/\d+/g, ' ');
-    InnerTexts = InnerTexts.replace(/ and /g, ' ');
-    InnerTexts = InnerTexts.replace(/ to /g, ' ');
-    InnerTexts = InnerTexts.replace(/to /g, ' ');
-    InnerTexts = InnerTexts.replace(/:/g, ' ');
-    InnerTexts = InnerTexts.replace(/ at /g, ' ');
-    InnerTexts = InnerTexts.replace(/at /g, ' ');
-    InnerTexts = InnerTexts.replace(/ for /g, ' ');
-    InnerTexts = InnerTexts.replace(/we /g, ' ');
-    InnerTexts = InnerTexts.replace(/you /g, ' ');
-    InnerTexts = InnerTexts.replace(/me /g, ' ');
-    InnerTexts = InnerTexts.replace(/'/g, ' ');
-    InnerTexts = InnerTexts.replace(/ our /g, ' ');
-    InnerTexts = InnerTexts.replace(/,/g, ' ');
-    InnerTexts = InnerTexts.replace(/will /g, ' ');
-    InnerTexts = InnerTexts.replace(/ will /g, ' ');
-    InnerTexts = InnerTexts.replace(/[()]/g, ' ');
-    InnerTexts = InnerTexts.replace(/[{}]/g, ' ');
-    InnerTexts = InnerTexts.replace(/\[/g, ' ');
-    InnerTexts = InnerTexts.replace(/\]/g, ' ');
-    InnerTexts = InnerTexts.replace(/&/g, ' ');
-    InnerTexts = InnerTexts.replace(/\//g, ' ');
-    InnerTexts = InnerTexts.replace(/!/g, ' ');
-
-    var words = InnerTexts.split(" ");
-
-    clouds = [];
-
-    for (var i = 0; i < words.length; i++)
-    {
-        if ((typeof words[i] === "undefined") || (words[i].length < 1))
-            continue;
-
-        var found = false;
-        for(var j = 0; j < clouds.length; j++) {
-            if (clouds[j].Word == words[i]) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            var nDuplicateCnt = 0
-            for (var n = 0; n < words.length; n++)
-            {
-                if (words[i] === words[n])
-                    nDuplicateCnt++;
-            }
-
-            clouds.push({"Len":nDuplicateCnt, "Word": words[i]});
-        }
-
-    }
-
-    clouds.sort(wordSort);
-
-    var nCnt = 0;
-
-    var InfoHtml = "<div style=\"font-size:11px;color:#a8a8a8;padding-top: 1px\">" + "Showing top 50 of " + (clouds.length - 1) + " possible words:</div>";
-
-    $('.info.list_books').html(InfoHtml);
-    var level = [];
-
-    var nlevelIndex = 0;
-    for (var i = clouds.length - 1; i >= 0; i--)
-    {
-        var found = false;
-        for(var j = 0; j < clouds.length; j++) {
-            if (clouds[j].Len == level[i]) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            if (clouds[i].Word.length > 2)
-            {
-                level[nlevelIndex] = clouds[i].Len;
-                nlevelIndex++;
-            }
-        }
-
-        if (nlevelIndex >= 6)
-            break;
-    }
-
-    var ColudLevel = 1;
-    var contentHtml = "";
-    nCnt = 0;
-
-    var ShuffleArray = [];
-
-    for (var i = clouds.length - 1; i >= 0; i--)
-    {
-        ColudLevel = 6;
-        for (var j = 0; j < level.length; j++)
-        {
-            if (clouds[i].Len === level[j])
-            {
-                ColudLevel = j + 1;
-                break;
-            }
-        }
-
-        if (clouds[i].Word.length > 2)
-        {
-            if (clouds[i].Len < 2)
-                ShuffleArray.push({Level:6, Word:clouds[i].Word, Len:clouds[i].Len});
-            else
-                ShuffleArray.push({Level:ColudLevel, Word:clouds[i].Word, Len:clouds[i].Len});
-        }
-
-        if (nCnt >= 50)
-            break;
-
-        nCnt++;
-    }
-
-    ShuffleArray = shuffle(ShuffleArray);
-
-    for (var i = 0; i < ShuffleArray.length; i++)
-    {
-        contentHtml += "<span class=\"occurcnt\"><span class=\"best" + ShuffleArray[i].Level + "\">" + "&nbsp;" + ShuffleArray[i].Word + "</span>(" + ShuffleArray[i].Len + ")&nbsp;</span>";
-    }
-
-    $('#word-cloud-content').html(contentHtml);
-
-    var wordsHTML = "";
-    nCnt = 1;
-    for (var i = clouds.length - 1; i >= 0; i--)
-    {
-        if (clouds[i].Word.length > 2)
-        {
-            wordsHTML += (nCnt + ". <b style='padding-right : 15px;'>" + clouds[i].Word + "</b>&nbsp;&nbsp;&nbsp;&nbsp;");
-            if (nCnt >= 5)
-                break;
-
-            nCnt++;
-        }
-    }
-
-    $('.table-head').html("");
-
-    resetCss();
-
-    $('#Words').html(wordsHTML);
-    $('#main-header').show();
-    $('#word-cloud-content').show();
-    $('.info.list_books').show();
-    $('#WordCloudFooter').show();
-    $('#ExportBtnWordCloud').show();
-    $('#AdPanel').show();
-
-    LoadAdvertisementBanner();
-}
+//function wordSort(a, b)
+//{
+//    if (parseInt(a.Len) < parseInt(b.Len))
+//        return -1;
+//    if (parseInt(a.Len) > parseInt(b.Len))
+//        return 1;
+//    return 0;
+//}
+//
+//function shuffle(array) {
+//    var currentIndex = array.length
+//        , temporaryValue
+//        , randomIndex
+//        ;
+//
+//    // While there remain elements to shuffle...
+//    while (0 !== currentIndex) {
+//
+//        // Pick a remaining element...
+//        randomIndex = Math.floor(Math.random() * currentIndex);
+//        currentIndex -= 1;
+//
+//        // And swap it with the current element.
+//        temporaryValue = array[currentIndex];
+//        array[currentIndex] = array[randomIndex];
+//        array[randomIndex] = temporaryValue;
+//    }
+//
+//    return array;
+//}
+//
+//function WordsInfoUpdate()
+//{
+//    var xPathRes = document.evaluate ( "/html/body/div/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+//    var InnerTexts = "";
+//
+//    if (xPathRes.length < 1)
+//        return;
+//
+//    for (var i = 0; i < xPathRes.snapshotLength; i++) {
+//        if (i > ActiveTab.pageNum * 20)
+//            break;
+//
+//        InnerTexts += xPathRes.snapshotItem (i).innerText + " ";
+//    }
+//
+//    InnerTexts = InnerTexts.toLowerCase();
+//
+//    InnerTexts = InnerTexts.replace(/ the /g, ' ');
+//    InnerTexts = InnerTexts.replace(/the /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ a /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ of /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ i /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ and /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ in /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ at /g, ' ');
+//    InnerTexts = InnerTexts.replace(/-/g, ' ');
+//    InnerTexts = InnerTexts.replace(/\d+/g, ' ');
+//    InnerTexts = InnerTexts.replace(/ and /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ to /g, ' ');
+//    InnerTexts = InnerTexts.replace(/to /g, ' ');
+//    InnerTexts = InnerTexts.replace(/:/g, ' ');
+//    InnerTexts = InnerTexts.replace(/ at /g, ' ');
+//    InnerTexts = InnerTexts.replace(/at /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ for /g, ' ');
+//    InnerTexts = InnerTexts.replace(/we /g, ' ');
+//    InnerTexts = InnerTexts.replace(/you /g, ' ');
+//    InnerTexts = InnerTexts.replace(/me /g, ' ');
+//    InnerTexts = InnerTexts.replace(/'/g, ' ');
+//    InnerTexts = InnerTexts.replace(/ our /g, ' ');
+//    InnerTexts = InnerTexts.replace(/,/g, ' ');
+//    InnerTexts = InnerTexts.replace(/will /g, ' ');
+//    InnerTexts = InnerTexts.replace(/ will /g, ' ');
+//    InnerTexts = InnerTexts.replace(/[()]/g, ' ');
+//    InnerTexts = InnerTexts.replace(/[{}]/g, ' ');
+//    InnerTexts = InnerTexts.replace(/\[/g, ' ');
+//    InnerTexts = InnerTexts.replace(/\]/g, ' ');
+//    InnerTexts = InnerTexts.replace(/&/g, ' ');
+//    InnerTexts = InnerTexts.replace(/\//g, ' ');
+//    InnerTexts = InnerTexts.replace(/!/g, ' ');
+//
+//    var words = InnerTexts.split(" ");
+//
+//    clouds = [];
+//
+//    for (var i = 0; i < words.length; i++)
+//    {
+//        if ((typeof words[i] === "undefined") || (words[i].length < 1))
+//            continue;
+//
+//        var found = false;
+//        for(var j = 0; j < clouds.length; j++) {
+//            if (clouds[j].Word == words[i]) {
+//                found = true;
+//                break;
+//            }
+//        }
+//
+//        if (!found)
+//        {
+//            var nDuplicateCnt = 0
+//            for (var n = 0; n < words.length; n++)
+//            {
+//                if (words[i] === words[n])
+//                    nDuplicateCnt++;
+//            }
+//
+//            clouds.push({"Len":nDuplicateCnt, "Word": words[i]});
+//        }
+//
+//    }
+//
+//    clouds.sort(wordSort);
+//
+//    var nCnt = 0;
+//
+//    var InfoHtml = "<div style=\"font-size:11px;color:#a8a8a8;padding-top: 1px\">" + "Showing top 50 of " + (clouds.length - 1) + " possible words:</div>";
+//
+//    $('.info.list_books').html(InfoHtml);
+//    var level = [];
+//
+//    var nlevelIndex = 0;
+//    for (var i = clouds.length - 1; i >= 0; i--)
+//    {
+//        var found = false;
+//        for(var j = 0; j < clouds.length; j++) {
+//            if (clouds[j].Len == level[i]) {
+//                found = true;
+//                break;
+//            }
+//        }
+//
+//        if (!found)
+//        {
+//            if (clouds[i].Word.length > 2)
+//            {
+//                level[nlevelIndex] = clouds[i].Len;
+//                nlevelIndex++;
+//            }
+//        }
+//
+//        if (nlevelIndex >= 6)
+//            break;
+//    }
+//
+//    var ColudLevel = 1;
+//    var contentHtml = "";
+//    nCnt = 0;
+//
+//    var ShuffleArray = [];
+//
+//    for (var i = clouds.length - 1; i >= 0; i--)
+//    {
+//        ColudLevel = 6;
+//        for (var j = 0; j < level.length; j++)
+//        {
+//            if (clouds[i].Len === level[j])
+//            {
+//                ColudLevel = j + 1;
+//                break;
+//            }
+//        }
+//
+//        if (clouds[i].Word.length > 2)
+//        {
+//            if (clouds[i].Len < 2)
+//                ShuffleArray.push({Level:6, Word:clouds[i].Word, Len:clouds[i].Len});
+//            else
+//                ShuffleArray.push({Level:ColudLevel, Word:clouds[i].Word, Len:clouds[i].Len});
+//        }
+//
+//        if (nCnt >= 50)
+//            break;
+//
+//        nCnt++;
+//    }
+//
+//    ShuffleArray = shuffle(ShuffleArray);
+//
+//    for (var i = 0; i < ShuffleArray.length; i++)
+//    {
+//        contentHtml += "<span class=\"occurcnt\"><span class=\"best" + ShuffleArray[i].Level + "\">" + "&nbsp;" + ShuffleArray[i].Word + "</span>(" + ShuffleArray[i].Len + ")&nbsp;</span>";
+//    }
+//
+//    $('#word-cloud-content').html(contentHtml);
+//
+//    var wordsHTML = "";
+//    nCnt = 1;
+//    for (var i = clouds.length - 1; i >= 0; i--)
+//    {
+//        if (clouds[i].Word.length > 2)
+//        {
+//            wordsHTML += (nCnt + ". <b style='padding-right : 15px;'>" + clouds[i].Word + "</b>&nbsp;&nbsp;&nbsp;&nbsp;");
+//            if (nCnt >= 5)
+//                break;
+//
+//            nCnt++;
+//        }
+//    }
+//
+//    $('.table-head').html("");
+//
+//    resetCss();
+//
+//    $('#Words').html(wordsHTML);
+//    $('#main-header').show();
+//    $('#word-cloud-content').show();
+//    $('.info.list_books').show();
+//    $('#WordCloudFooter').show();
+//    $('#ExportBtnWordCloud').show();
+//    $('#AdPanel').show();
+//
+//    LoadAdvertisementBanner();
+//}
 
 function RankTrackingListShow() {
     var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
@@ -409,7 +409,7 @@ function KwdAnalysisListShow() {
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(tableHead);
 
-    ActiveTab.InsertData(ActiveTab.PageNum-1, booksData, SiteParser);
+    ActiveTab.InsertData(ActiveTab.pageNum-1, booksData, SiteParser);
 }
 var prevBookUrl;
 function resetTrackingBookPage(bookUrl) {
@@ -587,8 +587,22 @@ function addEventListenerForSingleResultBook(){
 function SetupClickListeners(){
     var linkTitleWord = $('#TitleWordCloud');
     linkTitleWord.click(function() {
-        ActiveTab = new WordCloudTab();
-        WordsInfoUpdate();
+        ActiveTab = new WordCloudTab(ActiveTab.pageNum);
+        var cloud = ActiveTab.WordsInfoUpdate();
+
+        resetCss();
+        $('.table-head').html("");
+        $('.info.list_books').html(cloud.info);
+        $('#word-cloud-content').html(cloud.content);
+        $('#Words').html(cloud.words);
+        $('#main-header').show();
+        $('#word-cloud-content').show();
+        $('.info.list_books').show();
+        $('#WordCloudFooter').show();
+        $('#ExportBtnWordCloud').show();
+        $('#AdPanel').show();
+
+        LoadAdvertisementBanner();
     });
 
     var BestSellerLink = $('#BestSellerLink');
@@ -734,8 +748,8 @@ function SetupStaticClickListeners() {
     if (isStaticLinkInitialized) return;
 
     $('#PullResult').click(function () {
-        SetActivePage(ActiveTab.PageNum + 1);
-        Popup.sendMessage({type: 'pull-data', page: ActiveTab.PageNum}, function(){});
+        SetActivePage(ActiveTab.pageNum + 1);
+        Popup.sendMessage({type: 'pull-data', page: ActiveTab.pageNum}, function(){});
     });
 
     var exportToCsvFunction = function() {
@@ -843,13 +857,13 @@ function UpdateTable(obj)
         });
     });
 
-    ActiveTab.InsertData(ActiveTab.PageNum-1, obj, SiteParser);
+    ActiveTab.InsertData(ActiveTab.pageNum-1, obj, SiteParser);
 }
 
 function SetActivePage(pageNum)
 {
     $('#TitleWordCloud').text("Word Cloud (" + (pageNum) * 20 + ")");
-    ActiveTab.PageNum = pageNum;
+    ActiveTab.pageNum = pageNum;
     ActiveTab.SavePageNum();
     ActiveTab.InsertData(pageNum-1, booksData, SiteParser);
 }

@@ -7,7 +7,7 @@ function RankTrackingTab(){
         return RankTrackingTab.prototype._singletonInstance;
     RankTrackingTab.prototype._singletonInstance = this;
 
-    this.PageNum = 1;
+    this.pageNum = 1;
 }
 
 RankTrackingTab.prototype.ExportToCsv = function(data){

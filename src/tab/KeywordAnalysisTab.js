@@ -7,28 +7,28 @@ function KeywordAnalysisTab(){
         return KeywordAnalysisTab.prototype._singletonInstance;
     KeywordAnalysisTab.prototype._singletonInstance = this;
 
-    this.PageNum = 1;
+    this.pageNum = 1;
     this.IsPaged = true;
     this.Analysis = new SearchAnalysisAlgorithm();
 }
 
 KeywordAnalysisTab.prototype.SavePageNum = function(){
-    Popup.sendMessage({type: "save-pageNum", tab: 'KeywordAnalysisTab', PageNum: this.PageNum});
+    Popup.sendMessage({type: "save-pageNum", tab: 'KeywordAnalysisTab', pageNum: this.pageNum});
 };
 
 KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
     var _this = this;
     callback = ValueOrDefault(callback, function() {});
     Popup.sendMessage({type: "get-pageNum", tab: 'KeywordAnalysisTab'}, function(pageNum){
-        _this.PageNum = parseInt(pageNum);
+        _this.pageNum = parseInt(pageNum);
         callback();
     });
 };
 
 KeywordAnalysisTab.prototype.ExportToCsv = function(data){
     var bookData = data.bookData;
-    var x = new Array(this.PageNum * 20 + 1);
-    for (var i = 0; i < this.PageNum * 20 + 1; i++) {
+    var x = new Array(this.pageNum * 20 + 1);
+    for (var i = 0; i < this.pageNum * 20 + 1; i++) {
         x[i] = new Array(9);
     }
 
@@ -43,7 +43,7 @@ KeywordAnalysisTab.prototype.ExportToCsv = function(data){
     x[0][8] = "Sales Rank";
 
     for(var index = 0; index < bookData.length; index ++) {
-        if (Math.floor(index / 20) <= (this.PageNum - 1))
+        if (Math.floor(index / 20) <= (this.pageNum - 1))
         {
             x[index + 1][0] = (index + 1).toString();
             x[index + 1][1] = bookData[index].Title;
