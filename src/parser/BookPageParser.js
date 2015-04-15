@@ -39,10 +39,13 @@ BookPageParser.prototype.GetAuthorTitle = function(jqNodes) {
 
 BookPageParser.prototype.GetGoogleSearchUrlByTitleAndAuthor = function(title, author){
     var baseUrl = "http://google.com/";
-    if((title=='undefined' || title.length<1) || (author=='undefined' || author.length<1)) return baseUrl;
-    title = title.replace(/ /g, "+");
-    author = author.replace(/ /g, "+");
-    return baseUrl + "?q=" + title + "+" + author + "&oq=" + title + "+" + author + "#safe=off&q="+ title + "+" + author;
+    var queryString = "";
+    if((title !== undefined) && (title.length > 0))
+        queryString += title;
+    if((author !== undefined) && (author.length > 0))
+        queryString += " " + author;
+    queryString = encodeURIComponent(queryString).replace(/'/g, '%27');
+    return baseUrl + "?q=" + queryString + "&oq=" + queryString + "#safe=off&q="+ queryString;
 };
 
 BookPageParser.prototype.GetGoogleImageSearchUrl = function(jqNodes, url, callback){
