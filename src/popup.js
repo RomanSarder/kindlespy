@@ -20,6 +20,7 @@ columnGetterFunctions['sales-rank'] = function(book){return Helper.parseInt(book
 var currentSortColumn = 'no';
 var currentSortDirection = 1; //1 = ask, -1 = desc
 
+var isRefreshStarted = false;
 
 function resetCss(){
     // header
@@ -65,6 +66,7 @@ function resetCss(){
 function getData(callback){
     callback = Helper.valueOrDefault(callback, function(){});
     Api.sendMessageToActiveTab({type: "get-data"}, function(data) {
+        data.books.sort(compare);
         return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
     });
 }
@@ -446,8 +448,8 @@ function ClearSearchKeywordsTable(){
     $('#content-keyword-search .loading').show();
 }
 
-function formattedKeywordString(searchedKeyword){
-    return searchedKeyword.replace(SearchedKeyword, '<b>' + SearchedKeyword + '</b>');
+function formatKeywordString(keyword, searchedKeyword){
+    return keyword.replace(searchedKeyword, '<b>' + searchedKeyword + '</b>');
 }
 
 function AppendSearchKeywordsTable(item){
@@ -456,7 +458,7 @@ function AppendSearchKeywordsTable(item){
     $('.table-head-keyword-search').show();
     var html = $('table[name="data-keyword-search"] tbody').html();
     html += "<tr>" +
-        "<td style=\"width:200px;padding-left:50px;text-align:left;\">" + formattedKeywordString(item.keyword) + "</td>" +
+        "<td style=\"width:200px;padding-left:50px;text-align:left;\">" + formatKeywordString(item.keyword, SearchedKeyword) + "</td>" +
         "<td style=\"width:85px;\"><div style='width:32px; height:31px; margin: -9px auto -4px auto;' class='bullet-" + item.color + "' ></div></td>" +
         "<td style=\"width:85px;\"><a class = 'keyword-analyze' href='#' keyword = '" + item.keyword + "'>Analyze</a></td>" +
         "</tr>";
@@ -528,9 +530,9 @@ function SetupStaticClickListeners() {
     isStaticLinkInitialized = true;
 }
 
-function LoadData(obj) {
+function LoadData(books) {
     SetupStaticClickListeners();
-    if (obj === undefined || obj.length < 1)
+    if (books === undefined || books.length < 1)
     {
         IsErrorWindow = true;
         resetCss();
@@ -547,7 +549,7 @@ function LoadData(obj) {
 
         setTimeout(checkIsDataLoaded, 6000);
     }else{
-        UpdateTable(obj);
+        UpdateTable(books);
     }
 }
 
@@ -652,7 +654,20 @@ function checkUrlAndLoad()
                 return;
             }
 
-            LoadInfos();
+            new MainTab().LoadPageNum(function(){
+                new KeywordAnalysisTab().LoadPageNum(function(){
+                    getData(function(result){
+                        booksData = result.books;
+                        LoadData(booksData);
+                        LoadAdvertisementBanner();
+                    });
+                });
+            });
+
+            if (!isRefreshStarted) {
+                refreshData();
+                isRefreshStarted = true;
+            }
         });
     });
 }
@@ -666,24 +681,7 @@ function compare(a,b) {
     return 0;
 }
 
-var isRefreshStarted = false;
-function LoadInfos()
-{
-    new MainTab().LoadPageNum(function(){
-        new KeywordAnalysisTab().LoadPageNum(function(){
-            getData(function(result){
-                booksData = result.books;
-                LoadData(booksData);
-                LoadAdvertisementBanner();
-            });
-        });
-    });
 
-    if (!isRefreshStarted) {
-        setTimeout(refreshData, 1000);
-        isRefreshStarted = true;
-    }
-}
 
 function InitRegionSelector(){
     $("#regionSelector").val(SiteParser.region);
@@ -732,4 +730,7 @@ $(window).ready(function () {
 });
 
 // run this when show the popup
-checkUrlAndLoad();
+ApiLoader.load(function(){
+    checkUrlAndLoad();
+});
+
