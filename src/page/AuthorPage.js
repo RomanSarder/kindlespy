@@ -7,7 +7,7 @@ function AuthorPage(){
     AuthorPage.prototype._singletonInstance = this;
 
     this.name = AuthorPage.name;
-    this.AuthorPager = undefined;
+    this.authorPager = undefined;
 }
 
 AuthorPage.name = 'author';
@@ -16,8 +16,8 @@ AuthorPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, se
     callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.authorResultsNumber;
-    if(this.AuthorPager === undefined) {
-        this.AuthorPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
+    if(this.authorPager === undefined) {
+        this.authorPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
             return _this.parsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, siteParser);
         }, function(url, page){
@@ -25,11 +25,11 @@ AuthorPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, se
         });
     }
 
-    this.AuthorPager.loadNextPage(parentUrl, callback);
+    this.authorPager.loadNextPage(parentUrl, callback);
 };
 
 AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, siteParser){
-    var No = [];
+    var no = [];
     var url = [];
     var price = [];
     var review = [];
@@ -43,7 +43,7 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
         if(this.id == "result_"+(startIndex+counter)) {
             if(counter>=maxResults) return;
             var krow = siteParser.getKindleEditionRow($(this));
-            No[index] = parseInt(index) + 1 + parseInt(startIndex);
+            no[index] = parseInt(index) + 1 + parseInt(startIndex);
             if(typeof krow == "undefined"){
                 counter++;
                 return;
@@ -75,7 +75,7 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
             && price[i] !== undefined && price[i].length > 0){
             kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
-                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
+                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
                 }
                 setTimeout(wrapper, i*1000);
             })

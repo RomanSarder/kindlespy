@@ -29,7 +29,7 @@ BestSellersPage.prototype.parsePage = function(pullingToken, responseText, paren
     var str = responseText;
     var pos = str.indexOf(pattern);
 
-    var No = [];
+    var no = [];
     var url = [];
     var price = [];
     var review = [];
@@ -43,7 +43,7 @@ BestSellersPage.prototype.parsePage = function(pullingToken, responseText, paren
     {
         str = str.substr(pos + pattern.length);
 
-        No[index] = this.getNoInfo(str);
+        no[index] = this.getNoInfo(str);
         url[index] = this.getPageUrl(str);
         price[index] = this.getPriceInfo(str);
         review[index] = this.getReviewInfo(str);
@@ -56,7 +56,7 @@ BestSellersPage.prototype.parsePage = function(pullingToken, responseText, paren
         if(url[i] !== undefined){
             kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
-                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
+                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
                 }
                 setTimeout(wrapper, i*1000);
             })

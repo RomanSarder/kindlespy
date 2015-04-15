@@ -91,8 +91,8 @@ KindleSpy.prototype.clearSearchResults = function(){
     this.pullingToken = 0;
     this.pageData.remove();
     var searchResultPage = new SearchResultsPage();
-    if (searchResultPage.SearchResultsPager) searchResultPage.SearchResultsPager.stop();
-    searchResultPage.SearchResultsPager = undefined;
+    if (searchResultPage.searchResultsPager) searchResultPage.searchResultsPager.stop();
+    searchResultPage.searchResultsPager = undefined;
     this.pagesPulled = 0;
 };
 
