@@ -56,13 +56,10 @@ RankTrackingTab.resetTrackingBookPage = function(bookUrl) {
 };
 
 RankTrackingTab.addEventListenerForSingleResultBook = function(rankTrackingTab){
-    var RankTrackingResultSingle = document.getElementsByClassName('RankTrackingResultSingle');
-    for(var i = 0;i<RankTrackingResultSingle.length; i++) {
-        RankTrackingResultSingle[i].addEventListener("click", function () {
-            RankTrackingTab.initUI($(this).attr('bookUrl'));
-            rankTrackingTab.loadDetails($(this).attr('bookUrl'));
-        });
-    }
+    $('table[name="data"] tbody').on('click', '.RankTrackingResultSingle', function(){
+        RankTrackingTab.initUI($(this).attr('bookUrl'));
+        rankTrackingTab.loadDetails($(this).attr('bookUrl'));
+    });
 };
 
 RankTrackingTab.prototype.exportToCsv = function(bookData){
@@ -103,17 +100,17 @@ RankTrackingTab.prototype.loadDetails = function(bookUrl){
     $('#LinkBackTo').hide();
     _this.storage.getBook(bookUrl, function(bookData) {
         if(bookData) {
-            _this.UpdateTrackedBookView(bookData);
+            _this.updateTrackedBookView(bookData);
             return;
         }
 
         _this.storage.initBookFromUrl(bookUrl, function(bookFromUrl){
-            _this.UpdateTrackedBookView(bookFromUrl);
+            _this.updateTrackedBookView(bookFromUrl);
         });
     });
 };
 
-RankTrackingTab.prototype.UpdateRateTrackingTable = function(){
+RankTrackingTab.prototype.updateRateTrackingTable = function(){
     var _this = this;
     _this.storage.getAllBooks(function(books){
         var html = "";
@@ -126,7 +123,7 @@ RankTrackingTab.prototype.UpdateRateTrackingTable = function(){
             "<td style=\"width:85px;\"><a class='RankTrackingRemove' href='#' bookUrl='" + books[i].url + "'>Remove</a></td>" +
             "</tr>";
         }
-        $("table[name='data']").find("tbody").html(html);
+        $('table[name="data"] tbody').html(html);
         RankTrackingTab.addEventListenerForSingleResultBook(_this);
 
         //Remove links
@@ -134,14 +131,14 @@ RankTrackingTab.prototype.UpdateRateTrackingTable = function(){
         for(var i = 0;i<RemoveRankTrackedBooks.length; i++) {
             $(RemoveRankTrackedBooks[i]).click(function () {
                 _this.storage.removeBookInStorage($(this).attr('bookUrl'), function(){
-                    _this.UpdateRateTrackingTable();
+                    _this.updateRateTrackingTable();
                 });
             });
         }
     });
 };
 
-RankTrackingTab.prototype.UpdateTrackedBookView = function(bookData){
+RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     var contentHtml = '';
     $('#bookTitle').text(bookData.title);
     if(bookData.trackingEnabled){
@@ -178,9 +175,9 @@ RankTrackingTab.prototype.UpdateTrackedBookView = function(bookData){
     }
     var avgSalesRank = sumRank/points;
     var bookPageParser = new BookPageParser(bookData.url);
-    var estSale = bookPageParser.GetEstSale(avgSalesRank);
+    var estSale = bookPageParser.getEstSale(avgSalesRank);
     var realPrice = Helper.parseFloat(bookData.price, this.siteParser.decimalSeparator);
-    var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
+    var SalesRecv = bookPageParser.getSalesRecv(estSale, realPrice);
     var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
 
     $('#days').html(points);

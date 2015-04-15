@@ -148,7 +148,7 @@ function SetupClickListeners(){
 
         $('#data-body').css("overflow-y", "auto");
         $('.table-head').html(tracking.header);
-        ActiveTab.UpdateRateTrackingTable();
+        ActiveTab.updateRateTrackingTable();
     });
 
     $('#search').click(function() {
