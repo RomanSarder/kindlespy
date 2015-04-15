@@ -29,7 +29,11 @@ BrowserDetector.isIE = function() {
 function ApiLoader() {
 }
 
+ApiLoader.isLoaded = false;
+
 ApiLoader.load = function(callback) {
+    if(ApiLoader.isLoaded) return callback();
+
     var api;
     if (BrowserDetector.isChrome() || BrowserDetector.isOpera()) api = 'Chrome';
     else if (BrowserDetector.isFirefox()) api = 'Firefox';
@@ -39,6 +43,7 @@ ApiLoader.load = function(callback) {
     }
 
     $.getScript('../browser-api/' + api + '.js', function(script, textStatus){
+        ApiLoader.isLoaded = true;
         callback();
     });
 };

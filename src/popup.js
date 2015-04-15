@@ -360,8 +360,43 @@ function SetupClickListeners(){
     });
 
     $('#search').click(function() {
-        ActiveTab = new SearchKeywordsTab();
-        SearchKeywordsPage();
+        ActiveTab = new SearchKeywordsTab(SiteParser);
+        var info = ActiveTab.load();
+        $('#main-header').html('');
+        $('.info.list_books').html(info);
+
+        $('table[name="data-keyword-search"] tbody').on('click', '.keyword-analyze', function(){
+            ActiveTab = new MainTab();
+            var search = $(this).attr('keyword');
+            Api.sendMessageToActiveTab({type: "start-analyze-search-keywords", keyword: search});
+            checkUrlAndLoad();
+        });
+
+        $("#search-text").keypress(function(event){
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode == '13'){
+                ActiveTab.search();
+            }
+        });
+
+        $("#go-search").click(function()
+        {
+            ActiveTab.search();
+        });
+
+
+        resetCss();
+        $('#main-header').show();
+        $('#content-keyword-search').show();
+        $('#TrackedPanelFooter').show();
+        $('.info.list_books').show();
+        $('#search-text').focus();
+        $('#AdPanel').show();
+        if ($('table[name="data-keyword-search"] tr').length > 0) $('.table-head-keyword-search').show();
+
+        LoadAdvertisementBanner();
+
+        $('#data-body-keyword-search').css("overflow-y", "auto");
     });
 
     var linkKwdAnalysis = $("#KeywordAnalysis");
@@ -369,119 +404,6 @@ function SetupClickListeners(){
         ActiveTab = new KeywordAnalysisTab();
         KwdAnalysisListShow();
     });
-}
-var SearchedKeyword = '';
-function SearchKeywordsPage() {
-    var info = '<div class="search-inner-panel">' +
-        '<div class="search-panel">' +
-        '<div id ="go-search" value="Find"></div>' +
-        '<div style="overflow: hidden;">' +
-        '<input id="search-text" value="' + SearchedKeyword + '" type="text"/>' +
-        '</div>' +
-        '</div>' +
-        '</div>';
-    $('#main-header').html('');
-    $('.info.list_books').html(info);
-    resetCss();
-    $('#main-header').show();
-    $('#content-keyword-search').show();
-    $('#TrackedPanelFooter').show();
-    $('.info.list_books').show();
-    $('#search-text').focus();
-    $('#AdPanel').show();
-    if ($('table[name="data-keyword-search"] tr').length > 0) $('.table-head-keyword-search').show();
-
-    LoadAdvertisementBanner();
-
-    $('#data-body-keyword-search').css("overflow-y", "auto");
-
-    $("#search-text").keypress(function(event){
-        var keycode = (event.keyCode ? event.keyCode : event.which);
-        if(keycode == '13'){
-            startSearchKeywords();
-        }
-    });
-
-    $("#go-search").click(function()
-    {
-        startSearchKeywords();
-    });
-
-    $('table[name="data-keyword-search"] tbody').on('click', '.keyword-analyze', function(){
-        ActiveTab = new MainTab();
-        var search = $(this).attr('keyword');
-        Api.sendMessageToActiveTab({type: "start-analyze-search-keywords", keyword: search});
-        checkUrlAndLoad();
-    });
-}
-
-function startSearchKeywords(){
-    $('.table-head-keyword-search').hide();
-    SearchedKeyword = $("#search-text").val();
-    ClearSearchKeywordsTable();
-    GetSearchKeywordsList(function(keywords){
-        GetSearchKeywordFullData(keywords, function(response){
-            AppendSearchKeywordsTable(response);
-        });
-    });
-}
-
-function GetSearchKeywordFullData(list, processItemFunction){
-    var algorithm = new SearchAnalysisAlgorithm();
-    list.forEach(function(item){
-        var pageUrl = Helper.getSearchUrl(item, SiteParser);
-        $.get(pageUrl, function(responseText){
-            var jqResponse = Helper.parseHtmlToJquery(responseText);
-            var totalResults = Helper.parseInt(SiteParser.getTotalSearchResult(jqResponse), SiteParser.decimalSeparator);
-            var color = algorithm.getCompetitionColor(totalResults);
-            return processItemFunction({
-                keyword: item,
-                color: color
-            });
-        });
-    });
-}
-
-function ClearSearchKeywordsTable(){
-    $('table[name="data-keyword-search"] tbody').html('');
-    $('#content-keyword-search .content').hide();
-    $('#content-keyword-search .loading').show();
-}
-
-function formatKeywordString(keyword, searchedKeyword){
-    return keyword.replace(searchedKeyword, '<b>' + searchedKeyword + '</b>');
-}
-
-function AppendSearchKeywordsTable(item){
-    $('#content-keyword-search .loading').hide();
-    $('#content-keyword-search .content').show();
-    $('.table-head-keyword-search').show();
-    var html = $('table[name="data-keyword-search"] tbody').html();
-    html += "<tr>" +
-        "<td style=\"width:200px;padding-left:50px;text-align:left;\">" + formatKeywordString(item.keyword, SearchedKeyword) + "</td>" +
-        "<td style=\"width:85px;\"><div style='width:32px; height:31px; margin: -9px auto -4px auto;' class='bullet-" + item.color + "' ></div></td>" +
-        "<td style=\"width:85px;\"><a class = 'keyword-analyze' href='#' keyword = '" + item.keyword + "'>Analyze</a></td>" +
-        "</tr>";
-
-    $('table[name="data-keyword-search"] tbody').html(html);
-}
-
-function GetSearchKeywordsList(callback){
-    var q = encodeURI($("#search-text").val());
-    $.ajax({
-        url: SiteParser.completionUrl + "&q=" + q,
-        method: "GET",
-        dataType: "json",
-        success: function (responseJson) {
-            if(responseJson === undefined || responseJson.length < 2) return callback([]);
-            return callback(responseJson[1]);
-        },
-        error: function (obj, textStatus, errorThrown){
-            console.error(textStatus + "  " + errorThrown);
-            return callback([]);
-        }
-    });
-
 }
 
 var isStaticLinkInitialized = false;
