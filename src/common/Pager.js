@@ -28,7 +28,7 @@ Pager.prototype.loadNextPage = function(parentUrl, callback){
     var prevPulledItems = 0;
     setTimeout(pullOnePage.bind(this), 100);
 
-    function pullOnePage() {
+    function pullOnePage(){
         if(_this.isStopped) return;
         $.get(_this.getPageUrlFunction(parentUrl, i).trim(), function (responseText) {
             if(_this.isStopped) return;
