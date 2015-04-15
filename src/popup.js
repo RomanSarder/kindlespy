@@ -127,31 +127,6 @@ function RankTrackingListShow() {
     UpdateRateTrackingTable();
 }
 
-function KwdAnalysisListShow() {
-    var ContentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
-    var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:295px;\"> </label><label class=\"sort-column\" id=\"price\" style=\"padding-right:20px;\" >Price</label><label class=\"sort-column\" id=\"pages\" style=\"padding-right:15px;\">Page(s)</label><label class=\"sort-column\" id=\"kwt\" style=\"padding-right:15px;\">KWT</label><label class=\"sort-column\" id=\"kwd\" style=\"padding-right:20px;\">KWD</label><label class=\"sort-column\" id=\"rating\" style=\"padding-right:25px;\" >Rating</label><label class=\"sort-column\" id=\"reviews\" style=\"padding-right:40px;\" >Reviews</label><label class=\"sort-column\" id=\"sales-rank\" style=\"padding-right:10px;\" >Sales Rank</label>"
-    var InfoHtml = "<div class=\"info-item\"><span style=\"font-size:11px\">Results:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Price:</span><div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">$7.95</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Sales Rank:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">4,233</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Pages:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">112</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Rating:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">4.1</div></div><div class=\"info-item\"><span style=\"font-size:11px\">Avg. Reviews:</span><div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result6\">31</div></div>";
-
-    resetCss();
-    $('#main-content').html(ContentHtml);
-    $('.info.list_books').html(InfoHtml);
-    $('#main-content').show();
-    $('#main-header').show();
-    $('#BestSellersRankingFooter').show();
-    $('#ExportBtn').show();
-    $('.info.list_books').show();
-    $('.table-head').show();
-    $('#totalReSalesRecvBlock').show();
-    $('#Conclusion').show();
-
-    LoadAdvertisementBanner();
-
-    $(".info-item").css("width","16.6%");
-    $('#data-body').css("overflow-y" , "hidden");
-    $('.table-head').html(tableHead);
-
-    ActiveTab.InsertData(ActiveTab.pageNum-1, booksData, SiteParser);
-}
 var prevBookUrl;
 function resetTrackingBookPage(bookUrl) {
     if(prevBookUrl === bookUrl) return;
@@ -402,7 +377,26 @@ function SetupClickListeners(){
     var linkKwdAnalysis = $("#KeywordAnalysis");
     linkKwdAnalysis.click(function() {
         ActiveTab = new KeywordAnalysisTab();
-        KwdAnalysisListShow();
+
+        var kwdAnalysis = ActiveTab.KwdAnalysisListShow();
+        resetCss();
+        $('#main-content').html(kwdAnalysis.content);
+        $('.info.list_books').html(kwdAnalysis.info);
+        $('#main-content').show();
+        $('#main-header').show();
+        $('#BestSellersRankingFooter').show();
+        $('#ExportBtn').show();
+        $('.info.list_books').show();
+        $('.table-head').show();
+        $('#totalReSalesRecvBlock').show();
+        $('#Conclusion').show();
+
+        LoadAdvertisementBanner();
+
+        $(".info-item").css("width","16.6%");
+        $('#data-body').css("overflow-y" , "hidden");
+        $('.table-head').html(kwdAnalysis.header);
+        ActiveTab.InsertData(ActiveTab.pageNum-1, booksData, SiteParser);
     });
 }
 
@@ -497,7 +491,7 @@ function checkIsDataLoaded(){
     });
 }
 
-function UpdateTable(obj)
+function UpdateTable(books)
 {
     IsErrorWindow = false;
     Storage.getNumberOfBooks(function(num){
@@ -505,8 +499,8 @@ function UpdateTable(obj)
 
         $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');
         $('#main-header').html(Helper.buildHeaderHtml(num));
-        Helper.setupHeader(obj[0].Category, obj[0].CategoryKind);
-        Helper.setupFooter(obj[0].CategoryKind);
+        Helper.setupHeader(books[0].Category, books[0].CategoryKind);
+        Helper.setupFooter(books[0].CategoryKind);
 
         SetupClickListeners();
     });
@@ -544,7 +538,7 @@ function UpdateTable(obj)
         });
     });
 
-    ActiveTab.InsertData(ActiveTab.pageNum-1, obj, SiteParser);
+    ActiveTab.InsertData(ActiveTab.pageNum-1, books, SiteParser);
 }
 
 function SetActivePage(pageNum)

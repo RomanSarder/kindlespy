@@ -25,6 +25,43 @@ KeywordAnalysisTab.prototype.LoadPageNum = function(callback){
     });
 };
 
+KeywordAnalysisTab.prototype.KwdAnalysisListShow = function() {
+    var content = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
+    var header = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label>" +
+        "<label class=\"sort-column\" id=\"title-book\" style=\"padding-right:295px;\"> </label>" +
+        "<label class=\"sort-column\" id=\"price\" style=\"padding-right:20px;\" >Price</label>" +
+        "<label class=\"sort-column\" id=\"pages\" style=\"padding-right:15px;\">Page(s)</label>" +
+        "<label class=\"sort-column\" id=\"kwt\" style=\"padding-right:15px;\">KWT</label>" +
+        "<label class=\"sort-column\" id=\"kwd\" style=\"padding-right:20px;\">KWD</label>" +
+        "<label class=\"sort-column\" id=\"rating\" style=\"padding-right:25px;\" >Rating</label>" +
+        "<label class=\"sort-column\" id=\"reviews\" style=\"padding-right:40px;\" >Reviews</label>" +
+        "<label class=\"sort-column\" id=\"sales-rank\" style=\"padding-right:10px;\" >Sales Rank</label>";
+    var info = "<div class=\"info-item\">" +
+        "<span style=\"font-size:11px\">Results:</span>" +
+        "<div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result1\">1-20</div>" +
+        "</div>" +
+        "<div class=\"info-item\">" +
+        "<span style=\"font-size:11px\">Avg. Price:</span>" +
+        "<div style=\"font-size:16px;font-weight:bold; margin-top:-6px;\" id=\"result2\">$7.95</div>" +
+        "</div><div class=\"info-item\">" +
+        "<span style=\"font-size:11px\">Avg. Sales Rank:</span>" +
+        "<div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result3\">4,233</div>" +
+        "</div><div class=\"info-item\">" +
+        "<span style=\"font-size:11px\">Avg. Pages:</span>" +
+        "<div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result4\">112</div>" +
+        "</div>" +
+        "<div class=\"info-item\">" +
+        "<span style=\"font-size:11px\">Avg. Rating:</span>" +
+        "<div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result5\">4.1</div>" +
+        "</div>" +
+        "<div class=\"info-item\">" +
+        "<span style=\"font-size:11px\">Avg. Reviews:</span>" +
+        "<div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result6\">31</div>" +
+        "</div>";
+
+    return {content: content, info: info, header: header};
+};
+
 KeywordAnalysisTab.prototype.ExportToCsv = function(bookData){
     var x = new Array(this.pageNum * 20 + 1);
     for (var i = 0; i < this.pageNum * 20 + 1; i++) {
