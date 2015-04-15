@@ -10,7 +10,7 @@ function RankTrackingTab(){
     this.pageNum = 1;
 }
 
-RankTrackingTab.prototype.ExportToCsv = function(bookData){
+RankTrackingTab.prototype.exportToCsv = function(bookData){
     var bookUrl = $('#ExportBtnWordCloud').attr('book-url');
 
     new BookStorage().getBook(bookUrl, function(bookData) {

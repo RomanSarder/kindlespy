@@ -85,8 +85,8 @@ function refreshData()
             return;
         }
 
-        if (ActiveTab.IsPaged) {
-            ActiveTab.InsertData(ActiveTab.pageNum - 1, booksData, SiteParser);
+        if (ActiveTab.isPaged) {
+            ActiveTab.insertData(ActiveTab.pageNum - 1, booksData, SiteParser);
             if (result.isWaitingForPulling) $('.img-load').show();
             else {
                 $('.img-load').hide();
@@ -378,7 +378,7 @@ function SetupClickListeners(){
     linkKwdAnalysis.click(function() {
         ActiveTab = new KeywordAnalysisTab();
 
-        var kwdAnalysis = ActiveTab.KwdAnalysisListShow();
+        var kwdAnalysis = ActiveTab.kwdAnalysisListShow();
         resetCss();
         $('#main-content').html(kwdAnalysis.content);
         $('.info.list_books').html(kwdAnalysis.info);
@@ -396,7 +396,7 @@ function SetupClickListeners(){
         $(".info-item").css("width","16.6%");
         $('#data-body').css("overflow-y" , "hidden");
         $('.table-head').html(kwdAnalysis.header);
-        ActiveTab.InsertData(ActiveTab.pageNum-1, booksData, SiteParser);
+        ActiveTab.insertData(ActiveTab.pageNum-1, booksData, SiteParser);
     });
 }
 
@@ -434,7 +434,7 @@ function SetupStaticClickListeners() {
     });
 
     var exportToCsvFunction = function() {
-        ActiveTab.ExportToCsv({ bookData: booksData, cloudData: clouds });
+        ActiveTab.exportToCsv({ bookData: booksData, cloudData: clouds });
     };
     $('#Export').click(exportToCsvFunction);
     $('#ExportWordCloud').click(exportToCsvFunction);
@@ -538,15 +538,15 @@ function UpdateTable(books)
         });
     });
 
-    ActiveTab.InsertData(ActiveTab.pageNum-1, books, SiteParser);
+    ActiveTab.insertData(ActiveTab.pageNum-1, books, SiteParser);
 }
 
 function SetActivePage(pageNum)
 {
     $('#TitleWordCloud').text("Word Cloud (" + (pageNum) * 20 + ")");
     ActiveTab.pageNum = pageNum;
-    ActiveTab.SavePageNum();
-    ActiveTab.InsertData(pageNum-1, booksData, SiteParser);
+    ActiveTab.savePageNum();
+    ActiveTab.insertData(pageNum-1, booksData, SiteParser);
 }
 
 function checkUrlAndLoad()
@@ -570,8 +570,8 @@ function checkUrlAndLoad()
                 return;
             }
 
-            new MainTab().LoadPageNum(function(){
-                new KeywordAnalysisTab().LoadPageNum(function(){
+            new MainTab().loadPageNum(function(){
+                new KeywordAnalysisTab().loadPageNum(function(){
                     getData(function(result){
                         booksData = result.books;
                         LoadData(booksData);

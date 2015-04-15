@@ -8,14 +8,14 @@ function MainTab(){
     MainTab.prototype._singletonInstance = this;
 
     this.pageNum = 1;
-    this.IsPaged = true;
+    this.isPaged = true;
 }
 
-MainTab.prototype.SavePageNum = function(){
+MainTab.prototype.savePageNum = function(){
     Api.sendMessageToActiveTab({type: "save-pageNum", tab: 'MainTab', pageNum: this.pageNum});
 };
 
-MainTab.prototype.LoadPageNum = function(callback){
+MainTab.prototype.loadPageNum = function(callback){
     var _this = this;
     callback = Helper.valueOrDefault(callback, function() {});
     Api.sendMessageToActiveTab({type: "get-pageNum", tab: 'MainTab'}, function(pageNum){
@@ -24,7 +24,7 @@ MainTab.prototype.LoadPageNum = function(callback){
     });
 };
 
-MainTab.prototype.ExportToCsv = function(data){
+MainTab.prototype.exportToCsv = function(data){
     var bookData = data.bookData;
     var x = new Array(this.pageNum * 20 + 1);
     for (var i = 0; i < this.pageNum * 20 + 1; i++) {
@@ -105,7 +105,7 @@ MainTab.prototype.ExportToCsv = function(data){
     link.click();
 };
 
-MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
+MainTab.prototype.insertData = function(pageNumber, books, siteParser){
     var category = "";
     var categoryKind = "";
     var salesRankSum = 0;
@@ -114,8 +114,7 @@ MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
     var reviewSum = 0;
     var html = "";
     var nTotalCnt = 0;
-    var cellCnt = 0;
- 
+
     for(var i = books.length - 1; i >= 0 ; i --)
     {
         if (typeof books[i].SalesRank === "undefined" || books[i].SalesRank.length < 1)
@@ -170,7 +169,7 @@ MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
         }
     }
 
-    if (this.IsPaged && pageNumber * 20 >= 20)
+    if (this.isPaged && pageNumber * 20 >= 20)
     {
         $('#data-body').css("overflow-y" , "scroll");
     }
@@ -202,7 +201,7 @@ MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
 	var monthlyRevBook = 0;
 	for (var i = 0; i < 20 && i < books.length; i++) {
         monthlyRev20 += parseInt(books[i].SalesRecv);
-		if(this.GetSalesRankConclusion(Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
+		if(this.getSalesRankConclusion(Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
 		if (books[i].SalesRecv > 500) monthlyRevBook ++;
 	}
 	var avgMonthlyRev20 = monthlyRev20/(Math.min(20, books.length));
@@ -213,14 +212,14 @@ MainTab.prototype.InsertData = function(pageNumber, books, siteParser){
     $('#result4').html(siteParser.formatPrice(Helper.addCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result5').html(Helper.addCommas(Math.floor(reviewSum / nTotalCnt)));
     $('#totalReSalesRecv').html(siteParser.formatPrice(Helper.addCommas(salesRecvSum)));
-    this.Analysis = Helper.isSearchPageFromCategoryKind(categoryKind)? new SearchAnalysisAlgorithm() : new CategoryAnalysisAlgorithm();
-    this.Analysis.setBullets({salesRank20: salesRank20,
+    this.analysis = Helper.isSearchPageFromCategoryKind(categoryKind)? new SearchAnalysisAlgorithm() : new CategoryAnalysisAlgorithm();
+    this.analysis.setBullets({salesRank20: salesRank20,
         avgMonthlyRev:avgMonthlyRev20,
         salesRankConclusionValue: salesRankConclusionValue,
         monthlyRevBook:monthlyRevBook});
 };
 
-MainTab.prototype.GetSalesRankConclusion = function(salesRank){
+MainTab.prototype.getSalesRankConclusion = function(salesRank){
     if (salesRank < 10000) return 1;
     if (salesRank < 20000) return 2;
     if (salesRank < 50000) return 3;

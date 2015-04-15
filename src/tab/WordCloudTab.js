@@ -15,7 +15,7 @@ WordCloudTab.wordSort = function(a, b){
     return 0;
 };
 
-WordCloudTab.prototype.ExportToCsv = function(bookData){
+WordCloudTab.prototype.exportToCsv = function(bookData){
     var cloudData = this.clouds;
     var x = new Array(cloudData.length + 1);
 
