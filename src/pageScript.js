@@ -114,7 +114,7 @@ KindleSpy.prototype.parseDataFromBookPageAndSend = function(pullingToken, num, u
     if (pullingToken != _this.pullingToken) return;
     var parser = new BookPageParser(null, _this.siteParser);
     if (parser.isNotValid()) return callback();
-    parser.GetBookData(url, price, reviews, function(pageData) {
+    parser.getBookData(url, price, reviews, function(pageData) {
         // check if we still on the same search keywords page and didn't start a new pulling with new params
         if (pullingToken != _this.pullingToken) return;
         _this.saveBook({

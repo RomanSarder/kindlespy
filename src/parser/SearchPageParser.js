@@ -8,7 +8,7 @@ function SearchPageParser(kindleSpy){
 SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, category, siteParser, type)
 {
     var _this = this;
-    var No = [];
+    var no = [];
     var url = [];
     var price = [];
     var review = [];
@@ -26,7 +26,7 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
             && $(this).attr('id') !== 'centerPlus') return;
         result = $(this).find('.a-fixed-left-grid-inner');
         if(counter>=maxResults) return;
-        No[index] = startIndex + index + 1;
+        no[index] = startIndex + index + 1;
         url[index] = $(result).find("a:first").attr("href");
         if(!url[index]) url[index] = "";
         var kprice = $(result).find('div').filter(function () {
@@ -70,7 +70,7 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
             && price[i] !== undefined && price[i].length > 0){
             kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
-                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, No[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);
+                    kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);
                 }
                 setTimeout(wrapper, i*1000);
             })

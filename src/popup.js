@@ -217,9 +217,9 @@ function UpdateTrackedBookView(bookData){
     }
     var avgSalesRank = sumRank/points;
     var bookPageParser = new BookPageParser(bookData.url);
-    var estSale = bookPageParser.GetEstSale(avgSalesRank);
+    var estSale = bookPageParser.getEstSale(avgSalesRank);
     var realPrice = Helper.parseFloat(bookData.price, SiteParser.decimalSeparator);
-    var SalesRecv = bookPageParser.GetSalesRecv(estSale, realPrice);
+    var SalesRecv = bookPageParser.getSalesRecv(estSale, realPrice);
     var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
 
     $('#days').html(points);
