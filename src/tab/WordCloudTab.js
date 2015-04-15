@@ -99,7 +99,7 @@ WordCloudTab.prototype.shuffle = function(array) {
  * Word cloud HTML generator - created by Jang
  * @returns {{info: string, content: string, words: string}}
  */
-WordCloudTab.prototype.wordsInfoUpdate = function(){
+WordCloudTab.prototype.load = function(){
     var xPathRes = document.evaluate ( "/html/body/div/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var InnerTexts = "";
 

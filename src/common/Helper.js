@@ -246,13 +246,13 @@ Helper.setupFooter = function(categoryKind){
  * @param rankTrackingNum
  * @returns {string}
  */
-Helper.buildHeaderHtml = function(rankTrackingNum){
+Helper.buildHeaderHtml = function(rankTrackingNum, cloudNum){
     var headerHtml = '<div style="float:left;font-size:14px;padding-left:11px;" id="CategoryKind"></div>' +
         '<div style="float:left;font-size:14px;padding-left:6px;font-weight:bold" id="title"></div>' +
         '<div style="float:right">' +
         '<a id="BestSellerLink" href="#"></a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
         '<span style="display: none;" id="KeywordAnalysisMenu"><a id="KeywordAnalysis" href="#">Keyword Analysis</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span>' +
-        '<a id="TitleWordCloud" href="#">Word Cloud (20)</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
+        '<a id="TitleWordCloud" href="#">Word Cloud (' + cloudNum + ')</a>&nbsp;&nbsp;|&nbsp;&nbsp;' +
         '<a id="RankTrackingResultList" href="#">Rank Tracking (' + rankTrackingNum + ')</a>' +
         '</div>';
     return headerHtml;
