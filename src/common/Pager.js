@@ -26,9 +26,9 @@ Pager.prototype.loadNextPage = function(parentUrl, callback){
     var pulledItems;
     var i = this.lastPage;
     var prevPulledItems = 0;
-    setTimeout(PullOnePage.bind(this), 100);
+    setTimeout(pullOnePage.bind(this), 100);
 
-    function PullOnePage() {
+    function pullOnePage() {
         if(_this.isStopped) return;
         $.get(_this.getPageUrlFunction(parentUrl, i).trim(), function (responseText) {
             if(_this.isStopped) return;
@@ -46,7 +46,7 @@ Pager.prototype.loadNextPage = function(parentUrl, callback){
             _this.alreadyPulled = 0;
             i++;
             if(totalItemsLoaded<_this.itemsInResult) {
-                setTimeout(PullOnePage.bind(_this), 100);
+                setTimeout(pullOnePage.bind(_this), 100);
             } else {
                 _this.pagesLoaded++;
                 _this.lastPage = i-1;
