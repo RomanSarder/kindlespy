@@ -110,7 +110,7 @@ AmazonDeParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url
 };
 
 AmazonDeParser.prototype.getImageUrlSrc = function(responseText) {
-    return responseText.find('#main-image').attr('src');
+    return responseText.find('#main-image').attr('data-src');
 };
 
 AmazonDeParser.prototype.getReviews = function(responseText) {
