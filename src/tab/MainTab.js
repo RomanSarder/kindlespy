@@ -64,11 +64,12 @@ MainTab.prototype.exportToCsv = function(data){
             x[index + 1][7] = bookData[index].Reviews;
             x[index + 1][8] = bookData[index].SalesRank;
             x[index + 1][9] = bookData[index].PrintLength;
-            x[index + 1][10] = bookData[index].Url;
+            x[index + 1][10] = "=HYPERLINK(\"" + bookData[index].Url + "\")";
         }
     }
+
     var fileName = "bs-" + Helper.getCategoryFromBookData(bookData);
-    Export.exportData(x, bookData.length, fileName);
+    Export.exportData(x, fileName, bookData.length);
 };
 
 MainTab.prototype.insertData = function(pageNumber, books, siteParser){

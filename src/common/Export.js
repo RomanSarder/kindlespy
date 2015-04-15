@@ -4,10 +4,10 @@
 
 function Export(){
 }
-Export.exportData = function(data, booksNumber, fileName){
+Export.exportData = function(data, fileName, booksNumber){
     var csvContent = "\uFEFF";
     data.forEach(function(infoArray, index){
-        if (index <= booksNumber)
+        if (index <= booksNumber || booksNumber === undefined)
         {
             var dataString = [];
             for (var i = 0; i < infoArray.length; i++)
@@ -28,10 +28,7 @@ Export.exportData = function(data, booksNumber, fileName){
                     fieldValue = fieldValue.replace("\r", "");
                     fieldValue = fieldValue.replace("\n", "");
                 }
-
-                if(i == 10 && index > 0)
-                    fieldValue =  "=HYPERLINK(\"" + fieldValue + "\")";
-                dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
+               dataString[i] = (quotesRequired || escapeQuotes ? "\"" : "") + fieldValue + (quotesRequired || escapeQuotes ? "\"" : "") + ((i < (infoArray.length-1)) ? "," : "\r\n");
             }
             for (var i = 0; i < dataString.length; i ++)
                 csvContent += dataString[i];
