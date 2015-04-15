@@ -13,7 +13,7 @@ function SearchResultsPage(){
 
 SearchResultsPage.name = 'search';
 
-SearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
+SearchResultsPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.searchResultsNumber;
@@ -22,7 +22,7 @@ SearchResultsPage.prototype.LoadData = function(pullingToken, siteParser, parent
     if(this.SearchResultsPager === undefined) {
         this.SearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
-            return new SearchPageParser().ParsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, search, siteParser, "Search");
+            return new SearchPageParser().parsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, search, siteParser, "Search");
         }, function(url, page){
             return url + '&page=' + page;
         });

@@ -12,7 +12,7 @@ function SingleBookPage(){
 
 SingleBookPage.name = 'single';
 
-SingleBookPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
+SingleBookPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = Helper.valueOrDefault(callback, function(){});
     return callback();
 };

@@ -5,7 +5,7 @@
 function SearchPageParser(kindleSpy){
 }
 
-SearchPageParser.prototype.ParsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, category, siteParser, type)
+SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, category, siteParser, type)
 {
     var _this = this;
     var No = [];

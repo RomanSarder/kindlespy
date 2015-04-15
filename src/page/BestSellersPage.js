@@ -11,7 +11,7 @@ function BestSellersPage(){
 
 BestSellersPage.name = 'best-seller';
 
-BestSellersPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
+BestSellersPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var pageUrl = parentUrl + "?pg=" + pageNumber;
@@ -19,12 +19,12 @@ BestSellersPage.prototype.LoadData = function(pullingToken, siteParser, parentUr
         pageUrl += '&tf=1';
     $.get(pageUrl, function(responseText){
         // no need jQuery here: // var jqResponseText = parseHtmlToJquery(responseText);
-        _this.ParsePage(pullingToken, responseText, parentUrl);
+        _this.parsePage(pullingToken, responseText, parentUrl);
         return callback();
     });
 };
 
-BestSellersPage.prototype.ParsePage = function(pullingToken, responseText, parentUrl){
+BestSellersPage.prototype.parsePage = function(pullingToken, responseText, parentUrl){
     var pattern = 'class="zg_itemImmersion"';
     var str = responseText;
     var pos = str.indexOf(pattern);
@@ -37,16 +37,16 @@ BestSellersPage.prototype.ParsePage = function(pullingToken, responseText, paren
 
     var index = 0;
     var bIsExist = [];
-    category = this.GetCategoryInfo(str).trim();
+    category = this.getCategoryInfo(str).trim();
 
     while (pos >= 0)
     {
         str = str.substr(pos + pattern.length);
 
-        No[index] = this.GetNoInfo(str);
-        url[index] = this.GetPageUrl(str);
-        price[index] = this.GetPriceInfo(str);
-        review[index] = this.GetReviewrInfo(str);
+        No[index] = this.getNoInfo(str);
+        url[index] = this.getPageUrl(str);
+        price[index] = this.getPriceInfo(str);
+        review[index] = this.getReviewInfo(str);
 
         pos = str.indexOf(pattern);
         index++;
@@ -64,23 +64,23 @@ BestSellersPage.prototype.ParsePage = function(pullingToken, responseText, paren
     });
 };
 
-BestSellersPage.prototype.GetCategoryInfo = function(responseText){
+BestSellersPage.prototype.getCategoryInfo = function(responseText){
     return Helper.parseString(responseText, 'class="category"', '>', '<');
 };
 
-BestSellersPage.prototype.GetNoInfo = function(responseText){
+BestSellersPage.prototype.getNoInfo = function(responseText){
     return Helper.parseString(responseText, 'class="zg_rankNumber"', ">", ".");
 };
 
-BestSellersPage.prototype.GetPriceInfo = function(responseText){
+BestSellersPage.prototype.getPriceInfo = function(responseText){
     return Helper.parseString(responseText,'class="price"', ">", "<");
 };
 
-BestSellersPage.prototype.GetPageUrl = function(responsneText){
+BestSellersPage.prototype.getPageUrl = function(responsneText){
     return Helper.parseString(responsneText, 'class="zg_title"', 'href="', '"');
 };
 
-BestSellersPage.prototype.GetReviewrInfo = function(responseText){
+BestSellersPage.prototype.getReviewInfo = function(responseText){
     var pattern = "a href";
     var str = responseText;
     var pos = str.indexOf(pattern);

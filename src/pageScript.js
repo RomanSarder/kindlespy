@@ -151,7 +151,7 @@ KindleSpy.prototype.startPulling = function(pageNumber){
     data.isWaitingForPulling = true;
     data.isPulling = true;
 
-    this.currentPage.LoadData(this.pullingToken, this.siteParser, this.parentUrl, searchKeyword, pageNumber);
+    this.currentPage.loadData(this.pullingToken, this.siteParser, this.parentUrl, searchKeyword, pageNumber);
 };
 
 KindleSpy.prototype.startPullingSearchPage = function(url){

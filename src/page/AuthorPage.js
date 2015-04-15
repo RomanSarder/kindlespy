@@ -12,14 +12,14 @@ function AuthorPage(){
 
 AuthorPage.name = 'author';
 
-AuthorPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
+AuthorPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.authorResultsNumber;
     if(this.AuthorPager === undefined) {
         this.AuthorPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
-            return _this.ParsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, siteParser);
+            return _this.parsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, siteParser);
         }, function(url, page){
             return url + '?page=' + page;
         });
@@ -28,7 +28,7 @@ AuthorPage.prototype.LoadData = function(pullingToken, siteParser, parentUrl, se
     this.AuthorPager.loadNextPage(parentUrl, callback);
 };
 
-AuthorPage.prototype.ParsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, siteParser){
+AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, siteParser){
     var No = [];
     var url = [];
     var price = [];
@@ -85,6 +85,6 @@ AuthorPage.prototype.ParsePage = function(pullingToken, startIndex, maxResults, 
     return index;
 };
 
-AuthorPage.prototype.GetAuthorCategory = function(responseText){
+AuthorPage.prototype.getAuthorCategory = function(responseText){
     return Helper.parseString(responseText, 'EntityName', '<b>', '</b>');
 };
