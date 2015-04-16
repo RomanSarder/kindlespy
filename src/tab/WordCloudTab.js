@@ -15,7 +15,7 @@ WordCloudTab.wordSort = function(a, b){
     return 0;
 };
 
-WordCloudTab.prototype.exportToCsv = function(data){
+WordCloudTab.prototype.exportToCsv = function(bookData, siteParser){
     var cloudData = this.clouds;
     var x = new Array(cloudData.length + 1);
 
@@ -33,8 +33,8 @@ WordCloudTab.prototype.exportToCsv = function(data){
         nArrayIndex++;
     }
 
-    var fileName = "wc-"+Helper.getCategoryFromBookData(data.bookData);
-    Export.exportData(x, fileName);
+    var fileName = "wc-"+Helper.getCategoryFromBookData(bookData);
+    Export.toCSV(x, fileName);
 };
 
 WordCloudTab.prototype.shuffle = function(array) {

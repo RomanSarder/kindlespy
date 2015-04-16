@@ -1,10 +1,10 @@
 /**
- * Created by Andrey on 15.04.2015.
+ * Created by Andrey Klochkov on 15.04.2015.
  */
 
 function Export(){
 }
-Export.exportData = function(data, fileName, booksNumber){
+Export.toCSV = function(data, fileName, booksNumber){
     var csvContent = "\uFEFF";
     data.forEach(function(infoArray, index){
         if (index <= booksNumber || booksNumber === undefined)

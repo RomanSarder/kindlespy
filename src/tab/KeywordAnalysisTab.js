@@ -62,8 +62,7 @@ KeywordAnalysisTab.prototype.kwdAnalysisListShow = function() {
     return {content: content, info: info, header: header};
 };
 
-KeywordAnalysisTab.prototype.exportToCsv = function(data){
-    var bookData = data.bookData;
+KeywordAnalysisTab.prototype.exportToCsv = function(bookData, siteParser){
     var x = new Array(this.pageNum * 20 + 1);
     for (var i = 0; i < this.pageNum * 20 + 1; i++) {
         x[i] = new Array(9);
@@ -84,7 +83,7 @@ KeywordAnalysisTab.prototype.exportToCsv = function(data){
         {
             x[index + 1][0] = (index + 1).toString();
             x[index + 1][1] = bookData[index].Title;
-            x[index + 1][2] = bookData[index].Price.replace(SiteParser.currencySign, SiteParser.currencySignForExport);
+            x[index + 1][2] = bookData[index].Price.replace(siteParser.currencySign, siteParser.currencySignForExport);
             x[index + 1][3] = bookData[index].PrintLength;
             x[index + 1][4] = this.isKeywordInText(bookData[index].Category, bookData[index].Title);
             x[index + 1][5] = this.isKeywordInText(bookData[index].Category, bookData[index].Description);
@@ -95,7 +94,7 @@ KeywordAnalysisTab.prototype.exportToCsv = function(data){
     }
 
     var fileName = "ka-" + Helper.getCategoryFromBookData(bookData);
-    Export.exportData(x, fileName, bookData.length);
+    Export.toCSV(x, fileName, bookData.length);
 };
 
 KeywordAnalysisTab.prototype.insertData = function(pageNumber, books, siteParser)
@@ -198,7 +197,7 @@ KeywordAnalysisTab.prototype.insertData = function(pageNumber, books, siteParser
 	}
 	/*End region get data for analysis*/
 	
-    $('#result2').html(SiteParser.formatPrice(Helper.addCommas((priceSum/nTotalCnt).toFixed(2))));
+    $('#result2').html(siteParser.formatPrice(Helper.addCommas((priceSum/nTotalCnt).toFixed(2))));
     $('#result3').html(Helper.addCommas(Math.floor(salesRankSum / nTotalCnt)));
     $('#result4').html(Helper.addCommas(Math.floor(pagesSum/ nTotalCnt)));
     $('#result5').html(Helper.addCommas((ratingSum/ nTotalCnt).toFixed(1)));

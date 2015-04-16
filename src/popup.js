@@ -1,28 +1,31 @@
-var booksData = [];
-var clouds = [];
-var ActiveTab = new MainTab();
-var IsErrorWindow = false;
-var SiteParser;
-var Storage = new BookStorage();
-var columnGetterFunctions = [];
-columnGetterFunctions['no'] = function(book){return parseInt(book.No)};
-columnGetterFunctions['pageno'] = function(book){
-    var printLength = Helper.parseInt(book.PrintLength, SiteParser.decimalSeparator);
-    return isNaN(printLength) ? 0 : printLength;
-};
-columnGetterFunctions['title-book'] = function(book){return book.Title};
-columnGetterFunctions['price'] = function(book){return Helper.parseFloat(book.Price, SiteParser.decimalSeparator)};
-columnGetterFunctions['est-sales'] = function(book){return book.EstSales};
-columnGetterFunctions['sales-rev'] = function(book){return book.SalesRecv};
-columnGetterFunctions['reviews'] = function(book){return Helper.parseInt(book.Reviews, SiteParser.decimalSeparator)};
-columnGetterFunctions['sales-rank'] = function(book){return Helper.parseInt(book.SalesRank, SiteParser.decimalSeparator)};
+function Popup(){
+    this.booksData = [];
+    this.activeTab = new MainTab();
+    this.isErrorWindow = false;
+    this.siteParser = undefined;
+    this.storage = new BookStorage();
+    this.columnGetterFunctions = [];
+    var _this = this;
+    this.columnGetterFunctions['no'] = function(book){return parseInt(book.No)};
+    this.columnGetterFunctions['pageno'] = function(book){
+        var printLength = Helper.parseInt(book.PrintLength, _this.siteParser.decimalSeparator);
+        return isNaN(printLength) ? 0 : printLength;
+    };
+    this.columnGetterFunctions['title-book'] = function(book){return book.Title};
+    this.columnGetterFunctions['price'] = function(book){return Helper.parseFloat(book.Price, _this.siteParser.decimalSeparator)};
+    this.columnGetterFunctions['est-sales'] = function(book){return book.EstSales};
+    this.columnGetterFunctions['sales-rev'] = function(book){return book.SalesRecv};
+    this.columnGetterFunctions['reviews'] = function(book){return Helper.parseInt(book.Reviews, _this.siteParser.decimalSeparator)};
+    this.columnGetterFunctions['sales-rank'] = function(book){return Helper.parseInt(book.SalesRank, _this.siteParser.decimalSeparator)};
 
-var currentSortColumn = 'no';
-var currentSortDirection = 1; //1 = ask, -1 = desc
+    this.currentSortColumn = 'no';
+    this.currentSortDirection = 1; //1 = ask, -1 = desc
 
-var isRefreshStarted = false;
+    this.isRefreshStarted = false;
+    this.isStaticLinkInitialized = false;
+}
 
-function resetCss(){
+Popup.prototype.resetCss = function(){
     // header
     $('#main-header').hide();
     $('#tracking-header').hide();
@@ -61,37 +64,47 @@ function resetCss(){
     $('#Conclusion').hide();
     $('#ExportBtnWordCloud').hide();
     $('#AdPanel').hide();
-}
+};
 
-function getData(callback){
+Popup.prototype.compare = function(a,b) {
+    var func = this.columnGetterFunctions[this.currentSortColumn];
+    if (func(a) < func(b))
+        return -this.currentSortDirection;
+    if (func(a) > func(b))
+        return this.currentSortDirection;
+    return 0;
+};
+
+Popup.prototype.getData = function(callback){
+    var _this = this;
     callback = Helper.valueOrDefault(callback, function(){});
     Api.sendMessageToActiveTab({type: "get-data"}, function(data) {
-        data.books.sort(compare);
+        data.books.sort(function(a,b){_this.compare(a,b)});
         return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
     });
-}
+};
 
-function refreshData()
-{
-    getData(function(result) {
-        booksData = result.books;
+Popup.prototype.refreshData = function(){
+    var _this = this;
+    _this.getData(function(result) {
+        _this.booksData = result.books;
 
-        if (booksData.length <= 0) return;
+        if (_this.booksData.length <= 0) return;
 
-        Helper.setupHeader(booksData[0].Category, booksData[0].CategoryKind);
+        Helper.setupHeader(_this.booksData[0].Category, _this.booksData[0].CategoryKind);
 
-        if (IsErrorWindow) {
-            checkUrlAndLoad();
+        if (_this.isErrorWindow) {
+            _this.checkUrlAndLoad();
             return;
         }
 
-        if (ActiveTab.isPaged) {
-            ActiveTab.insertData(ActiveTab.pageNum - 1, booksData, SiteParser);
+        if (_this.activeTab.isPaged) {
+            _this.activeTab.insertData(_this.activeTab.pageNum - 1, _this.booksData, _this.siteParser);
             if (result.isWaitingForPulling) $('.img-load').show();
             else {
                 $('.img-load').hide();
             }
-            if (result.isPulling && booksData.length < 20){
+            if (result.isPulling && _this.booksData.length < 20){
                 $('.status-img div').hide();
                 $('.bullet-progress').show();
             }
@@ -101,15 +114,37 @@ function refreshData()
             }
         }
     });
-    setTimeout(refreshData, 1000);
-}
+    setTimeout(function(){_this.refreshData()}, 1000);
+};
 
-function SetupClickListeners(){
+Popup.prototype.initRankTrackingTab = function(bookUrl){
+    this.activeTab = new RankTrackingTab(this.siteParser);
+    this.activeTab.loadDetails(bookUrl);
+    this.resetCss();
+    RankTrackingTab.resetTrackingBookPage(bookUrl);
+    $('#tracking-header').show();
+    $('#tracking-content').show();
+    $('#TrackedPanelFooter').show();
+    $('.info.single_book').show();
+    $('.right-panel').show();
+    $('.table-head').show();
+    $(".table-head").html("<label>Bestseller rank tracking(30 days)<label>");
+
+    this.loadAdvertisementBanner();
+
+    $('.left-panel').css("width", "525px");
+
+    $('#main-header').html('');
+    $('#tracking-content').html('');
+};
+
+Popup.prototype.setupClickListeners = function(){
+    var _this = this;
     $('#TitleWordCloud').click(function() {
-        ActiveTab = new WordCloudTab(ActiveTab.pageNum);
-        var cloud = ActiveTab.load();
+        _this.activeTab = new WordCloudTab(_this.activeTab.pageNum);
+        var cloud = _this.activeTab.load();
 
-        resetCss();
+        _this.resetCss();
         $('.table-head').html("");
         $('.info.list_books').html(cloud.info);
         $('#word-cloud-content').html(cloud.content);
@@ -121,22 +156,22 @@ function SetupClickListeners(){
         $('#ExportBtnWordCloud').show();
         $('#AdPanel').show();
 
-        LoadAdvertisementBanner();
+        _this.loadAdvertisementBanner();
     });
 
     $('#BestSellerLink').click(function() {
         $('#data-body').css("overflow-y" , "auto");
-        ActiveTab = new MainTab();
-        checkUrlAndLoad();
+        _this.activeTab = new MainTab();
+        _this.checkUrlAndLoad();
     });
 
     $('#RankTrackingResultList').click(function() {
-        ActiveTab = new RankTrackingTab(SiteParser);
-        var tracking = ActiveTab.load();
+        _this.activeTab = new RankTrackingTab(_this.siteParser);
+        var tracking = _this.activeTab.load();
         $('#main-header').html('');
         $('#main-content').html(tracking.content);
         $('.info.list_books').html(tracking.info);
-        resetCss();
+        _this.resetCss();
         $('#main-header').show();
         $('#main-content').show();
         $('#TrackedPanelFooter').show();
@@ -144,40 +179,39 @@ function SetupClickListeners(){
         $('.table-head').show();
         $('#AdPanel').show();
 
-        LoadAdvertisementBanner();
+        _this.loadAdvertisementBanner();
 
         $('#data-body').css("overflow-y", "auto");
         $('.table-head').html(tracking.header);
-        ActiveTab.updateRateTrackingTable();
+        _this.activeTab.updateRateTrackingTable();
     });
 
     $('#search').click(function() {
-        ActiveTab = new SearchKeywordsTab(SiteParser);
-        var info = ActiveTab.load();
+        _this.activeTab = new SearchKeywordsTab(_this.siteParser);
+        var info = _this.activeTab.load();
         $('#main-header').html('');
         $('.info.list_books').html(info);
 
         $('table[name="data-keyword-search"] tbody').on('click', '.keyword-analyze', function(){
-            ActiveTab = new MainTab();
+            _this.activeTab = new MainTab();
             var search = $(this).attr('keyword');
             Api.sendMessageToActiveTab({type: "start-analyze-search-keywords", keyword: search});
-            checkUrlAndLoad();
+            _this.checkUrlAndLoad();
         });
 
         $("#search-text").keypress(function(event){
             var keycode = (event.keyCode ? event.keyCode : event.which);
             if(keycode == '13'){
-                ActiveTab.search();
+                _this.activeTab.search();
             }
         });
 
         $("#go-search").click(function()
         {
-            ActiveTab.search();
+            _this.activeTab.search();
         });
 
-
-        resetCss();
+        _this.resetCss();
         $('#main-header').show();
         $('#content-keyword-search').show();
         $('#TrackedPanelFooter').show();
@@ -186,16 +220,16 @@ function SetupClickListeners(){
         $('#AdPanel').show();
         if ($('table[name="data-keyword-search"] tr').length > 0) $('.table-head-keyword-search').show();
 
-        LoadAdvertisementBanner();
+        _this.loadAdvertisementBanner();
 
         $('#data-body-keyword-search').css("overflow-y", "auto");
     });
 
     $("#KeywordAnalysis").click(function() {
-        ActiveTab = new KeywordAnalysisTab();
+        _this.activeTab = new KeywordAnalysisTab();
 
-        var kwdAnalysis = ActiveTab.kwdAnalysisListShow();
-        resetCss();
+        var kwdAnalysis = _this.activeTab.kwdAnalysisListShow();
+        _this.resetCss();
         $('#main-content').html(kwdAnalysis.content);
         $('.info.list_books').html(kwdAnalysis.info);
         $('#main-content').show();
@@ -207,50 +241,50 @@ function SetupClickListeners(){
         $('#totalReSalesRecvBlock').show();
         $('#Conclusion').show();
 
-        LoadAdvertisementBanner();
+        _this.loadAdvertisementBanner();
 
         $(".info-item").css("width","16.6%");
         $('#data-body').css("overflow-y" , "hidden");
         $('.table-head').html(kwdAnalysis.header);
-        ActiveTab.insertData(ActiveTab.pageNum-1, booksData, SiteParser);
+        _this.activeTab.insertData(_this.activeTab.pageNum-1, _this.booksData, _this.siteParser);
     });
-}
+};
 
-var isStaticLinkInitialized = false;
-function SetupStaticClickListeners() {
-    if (isStaticLinkInitialized) return;
+Popup.prototype.setupStaticClickListeners = function() {
+    if (this.isStaticLinkInitialized) return;
 
+    var _this = this;
     $('#LinkBackTo').click(function () {
         $('#data-body').css("overflow-y", "auto");
-        ActiveTab = new MainTab();
-        checkUrlAndLoad();
+        _this.activeTab = new MainTab();
+        _this.checkUrlAndLoad();
     });
 
     $('#enableTracking').click(function () {
         $('#enableTracking').prop('disabled', true);
         $('#LinkBackTo').hide();
-        var _this = this;
-        Storage.enableTracking($(_this).data().url, function() {
+        var element = this;
+        _this.storage.enableTracking($(element).data().url, function() {
             $('#enableTracking').prop('disabled', false);
             $('#LinkBackTo').show();
-            ActiveTab.loadDetails($(_this).data().url);
+            _this.activeTab.loadDetails($(element).data().url);
         });
     });
 
     $('#disableTracking').click(function () {
-        var _this = this;
-        Storage.disableTracking($(_this).data().url, function(bytesInUse) {
-            ActiveTab.loadDetails($(_this).data().url);
+        var element = this;
+        _this.storage.disableTracking($(element).data().url, function(bytesInUse) {
+            _this.activeTab.loadDetails($(element).data().url);
         });
     });
 
     $('#PullResult').click(function () {
-        SetActivePage(ActiveTab.pageNum + 1);
-        Api.sendMessageToActiveTab({type: 'pull-data', page: ActiveTab.pageNum});
+        _this.setActivePage(_this.activeTab.pageNum + 1);
+        Api.sendMessageToActiveTab({type: 'pull-data', page: _this.activeTab.pageNum});
     });
 
     var exportToCsvFunction = function() {
-        ActiveTab.exportToCsv({ bookData: booksData, cloudData: clouds });
+        _this.activeTab.exportToCsv(_this.booksData, _this.siteParser);
     };
     $('#Export').click(exportToCsvFunction);
     $('#ExportWordCloud').click(exportToCsvFunction);
@@ -259,15 +293,15 @@ function SetupStaticClickListeners() {
         Api.openNewTab('http://www.kdspy.com/help/');
     });
 
-    isStaticLinkInitialized = true;
-}
+    _this.isStaticLinkInitialized = true;
+};
 
-function LoadData(books) {
-    SetupStaticClickListeners();
+Popup.prototype.loadData = function(books) {
+    this.setupStaticClickListeners();
     if (books === undefined || books.length < 1)
     {
-        IsErrorWindow = true;
-        resetCss();
+        this.isErrorWindow = true;
+        this.resetCss();
         $('#main-header').html('');
         $('.info.list_books').html("");
         $('.info.list_books').show();
@@ -279,17 +313,19 @@ function LoadData(books) {
         $('#main-content').show();
         $('#main-header').show();
 
-        setTimeout(checkIsDataLoaded, 6000);
+        var _this = this;
+        setTimeout(function(){_this.checkIsDataLoaded()}, 6000);
     }else{
-        UpdateTable(books);
+        this.updateTable(books);
     }
-}
+};
 
-function checkIsDataLoaded(){
+Popup.prototype.checkIsDataLoaded = function(){
+    var _this = this;
     Api.sendMessageToActiveTab({type: "get-data"}, function(settings) {
         if (settings.books.length == 0){
-            IsErrorWindow = true;
-            resetCss();
+            _this.isErrorWindow = true;
+            _this.resetCss();
             $('#main-header').html('');
             $('.table-head').html('');
 
@@ -301,29 +337,29 @@ function checkIsDataLoaded(){
                 $('#NoDataFooter').show();
                 $('#AdPanel').show();
 
-                LoadAdvertisementBanner();
+                _this.loadAdvertisementBanner();
             });
         }
     });
-}
+};
 
-function UpdateTable(books)
-{
-    IsErrorWindow = false;
-    Storage.getNumberOfBooks(function(num){
+Popup.prototype.updateTable = function(books){
+    var _this = this;
+    _this.isErrorWindow = false;
+    _this.storage.getNumberOfBooks(function(num){
         num = (num === undefined)?0:num;
 
         $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');
-        $('#main-header').html(Helper.buildHeaderHtml(num, ActiveTab.pageNum * 20));
+        $('#main-header').html(Helper.buildHeaderHtml(num, _this.activeTab.pageNum * 20));
         Helper.setupHeader(books[0].Category, books[0].CategoryKind);
         Helper.setupFooter(books[0].CategoryKind);
 
-        SetupClickListeners();
+        _this.setupClickListeners();
     });
 
-    var main = ActiveTab.load();
+    var main = _this.activeTab.load();
 
-    resetCss();
+    _this.resetCss();
     $('#main-content').html(main.content);
     $('.info.list_books').html(main.info);
     $('#main-content').show();
@@ -335,7 +371,7 @@ function UpdateTable(books)
     $('#totalReSalesRecvBlock').show();
     $('#Conclusion').show();
 
-    LoadAdvertisementBanner();
+    _this.loadAdvertisementBanner();
 
     $('#data-body').css("overflow-y" , "hidden");
     $('.table-head').html(main.header);
@@ -343,28 +379,27 @@ function UpdateTable(books)
     $('.sort-column').each(function( index ){
         $(this).click(function() {
             var newSortColumn = $(this).attr('id');
-            currentSortDirection *= -1;
+            _this.currentSortDirection *= -1;
 
-            if(currentSortColumn != newSortColumn)
-                currentSortDirection = 1;
+            if(_this.currentSortColumn != newSortColumn)
+                _this.currentSortDirection = 1;
 
-            currentSortColumn = newSortColumn;
+            _this.currentSortColumn = newSortColumn;
         });
     });
 
-    ActiveTab.insertData(ActiveTab.pageNum-1, books, SiteParser);
-}
+    _this.activeTab.insertData(_this.activeTab.pageNum-1, books, _this.siteParser);
+};
 
-function SetActivePage(pageNum)
-{
+Popup.prototype.setActivePage = function(pageNum){
     $('#TitleWordCloud').text("Word Cloud (" + (pageNum) * 20 + ")");
-    ActiveTab.pageNum = pageNum;
-    ActiveTab.savePageNum();
-    ActiveTab.insertData(pageNum-1, booksData, SiteParser);
-}
+    this.activeTab.pageNum = pageNum;
+    this.activeTab.savePageNum();
+    this.activeTab.insertData(pageNum-1, this.booksData, this.siteParser);
+};
 
-function checkUrlAndLoad()
-{
+Popup.prototype.checkUrlAndLoad = function(){
+    var _this = this;
     Api.sendMessageToActiveTab({type: "get-current-url"}, function(url) {
         if (url === undefined || url.indexOf("http://www.amazon.") < 0)
         {
@@ -375,47 +410,36 @@ function checkUrlAndLoad()
         }
 
         // load
-        SiteParser = Helper.getSiteParser(url);
-        InitRegionSelector();
+        _this.siteParser = Helper.getSiteParser(url);
+        _this.initRegionSelector();
         Api.sendMessageToActiveTab({type: "get-type-page"}, function(pageName) {
             if (pageName == 'SingleBookPage') {
-                ActiveTab = new RankTrackingTab(SiteParser);
-                RankTrackingTab.initUI(url);
-                ActiveTab.loadDetails(url);
+                _this.activeTab = new RankTrackingTab(_this.siteParser);
+                _this.initRankTrackingTab(url);
+                _this.activeTab.loadDetails(url);
                 return;
             }
 
             new MainTab().loadPageNum(function(){
                 new KeywordAnalysisTab().loadPageNum(function(){
-                    getData(function(result){
-                        booksData = result.books;
-                        LoadData(booksData);
-                        LoadAdvertisementBanner();
+                    _this.getData(function(result){
+                        _this.booksData = result.books;
+                        _this.loadData(_this.booksData);
+                        _this.loadAdvertisementBanner();
                     });
                 });
             });
 
-            if (!isRefreshStarted) {
-                refreshData();
-                isRefreshStarted = true;
+            if (!_this.isRefreshStarted) {
+                _this.refreshData();
+                _this.isRefreshStarted = true;
             }
         });
     });
-}
+};
 
-function compare(a,b) {
-    var func = columnGetterFunctions[currentSortColumn];
-    if (func(a) < func(b))
-        return -1 * currentSortDirection;
-    if (func(a) > func(b))
-        return 1 * currentSortDirection;
-    return 0;
-}
-
-
-
-function InitRegionSelector(){
-    $("#regionSelector").val(SiteParser.region);
+Popup.prototype.initRegionSelector = function(){
+    $("#regionSelector").val(this.siteParser.region);
     $("#regionSelector").change(function() {
         var url;
         switch ($("#regionSelector").val()){
@@ -438,17 +462,17 @@ function InitRegionSelector(){
 
         Api.openNewTab(url);
     });
-}
+};
 
-function LoadAdvertisementBanner()
-{
+Popup.prototype.loadAdvertisementBanner = function(){
     $.get("http://www.kdspy.com/banner.html", function(data) {
         $("#ad").html(data);
     });
-}
+};
 
+
+var popup = new Popup();
 $(window).ready(function () {
-
     $('#bullet-1, #bullet-2, #bullet-3').tooltipster({
         animation: 'fade',
         theme: 'tooltip-theme',
@@ -457,11 +481,11 @@ $(window).ready(function () {
         position: 'top'
     });
 
-    SetupStaticClickListeners();
+    popup.setupStaticClickListeners();
 });
 
 // run this when show the popup
 ApiLoader.load(function(){
-    checkUrlAndLoad();
+    popup.checkUrlAndLoad();
 });
 

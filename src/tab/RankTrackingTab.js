@@ -13,25 +13,6 @@ function RankTrackingTab(siteParser){
 
 RankTrackingTab.prevBookUrl = '';
 
-RankTrackingTab.initUI = function(bookUrl){
-    resetCss();
-    RankTrackingTab.resetTrackingBookPage(bookUrl);
-    $('#tracking-header').show();
-    $('#tracking-content').show();
-    $('#TrackedPanelFooter').show();
-    $('.info.single_book').show();
-    $('.right-panel').show();
-    $('.table-head').show();
-    $(".table-head").html("<label>Bestseller rank tracking(30 days)<label>");
-
-    LoadAdvertisementBanner();
-
-    $('.left-panel').css("width", "525px");
-
-    $('#main-header').html('');
-    $('#tracking-content').html('');
-};
-
 RankTrackingTab.resetTrackingBookPage = function(bookUrl) {
     if(RankTrackingTab.prevBookUrl === bookUrl) return;
     RankTrackingTab.prevBookUrl = bookUrl;
@@ -57,12 +38,11 @@ RankTrackingTab.resetTrackingBookPage = function(bookUrl) {
 
 RankTrackingTab.addEventListenerForSingleResultBook = function(rankTrackingTab){
     $('table[name="data"] tbody').on('click', '.RankTrackingResultSingle', function(){
-        RankTrackingTab.initUI($(this).attr('bookUrl'));
-        rankTrackingTab.loadDetails($(this).attr('bookUrl'));
+        popup.initRankTrackingTab($(this).attr('bookUrl'));
     });
 };
 
-RankTrackingTab.prototype.exportToCsv = function(bookData){
+RankTrackingTab.prototype.exportToCsv = function(bookData, siteParser){
     var bookUrl = $('#ExportBtnWordCloud').attr('book-url');
 
     this.storage.getBook(bookUrl, function(bookData) {
@@ -82,7 +62,7 @@ RankTrackingTab.prototype.exportToCsv = function(bookData){
             }
 
             var fileName = "rs-" + bookData.title;
-            Export.exportData(x, fileName, bookData.salesRankData.length + 1);
+            Export.toCSV(x, fileName, bookData.salesRankData.length + 1);
         }
     });
 };
@@ -127,9 +107,9 @@ RankTrackingTab.prototype.updateRateTrackingTable = function(){
         RankTrackingTab.addEventListenerForSingleResultBook(_this);
 
         //Remove links
-        var RemoveRankTrackedBooks = $('.RankTrackingRemove');
-        for(var i = 0;i<RemoveRankTrackedBooks.length; i++) {
-            $(RemoveRankTrackedBooks[i]).click(function () {
+        var removeRankTrackedBooks = $('.RankTrackingRemove');
+        for(var i = 0;i<removeRankTrackedBooks.length; i++) {
+            $(removeRankTrackedBooks[i]).click(function () {
                 _this.storage.removeBookInStorage($(this).attr('bookUrl'), function(){
                     _this.updateRateTrackingTable();
                 });
@@ -177,12 +157,12 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     var bookPageParser = new BookPageParser(bookData.url);
     var estSale = bookPageParser.getEstSale(avgSalesRank);
     var realPrice = Helper.parseFloat(bookData.price, this.siteParser.decimalSeparator);
-    var SalesRecv = bookPageParser.getSalesRecv(estSale, realPrice);
-    var EstDailyRev = Math.floor((SalesRecv/30)*100)/100;//30days
+    var salesRecv = bookPageParser.getSalesRecv(estSale, realPrice);
+    var estDailyRev = Math.floor((salesRecv/30)*100)/100;//30days
 
     $('#days').html(points);
     $('#AvgSalesRank').html(Helper.addCommas(Math.floor(avgSalesRank)));
-    $('#EstDailyRev').html(this.siteParser.formatPrice(Helper.addCommas(EstDailyRev)));
+    $('#EstDailyRev').html(this.siteParser.formatPrice(Helper.addCommas(estDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', '').replace('AA278', ''));
     $('#ExportBtnWordCloud').attr('book-url', bookData.url);

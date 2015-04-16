@@ -32,8 +32,7 @@ MainTab.prototype.load = function(){
     return { content: contentHtml, info: infoHtml, header: tableHead };
 };
 
-MainTab.prototype.exportToCsv = function(data){
-    var bookData = data.bookData;
+MainTab.prototype.exportToCsv = function(bookData, siteParser){
     var x = new Array(this.pageNum * 20 + 1);
     for (var i = 0; i < this.pageNum * 20 + 1; i++) {
         x[i] = new Array(11);
@@ -58,9 +57,9 @@ MainTab.prototype.exportToCsv = function(data){
             x[index + 1][1] = bookData[index].Title;
             x[index + 1][2] = bookData[index].Author;
             x[index + 1][3] = bookData[index].DateOfPublication;
-            x[index + 1][4] = bookData[index].Price.replace(SiteParser.currencySign, SiteParser.currencySignForExport);
+            x[index + 1][4] = bookData[index].Price.replace(siteParser.currencySign, siteParser.currencySignForExport);
             x[index + 1][5] = Helper.addCommas(bookData[index].EstSales);
-            x[index + 1][6] = SiteParser.currencySignForExport + " " + Helper.addCommas(Math.round(bookData[index].SalesRecv));
+            x[index + 1][6] = siteParser.currencySignForExport + " " + Helper.addCommas(Math.round(bookData[index].SalesRecv));
             x[index + 1][7] = bookData[index].Reviews;
             x[index + 1][8] = bookData[index].SalesRank;
             x[index + 1][9] = bookData[index].PrintLength;
@@ -69,7 +68,7 @@ MainTab.prototype.exportToCsv = function(data){
     }
 
     var fileName = "bs-" + Helper.getCategoryFromBookData(bookData);
-    Export.exportData(x, fileName, bookData.length);
+    Export.toCSV(x, fileName, bookData.length);
 };
 
 MainTab.prototype.insertData = function(pageNumber, books, siteParser){
@@ -84,16 +83,10 @@ MainTab.prototype.insertData = function(pageNumber, books, siteParser){
 
     for(var i = books.length - 1; i >= 0 ; i --)
     {
-        if (typeof books[i].SalesRank === "undefined" || books[i].SalesRank.length < 1)
+        if ((typeof books[i].SalesRank === "undefined" || books[i].SalesRank.length < 1)
+            || (typeof books[i].Title === "undefined" || books[i].Title.length < 1))
         {
             books.splice(i, 1);
-            continue;
-        }
-
-        if (typeof books[i].Title === "undefined" || books[i].Title.length < 1)
-        {
-            books.splice(i, 1);
-            continue;
         }
     }
 

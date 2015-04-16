@@ -34,6 +34,10 @@ SearchKeywordsTab.prototype.search = function(){
     });
 };
 
+SearchKeywordsTab.prototype.exportToCsv = function(bookData, siteParser){
+    // not implemented
+};
+
 SearchKeywordsTab.prototype.getFullData = function(list, processItemFunction){
     var _this = this;
     var algorithm = new SearchAnalysisAlgorithm();
