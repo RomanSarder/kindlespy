@@ -482,10 +482,15 @@ $(window).ready(function () {
     });
 
     popup.setupStaticClickListeners();
+
+    ApiLoader.load(function(){
+        Api.registerOnShowEvent(onShow);
+    });
 });
 
 // run this when show the popup
-ApiLoader.load(function(){
+function onShow(){
+    //TODO: reset UI
     popup.checkUrlAndLoad();
-});
+}
 

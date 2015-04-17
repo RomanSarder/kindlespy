@@ -8,6 +8,82 @@
 function Api(){
 }
 
+/**
+ * Add message listener
+ * @param messageListener
+ */
 Api.addListener = function(messageListener){
-    //TODO:implement
+    self.port.on('request', function(messageObject){
+        messageListener(messageObject.message, function(response){
+            self.port.emit('response-' + messageObject.id, response);
+        });
+    });
+};
+
+/**
+ * Send a message to the active tab
+ * @param message
+ * @param callback
+ */
+Api.sendMessageToActiveTab = function(message, callback){
+    var messageId = Date.now();
+    addon.port.emit('request', {id: messageId, message: message});
+    addon.port.once('response-' + messageId, function(result){
+        callback(result);
+    });
+};
+/* Following code should be in main.js
+ var workers = [];
+ function initEventScript(worker){
+ array.add(workers, worker);
+ worker.on('pageshow', function() { array.add(workers, this); });
+ worker.on('pagehide', function() { array.remove(workers, this); });
+ worker.on('detach', function() { array.remove(workers, this); });
+ }
+
+ popup.port.on('request', function(messageObject){
+ for (var i = 0; i < workers.length; i += 1) {
+ if (workers[i].tab.index === tabs.activeTab.index) {
+ workers[i].port.emit('request', messageObject);
+ workers[i].port.once('response-' + messageObject.id, function(result){
+ popup.port.emit('response-' + messageObject.id, result);
+ });
+ }
+ }
+ });
+ */
+
+Api.openNewTab = function(url){
+    addon.port.emit('open-tab', url);
+    addon.port.emit('close');
+};
+/* Following code should be in main.js
+ popup.port.on('open-tab', function(url){
+ tabs.open(url);
+ });
+ */
+
+Api.registerOnShowEvent = function(eventListener){
+    addon.port.on('show', eventListener);
+};
+
+Api.storage = {
+    set: function(data, callback){
+        var port = (addon !== undefined) ? addon.port : self.port;
+        console.log(port);
+        var result = {};
+        result[key] = 'test value';
+        callback(result);
+    },
+    get: function(key, callback){
+        var port = (addon !== undefined) ? addon.port : self.port;
+        var messageId = Date.now();
+        addon.port.emit('storage-get', {id: messageId, key: key});
+        addon.port.once('storage-get-response-' + messageId, function(result){
+            callback(result);
+        });
+    },
+    clear: function(){
+
+    }
 };

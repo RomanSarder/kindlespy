@@ -35,3 +35,10 @@ Api.sendMessageToActiveTab = function(message, callback){
 Api.openNewTab = function(url){
     chrome.tabs.create({url: url});
 };
+
+Api.registerOnShowEvent = function(eventListener){
+    // just call it once because Chrome constructs the popup on every show
+    eventListener();
+};
+
+Api.storage = chrome.storage.local;

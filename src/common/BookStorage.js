@@ -7,7 +7,7 @@ function BookStorage() {
         return BookStorage.prototype._singletonInstance;
     BookStorage.prototype._singletonInstance = this;
 
-    this._storage = chrome.storage.local;
+    this._storage = Api.storage;
 }
 
 var bookDataExample = {
