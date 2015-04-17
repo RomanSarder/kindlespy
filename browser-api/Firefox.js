@@ -71,8 +71,8 @@ Api.storage = {
     set: function(data, callback){
         var port = (typeof addon !== 'undefined') ? addon.port : self.port;
         var messageId = Date.now();
-        addon.port.emit('storage-set', {id: messageId, data: data});
-        addon.port.once('storage-set-response-' + messageId, function(result){
+        port.emit('storage-set', {id: messageId, data: data});
+        port.once('storage-set-response-' + messageId, function(result){
             callback(result);
         });
     },
