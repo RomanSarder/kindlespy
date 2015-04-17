@@ -471,7 +471,7 @@ Popup.prototype.loadAdvertisementBanner = function(){
 };
 
 
-var popup = new Popup();
+var popup = undefined;
 $(window).ready(function () {
     $('#bullet-1, #bullet-2, #bullet-3').tooltipster({
         animation: 'fade',
@@ -481,9 +481,9 @@ $(window).ready(function () {
         position: 'top'
     });
 
-    popup.setupStaticClickListeners();
-
     ApiLoader.load(function(){
+        popup = new Popup();
+        popup.setupStaticClickListeners();
         Api.registerOnShowEvent(onShow);
     });
 });
