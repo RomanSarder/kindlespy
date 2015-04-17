@@ -7,7 +7,7 @@ function Export(){
 Export.toCSV = function(data, fileName, booksNumber){
     var csvContent = "\uFEFF";
     data.forEach(function(infoArray, index){
-        if (index <= booksNumber || booksNumber === undefined)
+        if (typeof booksNumber === 'undefined' || index <= booksNumber)
         {
             var dataString = [];
             for (var i = 0; i < infoArray.length; i++)

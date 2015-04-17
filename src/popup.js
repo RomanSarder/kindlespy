@@ -298,7 +298,7 @@ Popup.prototype.setupStaticClickListeners = function() {
 
 Popup.prototype.loadData = function(books) {
     this.setupStaticClickListeners();
-    if (books === undefined || books.length < 1)
+    if (typeof books === 'undefined' || books.length < 1)
     {
         this.isErrorWindow = true;
         this.resetCss();
@@ -330,7 +330,7 @@ Popup.prototype.checkIsDataLoaded = function(){
             $('.table-head').html('');
 
             Api.sendMessageToActiveTab({type: "get-type-page"}, function(pageName) {
-                if (pageName === '' || pageName === undefined) $('#no-supported-area').show();
+                if (typeof pageName === 'undefined' || pageName === '') $('#no-supported-area').show();
                 else $('#no-data-found-content').show();
 
                 $('#ExportBtn').show();
@@ -347,7 +347,7 @@ Popup.prototype.updateTable = function(books){
     var _this = this;
     _this.isErrorWindow = false;
     _this.storage.getNumberOfBooks(function(num){
-        num = (num === undefined)?0:num;
+        num = (typeof num === 'undefined') ? 0 : num;
 
         $('#RankTrackingResultList').html('Rank Tracking (' + num + ')');
         $('#main-header').html(Helper.buildHeaderHtml(num, _this.activeTab.pageNum * 20));
@@ -401,7 +401,7 @@ Popup.prototype.setActivePage = function(pageNum){
 Popup.prototype.checkUrlAndLoad = function(){
     var _this = this;
     Api.sendMessageToActiveTab({type: "get-current-url"}, function(url) {
-        if (url === undefined || url.indexOf("http://www.amazon.") < 0)
+        if (typeof url === 'undefined' || url.indexOf("http://www.amazon.") < 0)
         {
             //Go To Amazon Page
             Api.openNewTab('https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html');

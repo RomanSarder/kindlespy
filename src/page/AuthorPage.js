@@ -16,7 +16,7 @@ AuthorPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, se
     callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.authorResultsNumber;
-    if(this.authorPager === undefined) {
+    if (typeof this.authorPager === 'undefined') {
         this.authorPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
             return _this.parsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, siteParser);
@@ -44,7 +44,7 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
             if(counter>=maxResults) return;
             var krow = siteParser.getKindleEditionRow($(this));
             no[index] = parseInt(index) + 1 + parseInt(startIndex);
-            if(typeof krow == "undefined"){
+            if (typeof krow === 'undefined'){
                 counter++;
                 return;
             }
@@ -71,8 +71,8 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
         category = tmpSplit[1];
 
     url.forEach(function(item, i) {
-        if (url[i] !== undefined && url[i].length > 0
-            && price[i] !== undefined && price[i].length > 0){
+        if (typeof url[i] !== 'undefined' && url[i].length > 0
+            && typeof price[i] !== 'undefined' && price[i].length > 0){
             kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);

@@ -53,7 +53,7 @@ BestSellersPage.prototype.parsePage = function(pullingToken, responseText, paren
     }
 
     url.forEach(function(item, i) {
-        if(url[i] !== undefined){
+        if (typeof url[i] !== 'undefined'){
             kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
@@ -92,7 +92,7 @@ BestSellersPage.prototype.getReviewInfo = function(responseText){
         str = str.substr(pos + pattern.length);
 
         review = Helper.parseString(str, "product-reviews", '>', '<');
-        if (typeof review !== "undefined" && review.length > 0) return review;
+        if (typeof review !== 'undefined' && review.length > 0) return review;
 
         pos = str.indexOf(pattern);
     }

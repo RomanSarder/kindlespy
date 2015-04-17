@@ -38,7 +38,7 @@ Helper.getParameterByName = function(url, name) {
  * @returns default value if parameter is not set
  */
 Helper.valueOrDefault = function(param, defaultValue){
-    return typeof param === "undefined" ? defaultValue : param;
+    return typeof param === 'undefined' ? defaultValue : param;
 };
 
 /**

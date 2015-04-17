@@ -16,7 +16,7 @@ AuthorSearchResultsPage.prototype.loadData = function(pullingToken, siteParser, 
     callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.authorResultsNumber;
-    if(_this.authorSearchResultsPager === undefined) {
+    if (typeof _this.authorSearchResultsPager === 'undefined') {
         _this.authorSearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
             var category = jqResponseText.find("#s-result-count > span > span").text().trim().replace(/"/g,'');

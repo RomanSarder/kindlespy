@@ -87,7 +87,7 @@ SearchKeywordsTab.prototype.getKeywords = function(callback){
         method: "GET",
         dataType: "json",
         success: function (responseJson) {
-            if(responseJson === undefined || responseJson.length < 2) return callback([]);
+            if (typeof responseJson === 'undefined' || responseJson.length < 2) return callback([]);
             return callback(responseJson[1]);
         },
         error: function (obj, textStatus, errorThrown){

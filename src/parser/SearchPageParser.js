@@ -36,7 +36,7 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
         if($(kprice).length > 0)
             var prices = kprice.find('span.s-price');
         var el_price;
-        if (prices != undefined) {
+        if (typeof prices !== 'undefined') {
             if ((prices.parent().parent().has('span.s-icon-kindle-unlimited').length > 0)
                 || (prices.parent().has("span:contains('" + siteParser.searchKeys[1] + "')").length > 0)) {
                 el_price = $.grep(kprice.find('span.s-price'), function (element) {
@@ -66,8 +66,8 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
     kindleSpy.saveTotalResults(totalResults);
 
     url.forEach(function(item, i) {
-        if (url[i] !== undefined && url[i].length > 0
-            && price[i] !== undefined && price[i].length > 0){
+        if (typeof url[i] !== 'undefined' && url[i].length > 0
+            && typeof price[i] !== 'undefined' && price[i].length > 0){
             kindleSpy.parserAsyncRunner.start(function(callback){
                 function wrapper(){
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);

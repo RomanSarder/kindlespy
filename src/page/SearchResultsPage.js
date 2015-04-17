@@ -19,7 +19,7 @@ SearchResultsPage.prototype.loadData = function(pullingToken, siteParser, parent
     var itemsPerPage = siteParser.searchResultsNumber;
     this.searchKeyword = search;
 
-    if(this.searchResultsPager === undefined) {
+    if (typeof this.searchResultsPager === 'undefined') {
         this.searchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
             return new SearchPageParser().parsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, search, siteParser, "Search");

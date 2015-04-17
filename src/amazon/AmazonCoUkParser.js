@@ -63,7 +63,7 @@ AmazonCoUkParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
-    if (titleNodes === undefined || titleNodes.length == 0) return '';
+    if (typeof titleNodes === 'undefined' || titleNodes.length == 0) return '';
     return titleNodes[0].nodeValue.trim();
 };
 
@@ -137,12 +137,11 @@ AmazonCoUkParser.prototype.getReviews = function(responseText) {
 
 AmazonCoUkParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
-    if(ratingString === undefined && ratingString =='') return undefined;
+    if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };
 
 AmazonCoUkParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    var result = totalSearchResult.substring(totalSearchResult.indexOf("of")+3, totalSearchResult.indexOf("results")-1).replace(/[^0-9]/g,'');
-    return result;
+    return totalSearchResult.substring(totalSearchResult.indexOf("of") + 3, totalSearchResult.indexOf("results") - 1).replace(/[^0-9]/g, '');
 };

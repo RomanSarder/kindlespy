@@ -63,7 +63,7 @@ AmazonComParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
-    if (titleNodes === undefined || titleNodes.length == 0) return '';
+    if (typeof titleNodes === 'undefined' || titleNodes.length == 0) return '';
     return titleNodes[0].nodeValue.trim();
 };
 
@@ -120,7 +120,7 @@ AmazonComParser.prototype.getReviews = function(responseText) {
 
 AmazonComParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
-    if(ratingString === undefined && ratingString =='') return undefined;
+    if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };
 

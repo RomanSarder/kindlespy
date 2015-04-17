@@ -64,7 +64,7 @@ AmazonFrParser.prototype.getTitle = function(responseText){
     var titleNodes = responseText.find('#btAsinTitle>span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
-    if (titleNodes === undefined || titleNodes.length == 0) return '';
+    if (typeof titleNodes === 'undefined' || titleNodes.length == 0) return '';
     return titleNodes[0].nodeValue.trim();
 };
 
@@ -123,7 +123,7 @@ AmazonFrParser.prototype.getReviews = function(responseText) {
 
 AmazonFrParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#revSum span:contains('étoiles sur')");
-    if(ratingString === undefined && ratingString =='') return undefined;
+    if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("étoiles sur")[0].trim();
 };
 

@@ -53,7 +53,7 @@ BookStorage.prototype.enableTracking = function(bookUrl, callback) {
             _this.updateBookInStorage(bookUrl, bookData, callback);
         };
 
-        if(bookData !== undefined) {
+        if (typeof bookData !== 'undefined') {
             changeStatus(bookData);
             return;
         }
@@ -73,7 +73,7 @@ BookStorage.prototype.disableTracking = function(bookUrl, callback) {
     var _this = this;
     // search url in storage
     this.getBook(bookUrl, function(bookData) {
-        if(bookData === undefined) return;
+        if (typeof bookData === 'undefined') return;
         // change status to not-tracking
         bookData.trackingEnabled = false;
         _this.updateBookInStorage(bookUrl, bookData, callback);
@@ -89,7 +89,7 @@ BookStorage.prototype.disableTracking = function(bookUrl, callback) {
 BookStorage.prototype.getBook = function(bookUrl, callback) {
     var _this = this;
     this._storage.get('trackingData', function(items) {
-        if(items !== undefined && items.trackingData !== undefined) {
+        if (typeof items !== 'undefined' && typeof items.trackingData !== 'undefined') {
             var index = _this.findUrlIndex(items.trackingData, bookUrl);
             return callback(items.trackingData[index]);
         }
@@ -128,7 +128,7 @@ BookStorage.prototype.initBookFromUrl = function(bookUrl, callback) {
  */
 BookStorage.prototype.getAllBooks = function(callback) {
     this._storage.get('trackingData', function(items) {
-        if(items !== undefined && items.trackingData !== undefined) {
+        if (typeof items !== 'undefined' && typeof items.trackingData !== 'undefined') {
             return callback(items.trackingData);
         }
 
@@ -157,10 +157,10 @@ BookStorage.prototype.findUrlIndex = function(trackingData, url) {
 BookStorage.prototype.updateBookInStorage = function(bookUrl, bookData, callback) {
     var _this = this;
     this._storage.get('trackingData', function(items) {
-        if(items === undefined) items = {};
-        if(items.trackingData === undefined) items.trackingData = [];
+        if (typeof items === 'undefined') items = {};
+        if (typeof items.trackingData === 'undefined') items.trackingData = [];
         var index = _this.findUrlIndex(items.trackingData, bookUrl);
-        if(index === undefined) {
+        if (typeof index === 'undefined') {
             items.trackingData.push(bookData);
         }else{
             items.trackingData[index] = bookData;
@@ -176,22 +176,22 @@ BookStorage.prototype.updateBookInStorage = function(bookUrl, bookData, callback
 BookStorage.prototype.trackData = function () {
     var _this = this;
     this._storage.get('lastUpdate', function(result) {
-        if(result === undefined) result = {};
-        if(result.lastUpdate === undefined) result.lastUpdate = 0;
+        if (typeof result === 'undefined') result = {};
+        if (typeof result.lastUpdate === 'undefined') result.lastUpdate = 0;
         var dateDiffMillis = Date.now() - Number(result.lastUpdate);
         // if previous update was < 1h ago then do nothing
-        if(dateDiffMillis / 1000 / 60 / 60 < 1) {
+        if (dateDiffMillis / 1000 / 60 / 60 < 1) {
             return;
         }
         _this._storage.set({lastUpdate:Date.now()}, function(bytesInUse) {
             _this.getAllBooks(function(/** Array */ books) {
-                if(books === undefined) return;
+                if (typeof books === 'undefined') return;
                 var today = new Date().setHours(0,0,0,0);
                 // iterate through all tracked books
                 books.forEach(function(book) {
                     // if the last data is not from today
-                    for(var i=0;i<book.salesRankData.length;i++) {
-                        if(!book.trackingEnabled || book.salesRankData[i].date === today) {
+                    for (var i=0;i<book.salesRankData.length;i++) {
+                        if (!book.trackingEnabled || book.salesRankData[i].date === today) {
                             return;
                         }
                     }
@@ -204,7 +204,7 @@ BookStorage.prototype.trackData = function () {
                             date: today,
                             salesRank: salesRank
                         });
-                        if((book.salesRankData.length % 30) === 0) {
+                        if ((book.salesRankData.length % 30) === 0) {
                             book.trackingEnabled = false;
                         }
                         _this.updateBookInStorage(book.url, book, function() { });
@@ -221,7 +221,7 @@ BookStorage.prototype.trackData = function () {
  */
 BookStorage.prototype.getNumberOfBooks = function(callback) {
     this._storage.get('trackingData', function(items) {
-        if(items !== undefined && items.trackingData !== undefined) {
+        if (typeof items !== 'undefined' && typeof items.trackingData !== 'undefined') {
             return callback(items.trackingData.length);
         }
 
@@ -237,10 +237,10 @@ BookStorage.prototype.getNumberOfBooks = function(callback) {
 BookStorage.prototype.removeBookInStorage = function(bookUrl, callback) {
     var _this = this;
     this._storage.get('trackingData', function(items) {
-        if(items === undefined) return;
-        if(items.trackingData === undefined) return;
+        if (typeof items === 'undefined') return;
+        if (typeof items.trackingData === 'undefined') return;
         var index = _this.findUrlIndex(items.trackingData, bookUrl);
-        if(index !== undefined)
+        if (typeof index !== 'undefined')
             items.trackingData.splice(index, 1);
         _this._storage.set(items, callback);
     });

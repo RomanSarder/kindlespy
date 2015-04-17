@@ -22,7 +22,7 @@ function DataStorage(){
 }
 
 DataStorage.prototype.get = function(){
-    if(this.data === undefined)
+    if (typeof this.data === 'undefined')
     // clone object
         this.data = JSON.parse(JSON.stringify(this.defaultData));
     return this.data;

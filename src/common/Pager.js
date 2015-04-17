@@ -15,7 +15,7 @@ function Pager(itemsPerPage, pullItemsFunction, getPageUrlFunction){
 }
 
 Pager.prototype.loadNextPage = function(parentUrl, callback){
-    if (this.alreadyPulled === undefined) return;
+    if (typeof this.alreadyPulled === 'undefined') return;
     if (this.isStopped) return;
     if (this.isInProgress) return setTimeout(this.loadNextPage.bind(this, parentUrl, callback), 100);
 
@@ -37,7 +37,7 @@ Pager.prototype.loadNextPage = function(parentUrl, callback){
             prevPulledItems = pulledItems;
             pulledItems = _this.pullItemsFunction(startFromIndex, maxResults, responseText, parentUrl);
 
-            if (pulledItems === undefined ||
+            if (typeof pulledItems === 'undefined' ||
                 (prevPulledItems == 0 && pulledItems == 0)) {
                 _this.isInProgress = false;
                 return;
@@ -52,7 +52,7 @@ Pager.prototype.loadNextPage = function(parentUrl, callback){
                 _this.lastPage = i-1;
                 _this.alreadyPulled = pulledItems;
                 _this.isInProgress = false;
-                if(callback !== undefined)
+                if (typeof callback !== 'undefined')
                     callback();
             }
         });

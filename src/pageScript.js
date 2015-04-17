@@ -33,10 +33,10 @@ KindleSpy.prototype.start = function(){
     _this.bookStorage.trackData();
     setInterval('kindleSpy.bookStorage.trackData()', 2*60*60*1000);
 
-    if (_this.siteParser === undefined) return;
+    if (typeof _this.siteParser === 'undefined') return;
     if (_this.url.indexOf(this.siteParser.mainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;
     _this.currentPage = this.getPageFromCurrentPage();
-    if (_this.currentPage === undefined) return;
+    if (typeof _this.currentPage === 'undefined') return;
 
     // Amazon search form
     $("#nav-searchbar, .nav-searchbar").submit(function()
