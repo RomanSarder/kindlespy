@@ -208,3 +208,5 @@ function onMessageReceived(request, callback){
         return callback(kindleSpy.pageData.get().totalResults);
     }
 }
+
+console.log('started');
