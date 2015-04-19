@@ -20,6 +20,8 @@ body, div, a, p, table, tr, td, th {
 .body{
     padding : 10px;
     min-height: 440px;
+    max-height: 440px;
+    overflow: hidden;
 }
 
 .footer {
