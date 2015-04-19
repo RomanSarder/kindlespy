@@ -63,56 +63,49 @@ WordCloudTab.prototype.shuffle = function(array) {
  * Word cloud HTML generator - created by Jang
  * @returns {{info: string, content: string, words: string}}
  */
-WordCloudTab.prototype.load = function(){
-    var xPathRes = document.evaluate ( "/html/body/div/div/div/div/table/tbody/tr/td[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    var InnerTexts = "";
+WordCloudTab.prototype.load = function(books){
+    var innerTexts = "";
 
-    if (xPathRes.length < 1)
-        return;
+    books.forEach(function(book){
+        innerTexts += book.Title + " ";
+    });
 
-    for (var i = 0; i < xPathRes.snapshotLength; i++) {
-        if (i > this.pageNum * 20)
-            break;
+    innerTexts = innerTexts.toLowerCase();
 
-        InnerTexts += xPathRes.snapshotItem (i).innerText + " ";
-    }
+    innerTexts = innerTexts.replace(/ the /g, ' ');
+    innerTexts = innerTexts.replace(/the /g, ' ');
+    innerTexts = innerTexts.replace(/ a /g, ' ');
+    innerTexts = innerTexts.replace(/ of /g, ' ');
+    innerTexts = innerTexts.replace(/ i /g, ' ');
+    innerTexts = innerTexts.replace(/ and /g, ' ');
+    innerTexts = innerTexts.replace(/ in /g, ' ');
+    innerTexts = innerTexts.replace(/ at /g, ' ');
+    innerTexts = innerTexts.replace(/-/g, ' ');
+    innerTexts = innerTexts.replace(/\d+/g, ' ');
+    innerTexts = innerTexts.replace(/ and /g, ' ');
+    innerTexts = innerTexts.replace(/ to /g, ' ');
+    innerTexts = innerTexts.replace(/to /g, ' ');
+    innerTexts = innerTexts.replace(/:/g, ' ');
+    innerTexts = innerTexts.replace(/ at /g, ' ');
+    innerTexts = innerTexts.replace(/at /g, ' ');
+    innerTexts = innerTexts.replace(/ for /g, ' ');
+    innerTexts = innerTexts.replace(/we /g, ' ');
+    innerTexts = innerTexts.replace(/you /g, ' ');
+    innerTexts = innerTexts.replace(/me /g, ' ');
+    innerTexts = innerTexts.replace(/'/g, ' ');
+    innerTexts = innerTexts.replace(/ our /g, ' ');
+    innerTexts = innerTexts.replace(/,/g, ' ');
+    innerTexts = innerTexts.replace(/will /g, ' ');
+    innerTexts = innerTexts.replace(/ will /g, ' ');
+    innerTexts = innerTexts.replace(/[()]/g, ' ');
+    innerTexts = innerTexts.replace(/[{}]/g, ' ');
+    innerTexts = innerTexts.replace(/\[/g, ' ');
+    innerTexts = innerTexts.replace(/\]/g, ' ');
+    innerTexts = innerTexts.replace(/&/g, ' ');
+    innerTexts = innerTexts.replace(/\//g, ' ');
+    innerTexts = innerTexts.replace(/!/g, ' ');
 
-    InnerTexts = InnerTexts.toLowerCase();
-
-    InnerTexts = InnerTexts.replace(/ the /g, ' ');
-    InnerTexts = InnerTexts.replace(/the /g, ' ');
-    InnerTexts = InnerTexts.replace(/ a /g, ' ');
-    InnerTexts = InnerTexts.replace(/ of /g, ' ');
-    InnerTexts = InnerTexts.replace(/ i /g, ' ');
-    InnerTexts = InnerTexts.replace(/ and /g, ' ');
-    InnerTexts = InnerTexts.replace(/ in /g, ' ');
-    InnerTexts = InnerTexts.replace(/ at /g, ' ');
-    InnerTexts = InnerTexts.replace(/-/g, ' ');
-    InnerTexts = InnerTexts.replace(/\d+/g, ' ');
-    InnerTexts = InnerTexts.replace(/ and /g, ' ');
-    InnerTexts = InnerTexts.replace(/ to /g, ' ');
-    InnerTexts = InnerTexts.replace(/to /g, ' ');
-    InnerTexts = InnerTexts.replace(/:/g, ' ');
-    InnerTexts = InnerTexts.replace(/ at /g, ' ');
-    InnerTexts = InnerTexts.replace(/at /g, ' ');
-    InnerTexts = InnerTexts.replace(/ for /g, ' ');
-    InnerTexts = InnerTexts.replace(/we /g, ' ');
-    InnerTexts = InnerTexts.replace(/you /g, ' ');
-    InnerTexts = InnerTexts.replace(/me /g, ' ');
-    InnerTexts = InnerTexts.replace(/'/g, ' ');
-    InnerTexts = InnerTexts.replace(/ our /g, ' ');
-    InnerTexts = InnerTexts.replace(/,/g, ' ');
-    InnerTexts = InnerTexts.replace(/will /g, ' ');
-    InnerTexts = InnerTexts.replace(/ will /g, ' ');
-    InnerTexts = InnerTexts.replace(/[()]/g, ' ');
-    InnerTexts = InnerTexts.replace(/[{}]/g, ' ');
-    InnerTexts = InnerTexts.replace(/\[/g, ' ');
-    InnerTexts = InnerTexts.replace(/\]/g, ' ');
-    InnerTexts = InnerTexts.replace(/&/g, ' ');
-    InnerTexts = InnerTexts.replace(/\//g, ' ');
-    InnerTexts = InnerTexts.replace(/!/g, ' ');
-
-    var words = InnerTexts.split(" ");
+    var words = innerTexts.split(" ");
 
     this.clouds = [];
 

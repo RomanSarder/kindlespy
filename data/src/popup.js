@@ -142,7 +142,7 @@ Popup.prototype.setupClickListeners = function(){
     var _this = this;
     $('#TitleWordCloud').click(function() {
         _this.activeTab = new WordCloudTab(_this.activeTab.pageNum);
-        var cloud = _this.activeTab.load();
+        var cloud = _this.activeTab.load(_this.booksData);
 
         _this.resetCss();
         $('.table-head').html("");
