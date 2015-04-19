@@ -20,13 +20,18 @@ Api.addListener = function(messageListener){
     });
 };
 
+Api._idCounter = 0;
+Api._generateMessageId = function(){
+    return Date.now().toString() + Api._idCounter++;
+};
+
 /**
  * Send a message to the active tab
  * @param message
  * @param callback
  */
 Api.sendMessageToActiveTab = function(message, callback){
-    var messageId = Date.now();
+    var messageId = Api._generateMessageId();
     addon.port.emit('request', {id: messageId, message: message});
     addon.port.once('response-' + messageId, function(result){
         callback(result);
@@ -70,7 +75,7 @@ Api.registerOnShowEvent = function(eventListener){
 Api.storage = {
     set: function(data, callback){
         var port = (typeof addon !== 'undefined') ? addon.port : self.port;
-        var messageId = Date.now();
+        var messageId = Api._generateMessageId();
         port.emit('storage-set', {id: messageId, data: data});
         port.once('storage-set-response-' + messageId, function(result){
             callback(result);
@@ -78,7 +83,7 @@ Api.storage = {
     },
     get: function(key, callback){
         var port = (typeof addon !== 'undefined') ? addon.port : self.port;
-        var messageId = Date.now();
+        var messageId = Api._generateMessageId();
         port.emit('storage-get', {id: messageId, key: key});
         port.once('storage-get-response-' + messageId, function(result){
             callback(result);
