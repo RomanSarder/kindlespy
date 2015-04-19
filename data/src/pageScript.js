@@ -201,7 +201,7 @@ function onMessageReceived(request, callback){
     }
 
     if (request.type === "get-type-page") {
-        return callback(kindleSpy.currentPage.name);
+        return callback(typeof kindleSpy.currentPage !== 'undefined' ? kindleSpy.currentPage.name : '');
     }
 
     if (request.type === "get-totalResults") {
