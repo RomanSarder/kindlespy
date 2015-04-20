@@ -34,7 +34,7 @@ Export.toCSV = function(data, fileName, booksNumber){
                 csvContent += dataString[i];
         }
     });
-
+    
     var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
     var url = URL.createObjectURL(blob);
     var today = new Date();
@@ -44,5 +44,7 @@ Export.toCSV = function(data, fileName, booksNumber){
     var link = document.createElement("a");
     link.setAttribute("href", url);
     link.setAttribute("download", fileName + "-" + mm + "-" + dd + "-" + yyyy + ".csv");
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 };
