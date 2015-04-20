@@ -243,5 +243,3 @@ function onMessageReceived(request, callback){
     }
     return true;
 }
-
-console.log('started');

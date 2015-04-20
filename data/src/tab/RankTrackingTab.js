@@ -36,12 +36,6 @@ RankTrackingTab.resetTrackingBookPage = function(bookUrl) {
     $('#ExportBtnWordCloud').attr('book-url','');
 };
 
-RankTrackingTab.addEventListenerForSingleResultBook = function(rankTrackingTab){
-    $('table[name="data"] tbody').on('click', '.RankTrackingResultSingle', function(){
-        popup.initRankTrackingTab($(this).attr('bookUrl'));
-    });
-};
-
 RankTrackingTab.prototype.exportToCsv = function(bookData, siteParser){
     var bookUrl = $('#ExportBtnWordCloud').attr('book-url');
 
@@ -68,24 +62,24 @@ RankTrackingTab.prototype.exportToCsv = function(bookData, siteParser){
 };
 
 RankTrackingTab.prototype.load = function(){
-    var contentHtml = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var tableHead = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label><label class=\"sort-column\" id=\"title-book\" style=\"padding-right:350px;\"> Kindle Book Title</label><label class=\"sort-column\" id=\"daysTracked\" style=\"padding-right:30px;\">Days Tracked</label><label class=\"sort-column\" id=\"resTracking\" style=\"padding-right:45px;\">Tracking</label><label class=\"sort-column\" id=\"removeTracking\" style=\"padding-right:5px;\">Action</label>";
     var info = "<div style=\"font-size:15px;\"><b>Best Seller Rank Tracking:</b></div>";
 
-    return { info: info, content: contentHtml, header: tableHead };
+    return { info: info, header: tableHead };
 };
 
-RankTrackingTab.prototype.loadDetails = function(bookUrl){
+RankTrackingTab.prototype.loadDetails = function(bookUrl, callback){
+    callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
-    $('#LinkBackTo').hide();
     _this.storage.getBook(bookUrl, function(bookData) {
         if(bookData) {
             _this.updateTrackedBookView(bookData);
-            return;
+            return callback();
         }
 
         _this.storage.initBookFromUrl(bookUrl, function(bookFromUrl){
             _this.updateTrackedBookView(bookFromUrl);
+            return callback();
         });
     });
 };
@@ -104,7 +98,6 @@ RankTrackingTab.prototype.updateRateTrackingTable = function(){
             "</tr>";
         }
         $('table[name="data"] tbody').html(html);
-        RankTrackingTab.addEventListenerForSingleResultBook(_this);
 
         //Remove links
         var removeRankTrackedBooks = $('.RankTrackingRemove');
@@ -119,6 +112,9 @@ RankTrackingTab.prototype.updateRateTrackingTable = function(){
 };
 
 RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
+    $('#tracking-header').show();
+    $('#ExportBtnWordCloud').show();
+    $('#AdPanel').show();
     var contentHtml = '';
     $('#bookTitle').text(bookData.title);
     if(bookData.trackingEnabled){
@@ -132,10 +128,7 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
         contentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
         $('#enableTracking').prop('disabled', false);
     }
-    $('#tracking-header').show();
-    $('#LinkBackTo').show();
-    $('#ExportBtnWordCloud').show();
-    $('#AdPanel').show();
+
     $('#tracking-content').html(contentHtml);
     $('#enableTracking').toggle(!bookData.trackingEnabled);
     $('#disableTracking').toggle(bookData.trackingEnabled);
@@ -172,7 +165,7 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     var data = [];
     for(var i=0;i<chartData.length;i++){
         labels.push(new Date(chartData[i].date).toDateString());
-        data.push(chartData[i].salesRank.replace(/[^0-9\.]/g, ''));
+        data.push(Helper.parseInt(chartData[i].salesRank, this.siteParser.decimalSeparator));
     }
 
     if(labels.length === 1) labels.push('');

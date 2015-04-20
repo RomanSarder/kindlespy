@@ -26,7 +26,6 @@ KeywordAnalysisTab.prototype.loadPageNum = function(callback){
 };
 
 KeywordAnalysisTab.prototype.kwdAnalysisListShow = function() {
-    var content = "<table class=\"data\" name=\"data\"><tbody id=\"data-body\"></tbody></table>";
     var header = "<label class=\"sort-column\" id=\"no\" style=\"padding-right:6px;\">#</label>" +
         "<label class=\"sort-column\" id=\"title-book\" style=\"padding-right:295px;\"> </label>" +
         "<label class=\"sort-column\" id=\"price\" style=\"padding-right:20px;\" >Price</label>" +
@@ -59,7 +58,7 @@ KeywordAnalysisTab.prototype.kwdAnalysisListShow = function() {
         "<div style=\"font-size:16px;font-weight:bold;margin-top:-6px;\" id=\"result6\">31</div>" +
         "</div>";
 
-    return {content: content, info: info, header: header};
+    return {info: info, header: header};
 };
 
 KeywordAnalysisTab.prototype.exportToCsv = function(bookData, siteParser){

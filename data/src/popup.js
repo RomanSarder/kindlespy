@@ -48,6 +48,7 @@ Popup.prototype.resetCss = function(){
     $('#no-data-found-content').hide();
     $('#no-supported-area').hide();
     $('#main-content').hide();
+    $('#loading-content').hide();
     $('#content-keyword-search').hide();
     $('#tracking-content').hide();
     $('.right-panel').hide();
@@ -119,7 +120,10 @@ Popup.prototype.refreshData = function(){
 
 Popup.prototype.initRankTrackingTab = function(bookUrl){
     this.activeTab = new RankTrackingTab(this.siteParser);
-    this.activeTab.loadDetails(bookUrl);
+    $('#LinkBackTo').hide();
+    this.activeTab.loadDetails(bookUrl, function(){
+        $('#LinkBackTo').show();
+    });
     this.resetCss();
     RankTrackingTab.resetTrackingBookPage(bookUrl);
     $('#tracking-header').show();
@@ -169,7 +173,7 @@ Popup.prototype.setupClickListeners = function(){
         _this.activeTab = new RankTrackingTab(_this.siteParser);
         var tracking = _this.activeTab.load();
         $('#main-header').html('');
-        $('#main-content').html(tracking.content);
+        $('#data-body').html('');
         $('.info.list_books').html(tracking.info);
         _this.resetCss();
         $('#main-header').show();
@@ -191,7 +195,7 @@ Popup.prototype.setupClickListeners = function(){
 
         var kwdAnalysis = _this.activeTab.kwdAnalysisListShow();
         _this.resetCss();
-        $('#main-content').html(kwdAnalysis.content);
+        $('#data-body').html('');
         $('.info.list_books').html(kwdAnalysis.info);
         $('#main-content').show();
         $('#main-header').show();
@@ -218,6 +222,7 @@ Popup.prototype.setupStaticClickListeners = function() {
     $('#LinkBackTo').click(function () {
         $('#data-body').css("overflow-y", "auto");
         _this.activeTab = new MainTab();
+        _this.resetCss();
         _this.checkUrlAndLoad();
     });
 
@@ -226,17 +231,25 @@ Popup.prototype.setupStaticClickListeners = function() {
         $('#LinkBackTo').hide();
         var element = this;
         _this.storage.enableTracking($(element).data().url, function() {
-            $('#enableTracking').prop('disabled', false);
-            $('#LinkBackTo').show();
-            _this.activeTab.loadDetails($(element).data().url);
+            _this.activeTab.loadDetails($(element).data().url, function(){
+                $('#enableTracking').prop('disabled', false);
+                $('#LinkBackTo').show();
+            });
         });
     });
 
     $('#disableTracking').click(function () {
         var element = this;
         _this.storage.disableTracking($(element).data().url, function(bytesInUse) {
-            _this.activeTab.loadDetails($(element).data().url);
+            $('#LinkBackTo').hide();
+            _this.activeTab.loadDetails($(element).data().url, function(){
+                $('#LinkBackTo').show();
+            });
         });
+    });
+
+    $('table[name="data"] tbody').on('click', '.RankTrackingResultSingle', function(){
+        _this.initRankTrackingTab($(this).attr('bookUrl'));
     });
 
     $('#PullResult').click(function () {
@@ -309,8 +322,8 @@ Popup.prototype.loadData = function(books) {
         $('#AdPanel').show();
 
         $('.table-head').html("");
-        $('#main-content').html('<div><img style="width:100%" src="../icons/loading.gif"/></div>');
-        $('#main-content').show();
+        $('#main-content').hide();
+        $('#loading-content').show();
         $('#main-header').show();
 
         var _this = this;
@@ -360,7 +373,7 @@ Popup.prototype.updateTable = function(books){
     var main = _this.activeTab.load();
 
     _this.resetCss();
-    $('#main-content').html(main.content);
+    $('#data-body').html('');
     $('.info.list_books').html(main.info);
     $('#main-content').show();
     $('#main-header').show();
@@ -416,7 +429,7 @@ Popup.prototype.checkUrlAndLoad = function(){
             if (pageName == 'SingleBookPage') {
                 _this.activeTab = new RankTrackingTab(_this.siteParser);
                 _this.initRankTrackingTab(url);
-                _this.activeTab.loadDetails(url);
+                //_this.activeTab.loadDetails(url);
                 return;
             }
 
