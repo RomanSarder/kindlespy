@@ -156,8 +156,7 @@ BookPageParser.prototype.getSalesRankFromUrl = function(url, callback) {
 
 BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
     var _this = this;
-
-    $.get(url, function (responseText) {
+    Api.sendMessageToActiveTab({type:'http-get', url: url}, function(responseText){
         var jqResponseText = Helper.parseHtmlToJquery(responseText);
         var entryTitle = _this.getTitle(jqResponseText);
         if (entryTitle == '') entryTitle = _this.getAuthorTitle(jqResponseText);

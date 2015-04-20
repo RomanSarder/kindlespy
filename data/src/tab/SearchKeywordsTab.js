@@ -43,7 +43,7 @@ SearchKeywordsTab.prototype.getFullData = function(list, processItemFunction){
     var algorithm = new SearchAnalysisAlgorithm();
     list.forEach(function(item){
         var pageUrl = Helper.getSearchUrl(item, _this.siteParser);
-        Api.sendMessageToActiveTab({type:'get-keyword-results', url: pageUrl}, function(responseText){
+        Api.sendMessageToActiveTab({type:'http-get', url: pageUrl}, function(responseText){
             var jqResponse = Helper.parseHtmlToJquery(responseText);
             var totalResults = Helper.parseInt(_this.siteParser.getTotalSearchResult(jqResponse), _this.siteParser.decimalSeparator);
             var color = algorithm.getCompetitionColor(totalResults);

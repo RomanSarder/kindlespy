@@ -8,14 +8,21 @@
 function Api(){
 }
 
+Api.messageListener = function(message, callback){};
+
 /**
  * Add message listener
  * @param messageListener
  */
 Api.addListener = function(messageListener){
+    Api.messageListener = messageListener;
     chrome.runtime.onMessage.addListener(function(request, sender, callback){
         return messageListener(request, callback);
     });
+};
+
+Api.sentFromPageScript = function(){
+    return typeof chrome.tabs === 'undefined';
 };
 
 /**
@@ -24,6 +31,12 @@ Api.addListener = function(messageListener){
  * @param callback
  */
 Api.sendMessageToActiveTab = function(message, callback){
+    if (Api.sentFromPageScript()){
+        Api.messageListener(message, function(result){
+            return callback(result);
+        });
+        return;
+    }
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
             if (typeof callback !== 'undefined' && typeof(callback) === 'function')

@@ -8,11 +8,14 @@
 function Api(){
 }
 
+Api.messageListener = function(message, callback){};
+
 /**
  * Add message listener
  * @param messageListener
  */
 Api.addListener = function(messageListener){
+    Api.messageListener = messageListener;
     self.port.on('request', function(messageObject){
         messageListener(messageObject.message, function(response){
             self.port.emit('response-' + messageObject.id, response);
@@ -25,16 +28,26 @@ Api._generateMessageId = function(){
     return Date.now().toString() + Api._idCounter++;
 };
 
+Api.sentFromPageScript = function(){
+    return typeof addon === 'undefined';
+};
+
 /**
- * Send a message to the active tab
+ * Send a message to the active tab in browser
  * @param message
  * @param callback
  */
 Api.sendMessageToActiveTab = function(message, callback){
+    if (Api.sentFromPageScript()){
+        Api.messageListener(message, function(result){
+            return callback(result);
+        });
+        return;
+    }
     var messageId = Api._generateMessageId();
     addon.port.emit('request', {id: messageId, message: message});
     addon.port.once('response-' + messageId, function(result){
-        callback(result);
+        return callback(result);
     });
 };
 // TODO: Following code should be in main.js

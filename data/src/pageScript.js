@@ -162,7 +162,7 @@ KindleSpy.prototype.startPullingSearchPage = function(url){
     this.startPulling(1);
 };
 
-KindleSpy.prototype.getSearchByKeywordResults = function(url, callback){
+KindleSpy.prototype.httpGet = function(url, callback){
     $.get(url, function(responseText){
           return callback(responseText);
     });
@@ -230,8 +230,8 @@ function onMessageReceived(request, callback){
         return callback(kindleSpy.pageData.get().totalResults);
     }
 
-    if(request.type === "get-keyword-results"){
-        kindleSpy.getSearchByKeywordResults(request.url, function(responseText){
+    if(request.type === "http-get"){
+        kindleSpy.httpGet(request.url, function(responseText){
             return callback(responseText);
         });
     }
