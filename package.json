@@ -10,6 +10,8 @@
       "cross-domain-content": [
           "http://www.kdspy.com/",
           "http://completion.amazon.com/",
+          "http://completion.amazon.co.uk/",
+          "http://t1-completion.amazon.co.uk/",
           "http://www.amazon.com/",
           "http://www.amazon.co.uk/",
           "http://www.amazon.de/",
