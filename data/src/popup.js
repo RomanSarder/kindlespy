@@ -491,7 +491,7 @@ $(window).ready(function () {
 // run this when show the popup
 function onShow(){
     popup.resetCss();
-    //TODO: reset UI
+    popup.activeTab = new MainTab();
     popup.checkUrlAndLoad();
 }
 

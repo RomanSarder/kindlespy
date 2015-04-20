@@ -137,9 +137,8 @@ BookStorage.prototype.getAllBooks = function(callback) {
 };
 
 BookStorage.prototype.findUrlIndex = function(trackingData, url) {
-
     for (var i = 0; i < trackingData.length; i++) {
-        if (trackingData[i].url.indexOf(Helper.trimCurrentUrl(url))) {
+        if (trackingData[i].url.indexOf(Helper.trimCurrentUrl(url)) === 0) {
             return i;
         }
     }
