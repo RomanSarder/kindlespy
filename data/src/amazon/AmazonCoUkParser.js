@@ -120,11 +120,11 @@ AmazonCoUkParser.prototype.getGoogleImageSearchUrlRel = function(responseText, u
 
 AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCode, callback) {
     var urlAmazonCom = "http://www.amazon.com/product/dp/" + bookCode;
-    $.get(urlAmazonCom, callback);
+    Api.sendMessageToActiveTab({type:'http-get', url: urlAmazonCom}, callback);
 };
 
 AmazonCoUkParser.prototype.getImageUrlSrc = function(responseText) {
-    return responseText.find('#prodImage').attr('src');
+    return responseText.find('#main-image').attr('data-src');
 };
 
 AmazonCoUkParser.prototype.getReviews = function(responseText) {
