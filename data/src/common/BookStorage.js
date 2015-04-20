@@ -132,20 +132,19 @@ BookStorage.prototype.getAllBooks = function(callback) {
             return callback(items.trackingData);
         }
 
-        return callback(undefined);
+        return callback([]);
     });
 };
 
 BookStorage.prototype.findUrlIndex = function(trackingData, url) {
-    var index;
+
     for (var i = 0; i < trackingData.length; i++) {
-        if (trackingData[i].url === url) {
-            index = i;
-            break;
+        if (trackingData[i].url.indexOf(Helper.trimCurrentUrl(url))) {
+            return i;
         }
     }
 
-    return index;
+    return undefined;
 };
 
 /**
