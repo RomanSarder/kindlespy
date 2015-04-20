@@ -21,6 +21,7 @@ Note: [jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm) tool will
 2. Go to SDK folder and run `bin\activate`
 3. Go to the project folder `cd project_folder`
 4. Use `cfx run` command to run a new instance of Firefox with the add-on installed
+5. You can use the `cfx run --profiledir=c:\firefox-sdk\profile` to store profile data and use it in future
 
 ### Chrome
 1. Open [extensions](chrome://extensions) page in chrome
