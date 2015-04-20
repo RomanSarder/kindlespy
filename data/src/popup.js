@@ -411,7 +411,7 @@ Popup.prototype.checkUrlAndLoad = function(){
 
         // load
         _this.siteParser = Helper.getSiteParser(url);
-        _this.initRegionSelector();
+        $("#regionSelector").val(_this.siteParser.region);
         Api.sendMessageToActiveTab({type: "get-type-page"}, function(pageName) {
             if (pageName == 'SingleBookPage') {
                 _this.activeTab = new RankTrackingTab(_this.siteParser);
@@ -439,10 +439,9 @@ Popup.prototype.checkUrlAndLoad = function(){
 };
 
 Popup.prototype.initRegionSelector = function(){
-    $("#regionSelector").val(this.siteParser.region);
-    $("#regionSelector").change(function() {
+    $('#regionSelector').on('change', function(){
         var url;
-        switch ($("#regionSelector").val()){
+        switch ($(this).val()){
             case AmazonComParser.region:
                 url = "http://www.amazon.com/Best-Sellers-Kindle-Store-eBooks/zgbs/digital-text/154606011/ref=zg_bs_nav_kstore_1_kstore";
                 break;
@@ -484,6 +483,7 @@ $(window).ready(function () {
     ApiLoader.load(function(){
         popup = new Popup();
         popup.setupStaticClickListeners();
+        popup.initRegionSelector();
         Api.registerOnShowEvent(onShow);
     });
 });
