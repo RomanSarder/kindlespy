@@ -464,8 +464,8 @@ Popup.prototype.initRegionSelector = function(){
 };
 
 Popup.prototype.loadAdvertisementBanner = function(){
-    $.get("http://www.kdspy.com/banner.html", function(data) {
-        $("#ad").html(data);
+    Api.sendMessageToActiveTab({type:'http-get', url: "http://www.kdspy.com/banner.html"}, function(responseText){
+        $("#ad").html(responseText);
     });
 };
 
