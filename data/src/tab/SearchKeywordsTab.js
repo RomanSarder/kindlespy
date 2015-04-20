@@ -43,7 +43,7 @@ SearchKeywordsTab.prototype.getFullData = function(list, processItemFunction){
     var algorithm = new SearchAnalysisAlgorithm();
     list.forEach(function(item){
         var pageUrl = Helper.getSearchUrl(item, _this.siteParser);
-        $.get(pageUrl, function(responseText){
+        Api.sendMessageToActiveTab({type:'get-keyword-results', url: pageUrl}, function(responseText){
             var jqResponse = Helper.parseHtmlToJquery(responseText);
             var totalResults = Helper.parseInt(_this.siteParser.getTotalSearchResult(jqResponse), _this.siteParser.decimalSeparator);
             var color = algorithm.getCompetitionColor(totalResults);
@@ -80,19 +80,8 @@ SearchKeywordsTab.prototype.appendTable = function(item){
 };
 
 SearchKeywordsTab.prototype.getKeywords = function(callback){
-    var _this = this;
-    var q = encodeURI($("#search-text").val());
-    $.ajax({
-        url: _this.siteParser.completionUrl + "&q=" + q,
-        method: "GET",
-        dataType: "json",
-        success: function (responseJson) {
-            if (typeof responseJson === 'undefined' || responseJson.length < 2) return callback([]);
-            return callback(responseJson[1]);
-        },
-        error: function (obj, textStatus, errorThrown){
-            console.error(textStatus + "  " + errorThrown);
-            return callback([]);
-        }
+    var url = this.siteParser.completionUrl + "&q=" + encodeURI($("#search-text").val());
+    Api.sendMessageToActiveTab({type:'get-completion-results', url: url}, function(responseText){
+        return callback(responseText);
     });
 };

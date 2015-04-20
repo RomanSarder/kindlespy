@@ -162,6 +162,28 @@ KindleSpy.prototype.startPullingSearchPage = function(url){
     this.startPulling(1);
 };
 
+KindleSpy.prototype.getSearchByKeywordResults = function(url, callback){
+    $.get(url, function(responseText){
+          return callback(responseText);
+    });
+};
+
+KindleSpy.prototype.getCompletionResults = function(url, callback){
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "json",
+        success: function (responseJson) {
+            if (typeof responseJson === 'undefined' || responseJson.length < 2) return callback([]);
+            return callback(responseJson[1]);
+        },
+        error: function (obj, textStatus, errorThrown){
+            console.error(textStatus + "  " + errorThrown);
+            return callback([]);
+        }
+    });
+};
+
 // entry point
 var kindleSpy = new KindleSpy();
 $(window).ready(function () {
@@ -207,6 +229,19 @@ function onMessageReceived(request, callback){
     if (request.type === "get-totalResults") {
         return callback(kindleSpy.pageData.get().totalResults);
     }
+
+    if(request.type === "get-keyword-results"){
+        kindleSpy.getSearchByKeywordResults(request.url, function(responseText){
+            return callback(responseText);
+        });
+    }
+
+    if(request.type === "get-completion-results"){
+        kindleSpy.getCompletionResults(request.url, function(responseText){
+            return callback(responseText);
+        });
+    }
+    return true;
 }
 
 console.log('started');
