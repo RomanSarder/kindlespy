@@ -38,6 +38,7 @@ Api.sentFromPageScript = function(){
  * @param callback
  */
 Api.sendMessageToActiveTab = function(message, callback){
+    if (typeof callback === 'undefined') callback = function(){};
     if (Api.sentFromPageScript()){
         Api.messageListener(message, function(result){
             return callback(result);

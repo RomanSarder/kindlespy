@@ -186,45 +186,6 @@ Popup.prototype.setupClickListeners = function(){
         _this.activeTab.updateRateTrackingTable();
     });
 
-    $('#search').click(function() {
-        _this.activeTab = new SearchKeywordsTab(_this.siteParser);
-        var info = _this.activeTab.load();
-        $('#main-header').html('');
-        $('.info.list_books').html(info);
-
-        $('table[name="data-keyword-search"] tbody').on('click', '.keyword-analyze', function(){
-            _this.activeTab = new MainTab();
-            var search = $(this).attr('keyword');
-            Api.sendMessageToActiveTab({type: "start-analyze-search-keywords", keyword: search});
-            _this.checkUrlAndLoad();
-        });
-
-        $("#search-text").keypress(function(event){
-            var keycode = (event.keyCode ? event.keyCode : event.which);
-            if(keycode == '13'){
-                _this.activeTab.search();
-            }
-        });
-
-        $("#go-search").click(function()
-        {
-            _this.activeTab.search();
-        });
-
-        _this.resetCss();
-        $('#main-header').show();
-        $('#content-keyword-search').show();
-        $('#TrackedPanelFooter').show();
-        $('.info.list_books').show();
-        $('#search-text').focus();
-        $('#AdPanel').show();
-        if ($('table[name="data-keyword-search"] tr').length > 0) $('.table-head-keyword-search').show();
-
-        _this.loadAdvertisementBanner();
-
-        $('#data-body-keyword-search').css("overflow-y", "auto");
-    });
-
     $("#KeywordAnalysis").click(function() {
         _this.activeTab = new KeywordAnalysisTab();
 
@@ -291,6 +252,45 @@ Popup.prototype.setupStaticClickListeners = function() {
 
     $('#Help').click(function(){
         Api.openNewTab('http://www.kdspy.com/help/');
+    });
+
+    $('#search').click(function() {
+        _this.activeTab = new SearchKeywordsTab(_this.siteParser);
+        var info = _this.activeTab.load();
+        $('#main-header').html('');
+        $('.info.list_books').html(info);
+
+        $("#search-text").keypress(function(event){
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode == '13'){
+                _this.activeTab.search();
+            }
+        });
+
+        $("#go-search").click(function()
+        {
+            _this.activeTab.search();
+        });
+
+        _this.resetCss();
+        $('#main-header').show();
+        $('#content-keyword-search').show();
+        $('#TrackedPanelFooter').show();
+        $('.info.list_books').show();
+        $('#search-text').focus();
+        $('#AdPanel').show();
+        if ($('table[name="data-keyword-search"] tr').length > 0) $('.table-head-keyword-search').show();
+
+        _this.loadAdvertisementBanner();
+
+        $('#data-body-keyword-search').css("overflow-y", "auto");
+    });
+
+    $('table[name="data-keyword-search"] tbody').on('click', '.keyword-analyze', function(){
+        _this.activeTab = new MainTab();
+        var search = $(this).attr('keyword');
+        Api.sendMessageToActiveTab({type: "start-analyze-search-keywords", keyword: search});
+        _this.checkUrlAndLoad();
     });
 
     _this.isStaticLinkInitialized = true;
@@ -492,6 +492,8 @@ $(window).ready(function () {
 function onShow(){
     popup.resetCss();
     popup.activeTab = new MainTab();
+    SearchKeywordsTab.clearTable();
+    SearchKeywordsTab.searchedKeyword = '';
     popup.checkUrlAndLoad();
 }
 
