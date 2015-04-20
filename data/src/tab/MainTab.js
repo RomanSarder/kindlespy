@@ -180,6 +180,7 @@ MainTab.prototype.insertData = function(pageNumber, books, siteParser){
 };
 
 MainTab.prototype.getSalesRankConclusion = function(salesRank){
+    if (salesRank == 0) return 0;
     if (salesRank < 10000) return 1;
     if (salesRank < 20000) return 2;
     if (salesRank < 50000) return 3;
