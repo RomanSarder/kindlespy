@@ -1,0 +1,22 @@
+{
+  "name": "kindlespy",
+  "title": "KindleSpy",
+  "id": "jid1-1RpMPpIB0n7BbQ",
+  "description": "KindleSpy analyses Amazon Kindle categories & author pages allowing you to find luctrative niche markets with ease.",
+  "author": "Andrey Klochkov",
+  "license": "MPL 2.0",
+  "version": "4.0",
+  "permissions": {
+      "cross-domain-content": [
+          "http://www.kdspy.com/",
+          "http://completion.amazon.com/",
+          "http://completion.amazon.co.uk/",
+          "http://t1-completion.amazon.co.uk/",
+          "http://www.amazon.com/",
+          "http://www.amazon.co.uk/",
+          "http://www.amazon.de/",
+          "http://www.amazon.fr/",
+          "http://www.amazon.ca/"
+      ]
+  }
+}
