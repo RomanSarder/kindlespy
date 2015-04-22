@@ -80,6 +80,7 @@ Popup.prototype.getData = function(callback){
     var _this = this;
     callback = Helper.valueOrDefault(callback, function(){});
     Api.sendMessageToActiveTab({type: "get-data"}, function(data) {
+        if(typeof data === 'undefined') return;
         data.books.sort(function(a,b){return _this.compare(a,b)});
         return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
     });
