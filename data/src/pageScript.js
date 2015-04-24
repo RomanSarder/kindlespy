@@ -8,7 +8,6 @@ function KindleSpy(){
     _this.url = '';
     _this.parentUrl = ''; // trimmed Url
     _this.siteParser = undefined;
-    _this.bookStorage = undefined;
     // used to invalidate the current data is being pulled when the other pulling with new parameters started
     _this.pullingToken = 0;
     _this.currentPage = undefined;
@@ -29,9 +28,6 @@ KindleSpy.prototype.start = function(){
     _this.url = location.href;
     _this.parentUrl = Helper.trimCurrentUrl(_this.url);
     _this.siteParser = Helper.getSiteParser(_this.url);
-    _this.bookStorage = new BookStorage();
-    _this.bookStorage.trackData();
-    setInterval('kindleSpy.bookStorage.trackData()', 2*60*60*1000);
 
     if (typeof _this.siteParser === 'undefined') return;
     if (_this.url.indexOf(this.siteParser.mainUrl + "/Best-Sellers-Kindle-Store/zgbs/digital-text/ref=zg_bs_nav_0") >= 0) return;

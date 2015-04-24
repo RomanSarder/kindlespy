@@ -56,3 +56,15 @@ Api.registerOnShowEvent = function(eventListener){
 };
 
 Api.storage = chrome.storage.local;
+
+Api.addAlarmListener = function(alarmName, listener){
+    chrome.alarms.onAlarm.addListener(function(alarm) {
+        if(alarm.name === alarmName){
+            listener();
+        }
+    });
+};
+
+Api.createAlarm = function(alarmName, periodInMinutes){
+    chrome.alarms.create(alarmName, {delayInMinutes: periodInMinutes, periodInMinutes: periodInMinutes});
+};

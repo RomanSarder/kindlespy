@@ -10,6 +10,9 @@ function BookStorage() {
     this._storage = Api.storage;
 }
 
+BookStorage.debug = false;
+BookStorage.lockStorage = false;
+
 var bookDataExample = {
     url: 'http://book.url',
     trackingEnabled: true,
@@ -153,7 +156,13 @@ BookStorage.prototype.findUrlIndex = function(trackingData, url) {
  * @param callback function(integer bytesInUse) {...};
  */
 BookStorage.prototype.updateBookInStorage = function(bookUrl, bookData, callback) {
+    callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
+    if (BookStorage.lockStorage)
+        return setTimeout(_this.updateBookInStorage.bind(_this, bookUrl, bookData, callback), 100);
+    
+    BookStorage.lockStorage = true;
+
     this._storage.get('trackingData', function(items) {
         if (typeof items === 'undefined') items = {};
         if (typeof items.trackingData === 'undefined') items.trackingData = [];
@@ -164,7 +173,10 @@ BookStorage.prototype.updateBookInStorage = function(bookUrl, bookData, callback
             items.trackingData[index] = bookData;
         }
 
-        _this._storage.set(items, callback);
+        _this._storage.set(items, function(bytesInUse){
+            BookStorage.lockStorage = false;
+            callback(bytesInUse);
+        });
     });
 };
 
@@ -178,7 +190,7 @@ BookStorage.prototype.trackData = function () {
         if (typeof result.lastUpdate === 'undefined') result.lastUpdate = 0;
         var dateDiffMillis = Date.now() - Number(result.lastUpdate);
         // if previous update was < 1h ago then do nothing
-        if (dateDiffMillis / 1000 / 60 / 60 < 1) {
+        if (dateDiffMillis / 1000 / 60 / 60 < 1 && !BookStorage.debug) {
             return;
         }
         _this._storage.set({lastUpdate:Date.now()}, function(bytesInUse) {
@@ -189,7 +201,8 @@ BookStorage.prototype.trackData = function () {
                 books.forEach(function(book) {
                     // if the last data is not from today
                     for (var i=0;i<book.salesRankData.length;i++) {
-                        if (!book.trackingEnabled || book.salesRankData[i].date === today) {
+                        if (!book.trackingEnabled
+                            || (book.salesRankData[i].date === today && !BookStorage.debug)) {
                             return;
                         }
                     }
@@ -205,7 +218,7 @@ BookStorage.prototype.trackData = function () {
                         if ((book.salesRankData.length % 30) === 0) {
                             book.trackingEnabled = false;
                         }
-                        _this.updateBookInStorage(book.url, book, function() { });
+                        _this.updateBookInStorage(book.url, book);
                     });
                 });
             });

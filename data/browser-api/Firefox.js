@@ -154,3 +154,34 @@ Api.storage = {
 //popup.port.on('storage-clear', function(){
 //    storageClear();
 //});
+//
+// TODO: In background events section
+//backgroundWorker.port.on('storage-set', function(messageObject){
+//    storageSet(backgroundWorker.port, messageObject);
+//});
+//
+//backgroundWorker.port.on('storage-get', function(messageObject){
+//    storageGet(backgroundWorker.port, messageObject);
+//});
+//
+//backgroundWorker.port.on('storage-clear', function(){
+//    storageClear();
+//});
+
+
+Api.addAlarmListener = function(alarmName, listener){
+    self.port.on('alarm', function(name){
+        if (name === alarmName) listener();
+    })
+};
+
+Api.createAlarm = function(alarmName, periodInMinutes){
+    self.port.emit('create-alarm', {alarmName: alarmName, periodInMinutes: periodInMinutes});
+};
+
+// TODO: Following code should be in main.js
+//backgroundWorker.port.on('create-alarm', function(alarmData){
+//    setInterval(function(alarmName) {
+//        backgroundWorker.port.emit('alarm', alarmName);
+//    }, alarmData.periodInMinutes * 60 * 1000, alarmData.alarmName);
+//});

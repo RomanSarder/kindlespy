@@ -11,11 +11,24 @@
     "permissions": [
         "tabs",
         "storage",
+        "alarms",
         "http://*/*",
         "https://*/*"
     ],
     "background": {
-        "scripts": ["src/background.js"],
+        "scripts": [
+            "libs/jquery-2.0.3.min.js",
+            "browser-api/Chrome.js",
+            "src/common/Helper.js",
+            "src/common/BookStorage.js",
+            "src/parser/BookPageParser.js",
+            "src/amazon/AmazonComParser.js",
+            "src/amazon/AmazonCoUkParser.js",
+            "src/amazon/AmazonDeParser.js",
+            "src/amazon/AmazonFrParser.js",
+            "src/amazon/AmazonCaParser.js",
+            "src/background.js"
+        ],
         "persistent": false
     },
     "browser_action": {
