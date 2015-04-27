@@ -58,6 +58,7 @@ Popup.prototype.resetCss = function(){
     $('#WordCloudFooter').hide();
     $('#BestSellersRankingFooter').hide();
     $('#NoDataFooter').hide();
+    $('#no-compatible-aria-footer').hide();
     $('#ExportBtn').hide();
     $('#TrackedPanelFooter').hide();
     $('#BookTracked').hide();
@@ -264,11 +265,15 @@ Popup.prototype.setupStaticClickListeners = function() {
     $('#Export').click(exportToCsvFunction);
     $('#ExportWordCloud').click(exportToCsvFunction);
 
-    $('#Help').click(function(){
+    $('.help').click(function(){
         Api.openNewTab('http://www.kdspy.com/help/');
     });
 
-    $('#search').click(function() {
+    $('#go-categories').click(function(){
+        Api.openNewTab('https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html');
+    });
+
+    $('.search').click(function() {
         _this.activeTab = new SearchKeywordsTab(_this.siteParser);
         var info = _this.activeTab.load();
         $('#main-header').html('');
@@ -344,11 +349,15 @@ Popup.prototype.checkIsDataLoaded = function(){
             $('.table-head').html('');
 
             Api.sendMessageToActiveTab({type: "get-type-page"}, function(pageName) {
-                if (typeof pageName === 'undefined' || pageName === '') $('#no-supported-area').show();
-                else $('#no-data-found-content').show();
+                if (typeof pageName === 'undefined' || pageName === '') {
+                    $('#no-supported-area').show();
+                    $('#no-compatible-aria-footer').show();
+                }else {
+                    $('#no-data-found-content').show();
+                    $('#NoDataFooter').show();
+                }
 
                 $('#ExportBtn').show();
-                $('#NoDataFooter').show();
                 $('#AdPanel').show();
 
                 _this.loadAdvertisementBanner();

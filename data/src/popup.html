@@ -131,9 +131,9 @@
                             <br><br>KDSPY has "intentionally" ONLY been made compatible with certain locations on the Amazon Kindle Store.
                             <br><br><i>You are currently viewing an incompatible area.</i>
                             <br><br>Amazon displays categories in multiple ways. Only ONE of those ways is compatible.
-                            <br><br><a href="https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html" target="_blank" style="color: #0000c0;font-size:20px;font-weight:bold">Click here</a> or to be taken to the Bestseller Categories and continue your browsing down the left hand side ONLY.
-                            <br><br>For more information on compatible areas, please see the HELP section on our site at:
-                            <a href="http://www.kdspy.com/help/" target="_blank" style="color: #0000c0;font-size:20px;font-weight:bold">http://www.kdspy.com/help/</a>.
+
+                            <br><br>Also, search keywords need to be performed with “Kindle Store” in the drop down box to the left of the search term. Alternatively, you can use the search option BELOW.
+                            <br><br>Please <b>NOW</b> select what you would like to do from the options below. 1. <a href="#" class="search link">Search a Keyword</a>. 2.<a class="link" href="https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html" target="_blank"> Browse the Categories.</a>
                         </div>
                     </div>
                 </div>
@@ -177,18 +177,21 @@
                 <div style="float:left;width:140px;margin-top: 22px;">
                     <div style="display: table;text-align: center;"><a href="#" style="margin-left: 20px;" id="PullResult">Pull Results 1-20</a></div>
                 </div>
-                <div style="float:left;width:76px;">
-                    <div style="display:table;text-align:center;margin:0 auto;border-left : 1px solid #999999; border-right : 0px solid #999999; padding:0 18px;height:59px;"><div style="font-size:11px; margin-top: 10px;">Search</div>
-                        <div style="font-size:16px;font-weight:bold"><img src="../icons/search-ico.png" id="search"></div></div>
+                <div class="search-btn">
+                    <div class="footer-btn-panel-common" style="border-right : 0px solid #999999;padding:0 18px;">
+                        <div class="footer-btn-panel-text">Search</div>
+                        <div><img src="../icons/search-ico.png" class="search"></div></div>
                 </div>
                 <div id="ExportBtn" book-url="" style="float:left;width:70px;">
-                    <div style="display:table;text-align:center;margin:0 auto;border-left : 1px solid #999999; padding:0 18px;height:59px;"><div style="font-size:11px; margin-top: 10px">Export</div>
-                        <div style="font-size:16px;font-weight:bold"><img src="../icons/download.png" id="Export" style="height: 35px;width: 35px;"></div></div>
+                    <div class="footer-btn-panel-common" style="padding:0 18px;">
+                        <div class="footer-btn-panel-text">Export</div>
+                        <div><img src="../icons/download.png" id="Export" style="height: 35px;width: 35px;"></div></div>
                 </div>
-                <div id="HelpBtn" style="width: 70px;float: left;">
-                    <div style="display:table;text-align:center;margin:0 auto;border-left:1px solid #999999;border-right:1px solid #999999; padding:0 18px;height:59px;"><div style="font-size:11px; margin-top: 10px">Help</div>
-                        <div style="font-size:16px;font-weight:bold;margin-top:4px;">
-                            <img src="../icons/help.png" id="Help">
+                <div class="help-btn">
+                    <div class="footer-btn-panel-common" style="border-right:1px solid #999999;padding:0 18px;">
+                        <div class="footer-btn-panel-text">Help</div>
+                        <div style="margin-top:4px;">
+                            <img src="../icons/help.png" class="help">
                         </div>
                     </div>
                 </div>
@@ -243,6 +246,32 @@
             </div>
             <div id="NoDataFooter" style="display: none">
                 <div style="float: left;width: 65%;margin-top: 5px;">
+                </div>
+            </div>
+            <div id="no-compatible-aria-footer" style="display:none;margin-left: 376px;">
+                <div class="search-btn">
+                    <div class="footer-btn-panel-common" style="border-right : 0px solid #999999;padding:0 18px;">
+                        <div class="footer-btn-panel-text">Search</div>
+                        <div>
+                            <img src="../icons/search-ico.png" class="search">
+                        </div>
+                    </div>
+                </div>
+                <div style="float:left;width:70px;">
+                    <div class="footer-btn-panel-common" style="padding:0 10px;">
+                        <div class="footer-btn-panel-text" >Categories</div>
+                        <div style="text-align: right;">
+                            <img src="../icons/category.png" style="height: 35px;width: 35px;" id="go-categories">
+                        </div>
+                    </div>
+                </div>
+                <div class="help-btn">
+                    <div class="footer-btn-panel-common" style="padding:0 18px;">
+                        <div class="footer-btn-panel-text" >Help</div>
+                        <div style="margin-top:4px;">
+                            <img src="../icons/help.png" class="help">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="AdPanel" style="float:right;width:177px;border-left: 1px solid #999999;min-height:59px;overflow: hidden;">

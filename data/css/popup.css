@@ -67,9 +67,14 @@ body, div, a, p, table, tr, td, th {
 }
 #no-supported-area{
     display: none;
-    margin-top: 30px;
-    height: 400px;
-    max-height: 400px;
+    margin-top: 10px;
+    height: 410px;
+    max-height: 410px;
+}
+#no-supported-area .link{
+    color: #0000c0;
+    font-size:20px;
+    font-weight:bold;
 }
 #no-data-found-content{
     display:none;
@@ -489,4 +494,31 @@ td.wow a:hover
     padding: 8px 10px;
     color: #FFFFFF;
     font-weight: bold;
+}
+
+
+/*Buttons in footer*/
+.footer-btn-panel-common{
+    display:table;
+    text-align:center;
+    margin:0 auto;
+    border-left : 1px solid #999999;
+    height:59px;
+}
+
+.footer-btn-panel-text{
+    font-size:11px;
+    margin-top: 10px;
+}
+
+/*Help button in footer*/
+.help-btn{
+    width: 70px;
+    float: left;
+}
+
+/*Search btn in footer*/
+.search-btn{
+    float:left;
+    width:76px;
 }
