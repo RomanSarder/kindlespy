@@ -480,6 +480,9 @@ Popup.prototype.initRegionSelector = function(){
             case AmazonCaParser.region:
                 url = "http://www.amazon.ca/gp/bestsellers/digital-text/2980423011/";
                 break;
+            case AmazonItParser.region:
+                url = "http://www.amazon.it/gp/bestsellers/digital-text/827182031/";
+                break;
         }
 
         Api.openNewTab(url);

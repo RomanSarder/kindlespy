@@ -49,8 +49,8 @@ function AmazonDeParser(){
         {min: 30001, max: 35000, estSale: 47},
         {min: 35001, max: 50000, estSale: 37},
         {min: 50001, max: 65000, estSale: 17},
-        {min: 65001, max: 80000, estSale: 25},
-        {min: 80001, max: 100000, estSale: 8},
+        {min: 65001, max: 80000, estSale: 8},
+        {min: 80001, max: 100000, estSale: 5},
         {min: 100001, max: 200000, estSale: 1},
         {min: 200001, max: 500000, estSale: 1},
         {min: 500001, max: -1, estSale: 1}

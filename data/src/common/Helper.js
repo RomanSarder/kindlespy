@@ -84,6 +84,8 @@ Helper.getSiteParser = function(url){
         return new AmazonFrParser();
     if(hostname.indexOf(AmazonCaParser.zone) != -1)
         return new AmazonCaParser();
+    if(hostname.indexOf(AmazonItParser.zone) != -1)
+        return new AmazonItParser();
 };
 
 /**

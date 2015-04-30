@@ -27,6 +27,7 @@
             "src/amazon/AmazonDeParser.js",
             "src/amazon/AmazonFrParser.js",
             "src/amazon/AmazonCaParser.js",
+            "src/amazon/AmazonItParser.js",
             "src/background.js"
         ],
         "persistent": false
@@ -60,6 +61,7 @@
                 "src/amazon/AmazonDeParser.js",
                 "src/amazon/AmazonFrParser.js",
                 "src/amazon/AmazonCaParser.js",
+                "src/amazon/AmazonItParser.js",
                 "src/page/BestSellersPage.js",
                 "src/page/AuthorPage.js",
                 "src/page/SearchResultsPage.js",
