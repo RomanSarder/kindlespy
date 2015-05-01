@@ -8,7 +8,6 @@ function AmazonCaParser(){
     // Amazon.ca uses api from amazon.com
     this.completionUrl = "http://completion.amazon." + AmazonComParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=7";
     this.region = AmazonCaParser.region;
-    this.paramUrlBestSellers = "2980423011";
     this.free = 'free';
     this.currencySign = "$";
     this.currencySignForExport = "$";
@@ -111,5 +110,6 @@ AmazonCaParser.prototype.getRating = function(responseText){
 
 AmazonCaParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    return totalSearchResult.substring(totalSearchResult.indexOf("of") + 3, totalSearchResult.indexOf("results") - 1);
+    var positionStart = totalSearchResult.indexOf("of") != -1 ? totalSearchResult.indexOf("of") + 3 : 0;
+    return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("results") - 1);
 };

@@ -8,7 +8,6 @@ function AmazonFrParser(){
     // Amazon.fr uses api from amazon.co.uk
     this.completionUrl = "http://t1-completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=5";
     this.region = AmazonFrParser.region;
-    this.paramUrlBestSellers = "695398031";
     this.areYouAnAuthorPattern = "Etes-vous un auteur";
     this.free = 'Gratuit';
     this.currencySign = "&euro;";
@@ -129,5 +128,6 @@ AmazonFrParser.prototype.getRating = function(responseText){
 
 AmazonFrParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    return totalSearchResult.substring(totalSearchResult.indexOf("sur") + 4, totalSearchResult.indexOf("résultats") - 1);
+    var positionStart = totalSearchResult.indexOf("sur") != -1 ? totalSearchResult.indexOf("sur") + 4 : 0;
+    return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("résultats") - 1);
 };

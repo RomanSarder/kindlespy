@@ -110,5 +110,6 @@ AmazonItParser.prototype.getRating = function(responseText){
 
 AmazonItParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    return totalSearchResult.substring(totalSearchResult.indexOf("dei") + 4, totalSearchResult.indexOf("risultati") - 1);
+    var positionStart = totalSearchResult.indexOf("dei") != -1 ? totalSearchResult.indexOf("dei") + 4 : 0;
+    return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("risultati") - 1);
 };

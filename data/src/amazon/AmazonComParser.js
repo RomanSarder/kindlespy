@@ -7,7 +7,6 @@ function AmazonComParser(){
     this.mainUrl = "http://www.amazon." + AmazonComParser.zone;
     this.completionUrl = "http://completion.amazon." + AmazonComParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=1";
     this.region = AmazonComParser.region;
-    this.paramUrlBestSellers = "341689031";
     this.areYouAnAuthorPattern = "Are You an Author";
     this.free = 'free';
     this.currencySign = "$";
@@ -126,5 +125,6 @@ AmazonComParser.prototype.getRating = function(responseText){
 
 AmazonComParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
-    return totalSearchResult.substring(totalSearchResult.indexOf("of") + 3, totalSearchResult.indexOf("results") - 1);
+    var positionStart = totalSearchResult.indexOf("of") != -1 ? totalSearchResult.indexOf("of") + 3 : 0;
+    return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("results") - 1);
 };
