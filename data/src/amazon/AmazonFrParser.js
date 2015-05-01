@@ -17,7 +17,7 @@ function AmazonFrParser(){
     this.searchResultsNumber = 16;
     this.authorResultsNumber = 16;
     this.publisher = "Editeur";
-    this.searchKeys = ["à acheter","louer"];
+    this.searchKeys = [decodeURI(encodeURI("à acheter")),"louer"];
     this.numberSign = decodeURI("n%C2%B0");
     this.searchPattern = "Format Kindle";
     this.estSalesScale = [
@@ -121,13 +121,14 @@ AmazonFrParser.prototype.getReviews = function(responseText) {
 };
 
 AmazonFrParser.prototype.getRating = function(responseText){
-    var ratingString = responseText.find("#revSum span:contains('étoiles sur')");
+    var pattern = decodeURI(encodeURI("étoiles sur"));
+    var ratingString = responseText.find("#revSum span:contains('" + pattern + "')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
-    return ratingString.text().split("étoiles sur")[0].trim();
+    return ratingString.text().split(pattern)[0].trim();
 };
 
 AmazonFrParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
     var positionStart = totalSearchResult.indexOf("sur") != -1 ? totalSearchResult.indexOf("sur") + 4 : 0;
-    return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("résultats") - 1);
+    return totalSearchResult.substring(positionStart, totalSearchResult.indexOf(decodeURI(encodeURI("résultats"))) - 1);
 };
