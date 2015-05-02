@@ -8,7 +8,7 @@ function AmazonItParser(){
     // Amazon.de uses api from amazon.co.uk
     this.completionUrl = "http://t1-completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=35691";
     this.region = AmazonItParser.region;
-    this.free = 'Gratuito';
+    this.free = 'gratuito';
     this.currencySign = "&euro;";
     this.currencySignForExport = "\u20AC";
     this.thousandSeparator = ".";
@@ -77,7 +77,7 @@ AmazonItParser.prototype.getPriceFromKindleEditionRow = function(kindleEditionRo
 AmazonItParser.prototype.getReviewsCountFromResult = function(resultItem) {};
 
 AmazonItParser.prototype.parsePrice = function(price) {
-    if(price == this.free) return 0;
+    if(price.toLowerCase() == this.free) return 0;
     if(!price) return 0;
     return Helper.parseFloat(price, this.decimalSeparator);
 };

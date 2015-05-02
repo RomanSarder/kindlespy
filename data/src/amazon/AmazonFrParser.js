@@ -9,7 +9,7 @@ function AmazonFrParser(){
     this.completionUrl = "http://t1-completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=5";
     this.region = AmazonFrParser.region;
     this.areYouAnAuthorPattern = "Etes-vous un auteur";
-    this.free = 'Gratuit';
+    this.free = 'gratuit';
     this.currencySign = "&euro;";
     this.currencySignForExport = "\u20AC";
     this.thousandSeparator = ".";
@@ -95,7 +95,7 @@ AmazonFrParser.prototype.getReviewsCountFromResult = function(resultItem) {
 };
 
 AmazonFrParser.prototype.parsePrice = function(price) {
-    if(price == this.free) return 0;
+    if(price.toLowerCase() == this.free) return 0;
     if(!price) return 0;
     return Helper.parseFloat(price, this.decimalSeparator);
 };

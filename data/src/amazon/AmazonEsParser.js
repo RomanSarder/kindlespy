@@ -77,7 +77,7 @@ AmazonEsParser.prototype.getPriceFromKindleEditionRow = function(kindleEditionRo
 AmazonEsParser.prototype.getReviewsCountFromResult = function(resultItem) {};
 
 AmazonEsParser.prototype.parsePrice = function(price) {
-    if(price == this.free) return 0;
+    if(price.toLowerCase() == this.free) return 0;
     if(!price) return 0;
     return Helper.parseFloat(price, this.decimalSeparator);
 };
