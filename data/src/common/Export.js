@@ -19,7 +19,7 @@ Export.toCSV = function(data, fileName, booksNumber){
                 if (infoArray[i].indexOf("\"") >= 0)
                     escapeQuotes = true;
 
-                var fieldValue = (escapeQuotes ? infoArray[i].replace("\"", "\"\"") : infoArray[i]);
+                var fieldValue = infoArray[i];
 
                 if (fieldValue.indexOf("\r") >= 0 || fieldValue.indexOf("\n") >= 0)
                 {

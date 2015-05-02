@@ -62,7 +62,7 @@ MainTab.prototype.exportToCsv = function(bookData, siteParser){
             x[index + 1][7] = bookData[index].Reviews;
             x[index + 1][8] = bookData[index].SalesRank;
             x[index + 1][9] = bookData[index].PrintLength;
-            x[index + 1][10] = "=HYPERLINK(\"" + bookData[index].Url + "\")";
+            x[index + 1][10] = '=HYPERLINK(""' + bookData[index].Url + '"")';
         }
     }
 
