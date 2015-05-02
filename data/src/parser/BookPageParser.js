@@ -140,7 +140,7 @@ BookPageParser.prototype.getAuthor = function(jqNodes) {
         author = jqNodes.find('#contributorContainer' + asin + ' b:first').text().trim();
     }
     if(author == ''){
-        author = jqNodes.find('.byLinePipe').parent().find('a').text().trim();
+        author = jqNodes.find('.byLinePipe').parent().find('a:first').text().trim();
     }
     return author;
 };
