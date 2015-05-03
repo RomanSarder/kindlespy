@@ -25,9 +25,10 @@ BestSellersPage.prototype.loadData = function(pullingToken, siteParser, parentUr
 };
 
 BestSellersPage.prototype.parsePage = function(pullingToken, responseText, parentUrl){
-    var pattern = 'class="zg_itemImmersion"';
+    var patternStart = 'class="zg_itemImmersion"';
+    var patternEnd = 'class="zg_clear"';
     var str = responseText;
-    var pos = str.indexOf(pattern);
+    var pos = str.indexOf(patternStart);
 
     var no = [];
     var url = [];
@@ -41,14 +42,15 @@ BestSellersPage.prototype.parsePage = function(pullingToken, responseText, paren
 
     while (pos >= 0)
     {
-        str = str.substr(pos + pattern.length);
+        str = str.substr(pos + patternStart.length);
+        var item = str.substring(0, str.indexOf(patternEnd));
 
-        no[index] = this.getNoInfo(str);
-        url[index] = this.getPageUrl(str);
-        price[index] = this.getPriceInfo(str);
-        review[index] = this.getReviewInfo(str);
+        no[index] = this.getNoInfo(item);
+        url[index] = this.getPageUrl(item);
+        price[index] = this.getPriceInfo(item);
+        review[index] = this.getReviewInfo(item);
 
-        pos = str.indexOf(pattern);
+        pos = str.indexOf(patternStart);
         index++;
     }
 
