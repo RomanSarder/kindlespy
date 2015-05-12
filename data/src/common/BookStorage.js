@@ -113,6 +113,7 @@ BookStorage.prototype.initBookFromUrl = function(bookUrl, callback) {
             image: book.imageUrl,
             currentSalesRank: book.salesRank,
             price: book.price,
+            formattedPrice: book.formattedPrice,
             pages: book.printLength,
             estSales: book.estSale,
             estSalesRev: book.salesRecv,

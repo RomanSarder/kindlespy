@@ -121,6 +121,7 @@ KindleSpy.prototype.parseDataFromBookPageAndSend = function(pullingToken, num, u
             Title: pageData.title,
             Description: pageData.description,
             Price: pageData.price,
+            FormattedPrice: pageData.formattedPrice,
             EstSales: pageData.estSale,
             SalesRecv: pageData.salesRecv,
             Reviews: pageData.reviews,

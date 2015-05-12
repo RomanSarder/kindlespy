@@ -79,7 +79,7 @@ AmazonCaParser.prototype.getReviewsCountFromResult = function() {};
 AmazonCaParser.prototype.parsePrice = function(price) {
     if(price.toLowerCase() == this.free) return 0;
     if(!price) return 0;
-    return price.substr(4);
+    return Helper.parseFloat(price, this.decimalSeparator);
 };
 
 AmazonCaParser.prototype.formatPrice = function(price) {

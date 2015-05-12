@@ -82,7 +82,7 @@ KeywordAnalysisTab.prototype.exportToCsv = function(bookData, siteParser){
         {
             x[index + 1][0] = (index + 1).toString();
             x[index + 1][1] = bookData[index].Title;
-            x[index + 1][2] = bookData[index].Price.replace(siteParser.currencySign, siteParser.currencySignForExport);
+            x[index + 1][2] = bookData[index].FormattedPrice.replace(siteParser.currencySign, siteParser.currencySignForExport);
             x[index + 1][3] = bookData[index].PrintLength;
             x[index + 1][4] = this.isKeywordInText(bookData[index].Category, bookData[index].Title);
             x[index + 1][5] = this.isKeywordInText(bookData[index].Category, bookData[index].Description);
@@ -134,7 +134,7 @@ KeywordAnalysisTab.prototype.insertData = function(pageNumber, books, siteParser
             html += "<tr>" +
                 "<td>"+(i + 1)+"</td>" +
                 "<td class='wow' style='min-width:280px;max-width:280px;'><a href="+books[i].Url+" target='_blank'>" + books[i].Title + "</a></td>" +
-                "<td style='min-width:50px;max-width:50px;padding-left:5px;padding-right:5px;'>"+ books[i].Price +"</td>" +
+                "<td style='min-width:50px;max-width:50px;padding-left:5px;padding-right:5px;'>"+ books[i].FormattedPrice +"</td>" +
                 "<td class='bg-" + this.getPagesColor(books[i].PrintLength) + "' style='padding-left:18px;min-width:22px;max-width:22px;padding-right:18px;'>" +books[i].PrintLength + "</td>" +
                 "<td class='bg-" + this.getKWColor(kwt) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwt + "</td>" +
                 "<td class='bg-" + this.getKWColor(kwd) + "' style='padding-left:10px;min-width:22px;max-width:22px;padding-right:10px;'>" + kwd + "</td>" +
@@ -143,15 +143,9 @@ KeywordAnalysisTab.prototype.insertData = function(pageNumber, books, siteParser
                 "<td class='bg-" + this.getSalesRankColor(salesRankConclusion) + "' align='right' style='padding-left:31px;width:70px;'>"+ books[i].SalesRank +"</td>"+
                 "</tr>";
 
-            var price = "" + books[i].Price;
             var review = "" + books[i].Reviews;
-
             salesRankSum += Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator);
-            if (price.indexOf("free") >= 0)
-                priceSum = 0;
-            else
-                priceSum += Helper.parseFloat(price, siteParser.decimalSeparator);
-
+            priceSum += books[i].Price;
             reviewSum += Helper.parseInt(review, siteParser.decimalSeparator);
             pagesSum += $.isNumeric(books[i].PrintLength) ? parseInt(books[i].PrintLength) : 0;
             ratingSum += parseFloat(books[i].Rating);

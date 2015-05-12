@@ -190,7 +190,8 @@ BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
                 return callback({
                     title: entryTitle,
                     description: entryDescription,
-                    price: (price == _this._siteParser.free) ? _this._siteParser.free : _this._siteParser.formatPrice(realPrice),
+                    price: realPrice,
+                    formattedPrice: (price == _this._siteParser.free) ? _this._siteParser.free : _this._siteParser.formatPrice(realPrice),
                     estSale: entryEstSale,
                     salesRecv: entrySalesRecv,
                     reviews: reviews,

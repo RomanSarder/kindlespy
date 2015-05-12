@@ -56,7 +56,7 @@ MainTab.prototype.exportToCsv = function(bookData, siteParser){
             x[index + 1][1] = bookData[index].Title;
             x[index + 1][2] = bookData[index].Author;
             x[index + 1][3] = bookData[index].DateOfPublication;
-            x[index + 1][4] = bookData[index].Price.replace(siteParser.currencySign, siteParser.currencySignForExport);
+            x[index + 1][4] = bookData[index].FormattedPrice.replace(siteParser.currencySign, siteParser.currencySignForExport);
             x[index + 1][5] = Helper.addCommas(bookData[index].EstSales);
             x[index + 1][6] = siteParser.currencySignForExport + " " + Helper.addCommas(Math.round(bookData[index].SalesRecv));
             x[index + 1][7] = bookData[index].Reviews;
@@ -99,25 +99,20 @@ MainTab.prototype.insertData = function(pageNumber, books, siteParser, books20){
                 "<a target='_blank' href='" + books[i].GoogleSearchUrl + "' >S</a> " + " | " +
                 "<a target='_blank' href='" + books[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
                 "<td style='padding-left:15px; width:30px;'>" +books[i].PrintLength + "</td>" +
-                "<td style='width:50px;'>"+ books[i].Price +"</td>" +
+                "<td style='width:50px;'>"+ books[i].FormattedPrice +"</td>" +
                 "<td style='width:60px;' align='center'>" + Helper.addCommas(books[i].EstSales) +"</td>" +
                 "<td style='width:80px;'><div style='float:left'> "+ siteParser.currencySign +" </div> <div style='float:right'>"+ Helper.addCommas(Math.round(books[i].SalesRecv)) +"</div></td>" +
                 "<td style='width:50px;' align='right'>"+ books[i].Reviews +"</td>" +
                 "<td style='width:80px;padding-right : 10px;' align='right'>"+ books[i].SalesRank +"</td>"+
                 "</tr>";
 
-            var price = "" + books[i].Price;
             var review = "" + books[i].Reviews;
 
             salesRankSum += Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator);
             salesRecvSum += parseInt(books[i].SalesRecv);
-            if (price.indexOf("free") >= 0)
-                priceSum = 0;
-            else
-                priceSum += Helper.parseFloat(price, siteParser.decimalSeparator);
-
+            priceSum += books[i].Price;
             reviewSum += Helper.parseInt(review, siteParser.decimalSeparator);
-
+            
             nTotalCnt ++;
 
             if (category == "")

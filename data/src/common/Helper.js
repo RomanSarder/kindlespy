@@ -6,6 +6,7 @@ function Helper(){
 }
 
 Helper.parseFloat = function(string, decimalSeparator){
+    if (typeof(string) !== 'string') return string;
     decimalSeparator = Helper.valueOrDefault(decimalSeparator, '.');
     // leave only numbers and decimal separator
     var numbersWithLocalDecimalSeparator = string.trim().replace(new RegExp('[^0-9' + decimalSeparator + ']','g'), '');
@@ -13,6 +14,7 @@ Helper.parseFloat = function(string, decimalSeparator){
 };
 
 Helper.parseInt = function(string, decimalSeparator){
+    if (typeof(string) !== 'string') return string;
     decimalSeparator = Helper.valueOrDefault(decimalSeparator, '.');
     // leave only numbers and decimal separator
     return parseInt(string.trim().replace(new RegExp('[^0-9' + decimalSeparator + ']','g'), ''));

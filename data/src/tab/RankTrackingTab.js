@@ -136,7 +136,7 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     $('#disableTracking').data({url: bookData.url});
 
     $('#singleResult1').html(bookData.currentSalesRank);
-    $('#singleResult2').html(bookData.price);
+    $('#singleResult2').html(bookData.formattedPrice);
     $('#singleResult3').html(bookData.pages);
     $('#singleResult4').html(Helper.addCommas(bookData.estSales));
     $('#singleResult5').html(this.siteParser.formatPrice(Helper.addCommas(Math.round(bookData.estSalesRev))));
@@ -149,8 +149,7 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     var avgSalesRank = sumRank/points;
     var bookPageParser = new BookPageParser(bookData.url);
     var estSale = bookPageParser.getEstSale(avgSalesRank);
-    var realPrice = Helper.parseFloat(bookData.price, this.siteParser.decimalSeparator);
-    var salesRecv = bookPageParser.getSalesRecv(estSale, realPrice);
+    var salesRecv = bookPageParser.getSalesRecv(estSale, bookData.price);
     var estDailyRev = Math.floor((salesRecv/30)*100)/100;//30days
 
     $('#days').html(points);

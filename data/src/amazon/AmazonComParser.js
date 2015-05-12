@@ -97,7 +97,7 @@ AmazonComParser.prototype.getReviewsCountFromResult = function(resultItem) {
 AmazonComParser.prototype.parsePrice = function(price) {
     if(price.toLowerCase() == this.free) return 0;
     if(!price) return 0;
-    return price.substr(1);
+    return Helper.parseFloat(price, this.decimalSeparator);
 };
 
 AmazonComParser.prototype.formatPrice = function(price) {
