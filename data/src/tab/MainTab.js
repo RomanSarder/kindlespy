@@ -70,7 +70,7 @@ MainTab.prototype.exportToCsv = function(bookData, siteParser){
     Export.toCSV(x, fileName, bookData.length);
 };
 
-MainTab.prototype.insertData = function(pageNumber, books, siteParser){
+MainTab.prototype.insertData = function(pageNumber, books, siteParser, books20){
     var category = "";
     var categoryKind = "";
     var salesRankSum = 0;
@@ -150,18 +150,18 @@ MainTab.prototype.insertData = function(pageNumber, books, siteParser){
     $("table[name='data']").find("tbody").html(html);
 
     /*Start region: get data for analysis*/
-	var salesRank20index = Math.min(19, books.length-1);
-    var salesRank20 = Helper.parseInt(books[salesRank20index].SalesRank || 0, siteParser.decimalSeparator);
+	var salesRank20index = Math.min(19, books20.length-1);
+    var salesRank20 = Helper.parseInt(books20[salesRank20index].SalesRank || 0, siteParser.decimalSeparator);
 	
 	var monthlyRev20 = 0;
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
-	for (var i = 0; i < 20 && i < books.length; i++) {
-        monthlyRev20 += parseInt(books[i].SalesRecv);
-		if(this.getSalesRankConclusion(Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
-		if (books[i].SalesRecv > 500) monthlyRevBook ++;
+	for (var i = 0; i < 20 && i < books20.length; i++) {
+        monthlyRev20 += parseInt(books20[i].SalesRecv);
+		if(this.getSalesRankConclusion(Helper.parseInt(books20[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue ++;
+		if (books20[i].SalesRecv > 500) monthlyRevBook ++;
 	}
-	var avgMonthlyRev20 = monthlyRev20/(Math.min(20, books.length));
+	var avgMonthlyRev20 = monthlyRev20/(Math.min(20, books20.length));
 	/*End region get data for analysis*/
     
 	$('#result2').html(Helper.addCommas(Math.floor(salesRankSum / nTotalCnt)));

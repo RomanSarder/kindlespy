@@ -96,7 +96,7 @@ KeywordAnalysisTab.prototype.exportToCsv = function(bookData, siteParser){
     Export.toCSV(x, fileName, bookData.length);
 };
 
-KeywordAnalysisTab.prototype.insertData = function(pageNumber, books, siteParser)
+KeywordAnalysisTab.prototype.insertData = function(pageNumber, books, siteParser, books20)
 {
     var category = "";
     var categoryKind = "";
@@ -190,9 +190,9 @@ KeywordAnalysisTab.prototype.insertData = function(pageNumber, books, siteParser
 	/*Start region: get data for analysis*/
 	var salesRankConclusionValue = 0;
 	var monthlyRevBook = 0;
-	for (var i = 0; i < 20 && i < books.length; i++) {
-		if(this.getSalesRankConclusion(Helper.parseInt(books[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue++;
-		if (books[i].SalesRecv > 500) monthlyRevBook++;
+	for (var i = 0; i < 20 && i < books20.length; i++) {
+		if(this.getSalesRankConclusion(Helper.parseInt(books20[i].SalesRank, siteParser.decimalSeparator)) == 1) salesRankConclusionValue++;
+		if (books20[i].SalesRecv > 500) monthlyRevBook++;
 	}
 	/*End region get data for analysis*/
 	

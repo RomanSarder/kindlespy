@@ -1,5 +1,6 @@
 function Popup(){
     this.booksData = [];
+    this.books20 = [];
     this.activeTab = new MainTab();
     this.isErrorWindow = false;
     this.siteParser = undefined;
@@ -82,8 +83,9 @@ Popup.prototype.getData = function(callback){
     callback = Helper.valueOrDefault(callback, function(){});
     Api.sendMessageToActiveTab({type: "get-data"}, function(data) {
         if(typeof data === 'undefined') return;
+        var books20 = data.books.slice(0, Math.max(20, data.books.length))
         data.books.sort(function(a,b){return _this.compare(a,b)});
-        return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling});
+        return callback({books: data.books, isWaitingForPulling: data.isWaitingForPulling, isPulling: data.isPulling, books20: books20});
     });
 };
 
@@ -91,6 +93,7 @@ Popup.prototype.refreshData = function(){
     var _this = this;
     _this.getData(function(result) {
         _this.booksData = result.books;
+        _this.books20 = result.books20;
 
         if (_this.booksData.length <= 0) return;
 
@@ -102,7 +105,7 @@ Popup.prototype.refreshData = function(){
         }
 
         if (_this.activeTab.isPaged) {
-            _this.activeTab.insertData(_this.activeTab.pageNum - 1, _this.booksData, _this.siteParser);
+            _this.activeTab.insertData(_this.activeTab.pageNum - 1, _this.booksData, _this.siteParser, _this.books20);
             if (result.isWaitingForPulling) $('.img-load').show();
             else {
                 $('.img-load').hide();
@@ -213,7 +216,7 @@ Popup.prototype.setupClickListeners = function(){
         $(".info-item").css("width","16.6%");
         $('#data-body').css("overflow-y" , "hidden");
         $('.table-head').html(kwdAnalysis.header);
-        _this.activeTab.insertData(_this.activeTab.pageNum-1, _this.booksData, _this.siteParser);
+        _this.activeTab.insertData(_this.activeTab.pageNum-1, _this.booksData, _this.siteParser, _this.books20);
     });
 };
 
@@ -315,7 +318,7 @@ Popup.prototype.setupStaticClickListeners = function() {
     _this.isStaticLinkInitialized = true;
 };
 
-Popup.prototype.loadData = function(books) {
+Popup.prototype.loadData = function(books, books20) {
     this.setupStaticClickListeners();
     if (typeof books === 'undefined' || books.length < 1)
     {
@@ -335,7 +338,7 @@ Popup.prototype.loadData = function(books) {
         var _this = this;
         setTimeout(function(){_this.checkIsDataLoaded()}, 6000);
     }else{
-        this.updateTable(books);
+        this.updateTable(books, books20);
     }
 };
 
@@ -366,7 +369,7 @@ Popup.prototype.checkIsDataLoaded = function(){
     });
 };
 
-Popup.prototype.updateTable = function(books){
+Popup.prototype.updateTable = function(books, books20){
     var _this = this;
     _this.isErrorWindow = false;
     _this.storage.getNumberOfBooks(function(num){
@@ -411,14 +414,14 @@ Popup.prototype.updateTable = function(books){
         });
     });
 
-    _this.activeTab.insertData(_this.activeTab.pageNum-1, books, _this.siteParser);
+    _this.activeTab.insertData(_this.activeTab.pageNum-1, books, _this.siteParser, books20);
 };
 
 Popup.prototype.setActivePage = function(pageNum){
     $('#TitleWordCloud').text("Word Cloud (" + (pageNum) * 20 + ")");
     this.activeTab.pageNum = pageNum;
     this.activeTab.savePageNum();
-    this.activeTab.insertData(pageNum-1, this.booksData, this.siteParser);
+    this.activeTab.insertData(pageNum-1, this.booksData, this.siteParser, this.books20);
 };
 
 Popup.prototype.checkUrlAndLoad = function(){
@@ -447,7 +450,8 @@ Popup.prototype.checkUrlAndLoad = function(){
                 new KeywordAnalysisTab().loadPageNum(function(){
                     _this.getData(function(result){
                         _this.booksData = result.books;
-                        _this.loadData(_this.booksData);
+                        _this.books20 = result.books20;
+                        _this.loadData(_this.booksData, _this.books20);
                         _this.loadAdvertisementBanner();
                     });
                 });
