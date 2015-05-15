@@ -67,10 +67,10 @@ AmazonComParser.prototype.getTitle = function(responseText){
 };
 
 AmazonComParser.prototype.getDescription = function(jqNodes){
-    var description = jqNodes.find("#outer_postBodyPS");
-    if (description.length > 0 && description.text().trim().length > 0) return description.text().trim();
+    var description = jqNodes.find("#bookDescription_feature_div noscript");
+    if (description.length > 0) return $(description.text()).text().trim();
 
-    return $(jqNodes.find("#bookDescription_feature_div noscript").text()).find('p').text().trim();
+    return jqNodes.find("#outer_postBodyPS").text().trim();
 };
 
 AmazonComParser.prototype.getKindleEditionRow = function(jqNode) {
