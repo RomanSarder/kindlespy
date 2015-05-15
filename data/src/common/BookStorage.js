@@ -210,8 +210,10 @@ BookStorage.prototype.trackData = function () {
 
                     // add the today's day data
                     var bookParser = new BookPageParser(book.url);
-                    bookParser.getSalesRankFromUrl(book.url, function(salesRank){
+                    bookParser.getSalesRankFromUrl(book.url, function(salesRank, price, formattedPrice){
                         book.currentSalesRank = salesRank;
+                        book.price = price;
+                        book.formattedPrice = formattedPrice;
                         book.salesRankData.push({
                             date: today,
                             salesRank: salesRank

@@ -15,7 +15,7 @@ function AmazonComParser(){
     this.thousandSeparator = ",";
     this.searchResultsNumber = 16;
     this.authorResultsNumber = 12;
-    this.publisher = "publisher";
+    this.publisher = "Publisher";
     this.searchKeys = ["to buy","to rent"];
     this.numberSign = "#";
     this.searchPattern = "Kindle Edition";
@@ -67,7 +67,10 @@ AmazonComParser.prototype.getTitle = function(responseText){
 };
 
 AmazonComParser.prototype.getDescription = function(jqNodes){
-    return jqNodes.find("#outer_postBodyPS").text().trim();
+    var description = jqNodes.find("#outer_postBodyPS");
+    if (description.length > 0 && description.text().trim().length > 0) return description.text().trim();
+
+    return $(jqNodes.find("#bookDescription_feature_div noscript").text()).find('p').text().trim();
 };
 
 AmazonComParser.prototype.getKindleEditionRow = function(jqNode) {
@@ -109,16 +112,27 @@ AmazonComParser.prototype.getGoogleImageSearchUrlRel = function(responseText, ur
 };
 
 AmazonComParser.prototype.getImageUrlSrc = function(responseText) {
+    var imgBlkFront = responseText.find('#imgBlkFront');
+    if (imgBlkFront.length > 0){
+        return imgBlkFront.attr('data-src').trim();
+    }
+
     return Helper.parseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
 AmazonComParser.prototype.getReviews = function(responseText) {
     var rl_reviews = responseText.find("#acr .acrCount a:first");
-    return rl_reviews.length ? $(rl_reviews).text().trim() : "0";
+    if (rl_reviews.length > 0)
+        return $(rl_reviews).text().trim();
+
+    rl_reviews = responseText.find("#acrCustomerReviewText");
+    return rl_reviews.length ? $(rl_reviews).text().replace('customer reviews','').trim() : "0";
 };
 
 AmazonComParser.prototype.getRating = function(responseText){
-    var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
+    var ratingString = responseText.find("#avgRating span");
+    if (ratingString.length === 0)
+        ratingString = responseText.find("#revSum .acrRating:contains('out of')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };
@@ -127,4 +141,33 @@ AmazonComParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
     var positionStart = totalSearchResult.indexOf("of") != -1 ? totalSearchResult.indexOf("of") + 3 : 0;
     return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("results") - 1);
+};
+
+AmazonComParser.prototype.getPrintLength = function(jqNodes) {
+    var link = jqNodes.find('#aboutEbooksSection span a:first');
+    if (link.length > 0)
+        return parseInt(link.text()).toString();
+
+    return null;
+};
+
+AmazonComParser.prototype.getAuthor = function(jqNodes) {
+    var contributorNameId = jqNodes.find('#byline a.contributorNameID');
+    if (contributorNameId.length > 0)
+        return contributorNameId.text().trim();
+
+    var link = jqNodes.find('#byline span.author a:first');
+    if (link.length > 0)
+        return link.text().trim();
+
+    return null;
+};
+
+AmazonComParser.prototype.getPrice = function(jqNodes) {
+    var priceNodes = $(jqNodes.find('#buybox .kindle-price td')[1]).contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+
+    if (typeof priceNodes === 'undefined' || priceNodes.length == 0) return null;
+    return priceNodes[0].nodeValue.trim();
 };

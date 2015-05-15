@@ -88,13 +88,18 @@ BookPageParser.prototype.getReviews = function(jqNodes) {
 };
 
 BookPageParser.prototype.getPrice = function(jqNodes) {
+    var price = null;
+    if (typeof this._siteParser.getPrice !== 'undefined')
+        price = this._siteParser.getPrice(jqNodes);
+    if (price !== null) return price;
+
     var priceBlock = jqNodes.find('#priceBlock b.priceLarge');
     if(priceBlock && priceBlock.text().trim() !== '') {
         if(priceBlock.text().trim() == "free") return this._siteParser.formatPrice("0" + this._siteParser.decimalSeparator + "00");
          return priceBlock.text().trim();
     }
     priceBlock = jqNodes.find('#kindle_meta_binding_winner .price');
-    return priceBlock ? priceBlock.text().trim() : "";
+    return priceBlock ? priceBlock.text().trim() : this._siteParser.formatPrice("0" + this._siteParser.decimalSeparator + "00");
 };
 
 BookPageParser.prototype.getSalesRank = function(jqNodes) {
@@ -130,11 +135,21 @@ BookPageParser.prototype.getSalesRecv = function(estsales, price) {
 };
 
 BookPageParser.prototype.getPrintLength = function(jqNodes) {
+    var printLength = null;
+    if (typeof this._siteParser.getPrintLength !== "undefined")
+        printLength = this._siteParser.getPrintLength(jqNodes);
+    if (printLength !== null) return printLength;
+
     return parseInt(jqNodes.find('#pageCountAvailable span').text()).toString();
 };
 
 BookPageParser.prototype.getAuthor = function(jqNodes) {
-    var author = jqNodes.find('.contributorNameTrigger>a').text().trim();
+    var author = null;
+    if (typeof this._siteParser.getAuthor !== "undefined")
+        author = this._siteParser.getAuthor(jqNodes);
+    if (author !== null) return author;
+
+    author = jqNodes.find('.contributorNameTrigger>a').text().trim();
     if (author == ''){
         var asin = jqNodes.find('.contributorNameTrigger').attr('asin');
         author = jqNodes.find('#contributorContainer' + asin + ' b:first').text().trim();
@@ -152,7 +167,9 @@ BookPageParser.prototype.getSalesRankFromUrl = function(url, callback) {
         var jqResponse = Helper.parseHtmlToJquery(responseText);
         var salesRank = _this.getSalesRank(jqResponse);
         if (!salesRank) salesRank = "1";
-        callback(salesRank);
+        var price = _this._siteParser.parsePrice(_this.getPrice(jqResponse));
+        var formattedPrice = (price == _this._siteParser.free) ? _this._siteParser.free : _this._siteParser.formatPrice(price);
+        callback(salesRank, price, formattedPrice);
     });
 };
 
