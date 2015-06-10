@@ -148,6 +148,13 @@ AmazonComParser.prototype.getPrintLength = function(jqNodes) {
     if (link.length > 0)
         return parseInt(link.text()).toString();
 
+    var text = jqNodes.find('#productDetailsTable .content li:contains(Print Length)').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if(text.length > 0){
+        return parseInt(text[0].nodeValue);
+    }
+
     return null;
 };
 
