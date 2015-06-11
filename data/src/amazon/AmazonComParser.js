@@ -152,7 +152,7 @@ AmazonComParser.prototype.getPrintLength = function(jqNodes) {
         return this.nodeType == Node.TEXT_NODE;
     });
     if(text.length > 0){
-        return parseInt(text[0].nodeValue);
+        return parseInt(text[0].nodeValue).toString();
     }
 
     return null;
