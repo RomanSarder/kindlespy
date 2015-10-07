@@ -175,6 +175,12 @@ AmazonComParser.prototype.getPrice = function(jqNodes) {
         return this.nodeType == Node.TEXT_NODE;
     });
 
+    if (typeof priceNodes !== 'undefined' && priceNodes.length > 0) return priceNodes[0].nodeValue.trim();
+
+    priceNodes = $(jqNodes.find('#tmmSwatches .a-button-text span:contains("Kindle")').next().next().find('.a-color-price')).contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+
     if (typeof priceNodes === 'undefined' || priceNodes.length == 0) return null;
     return priceNodes[0].nodeValue.trim();
 };
