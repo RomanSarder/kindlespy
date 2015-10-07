@@ -136,7 +136,7 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     $('#disableTracking').data({url: bookData.url});
 
     $('#singleResult1').html(bookData.currentSalesRank);
-    $('#singleResult2').html(bookData.formattedPrice);
+    $('#singleResult2').html(this.siteParser.formatPrice(Helper.addCommas(bookData.price.toFixed(2))));
     $('#singleResult3').html(bookData.pages);
     $('#singleResult4').html(Helper.addCommas(bookData.estSales));
     $('#singleResult5').html(this.siteParser.formatPrice(Helper.addCommas(Math.round(bookData.estSalesRev))));
