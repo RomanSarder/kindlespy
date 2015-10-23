@@ -156,7 +156,7 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     $('#AvgSalesRank').html(Helper.addCommas(Math.floor(avgSalesRank)));
     $('#EstDailyRev').html(this.siteParser.formatPrice(Helper.addCommas(estDailyRev)));
     $('#authorName').html(bookData.author);
-    $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', '').replace('AA278', ''));
+    $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', '').replace('AA278', '').replace('PIsitb-sticker-v3-big,TopRight', '').replace('PIkin4,BottomRight', ''));
     $('#ExportBtnWordCloud').attr('book-url', bookData.url);
 
     var chartData = bookData.salesRankData;

@@ -74,9 +74,10 @@ AmazonComParser.prototype.getDescription = function(jqNodes){
 };
 
 AmazonComParser.prototype.getKindleEditionRow = function(jqNode) {
+    var _this = this;
     var retval;
     jqNode.find(".tp").find("tr").each(function() {
-        if($(this).text().indexOf("Kindle Edition")>0)
+        if($(this).text().indexOf(_this.searchPattern)>0)
             retval= $(this);
     });
 

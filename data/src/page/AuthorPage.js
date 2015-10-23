@@ -41,7 +41,7 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
     var jqResponse =
     jqNodes.find(".results").children().each(function() {
         if(this.id == "result_"+(startIndex+counter)) {
-            if(counter>=maxResults) return;
+            if(index>=maxResults) return;
             var krow = siteParser.getKindleEditionRow($(this));
             no[index] = parseInt(index) + 1 + parseInt(startIndex);
             if (typeof krow === 'undefined'){
@@ -67,8 +67,8 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
 
     category = jqNodes.find("#entityHeader").text().trim();
     var tmpSplit =category.split("by");
-    if (tmpSplit.length > 1)
-        category = tmpSplit[1];
+    if (tmpSplit.length > 1) category = tmpSplit[1];
+    else category = jqNodes.find("#ap-author-name").text().trim();
 
     url.forEach(function(item, i) {
         if (typeof url[i] !== 'undefined' && url[i].length > 0

@@ -15,7 +15,10 @@
           "http://www.amazon.co.uk/",
           "http://www.amazon.de/",
           "http://www.amazon.fr/",
-          "http://www.amazon.ca/"
+          "http://www.amazon.ca/",
+          "http://www.amazon.es/",
+          "http://www.amazon.it/",
+          "http://www.amazon.in/"
       ]
   }
 }

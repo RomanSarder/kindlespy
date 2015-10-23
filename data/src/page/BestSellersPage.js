@@ -99,5 +99,5 @@ BestSellersPage.prototype.getReviewInfo = function(responseText){
         pos = str.indexOf(pattern);
     }
 
-    return "0";
+    return null;
 };
