@@ -127,7 +127,7 @@ AmazonComParser.prototype.getReviews = function(responseText) {
         return $(rl_reviews).text().trim();
 
     rl_reviews = responseText.find("#acrCustomerReviewText");
-    return rl_reviews.length ? $(rl_reviews).text().replace('customer reviews','').trim() : "0";
+    return rl_reviews.length ? $(rl_reviews).text().replace('customer reviews','').replace('customer review','').trim() : "0";
 };
 
 AmazonComParser.prototype.getRating = function(responseText){
