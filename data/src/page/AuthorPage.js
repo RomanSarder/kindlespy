@@ -38,30 +38,46 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
     var counter = 0;
     var index = 0;
 
-    var jqResponse =
-    jqNodes.find(".results").children().each(function() {
-        if(this.id == "result_"+(startIndex+counter)) {
-            if(index>=maxResults) return;
-            var krow = siteParser.getKindleEditionRow($(this));
-            no[index] = parseInt(index) + 1 + parseInt(startIndex);
-            if (typeof krow === 'undefined'){
-                counter++;
-                return;
+    var listItems = jqNodes.find("#mainResults li").has('.a-fixed-left-grid-inner');
+
+    listItems.each(function() {
+        if($(this).attr('id') !== 'result_'+(startIndex+index)
+            && $(this).attr('id') !== 'centerPlus') return;
+        result = $(this).find('.a-fixed-left-grid-inner');
+        if(counter>=maxResults) return;
+        no[index] = startIndex + index + 1;
+        url[index] = $(result).find('a[title="Kindle Edition"]').attr("href");
+        if(!url[index]) url[index] = "";
+        var kprice = $(result).find('div').filter(function () {
+            return $(this).text() == siteParser.searchPattern || $(this).children("a:contains(" + siteParser.searchPattern+ ")").length > 0;
+        }).parent();
+        price[index] = siteParser.currencySign + "0" + siteParser.decimalSeparator + "00";
+        if($(kprice).length > 0)
+            var prices = kprice.find('span.s-price');
+        var el_price;
+        if (typeof prices !== 'undefined') {
+            if ((prices.parent().parent().has('span.s-icon-kindle-unlimited').length > 0)
+                || (prices.parent().has("span:contains('" + siteParser.searchKeys[1] + "')").length > 0)) {
+                el_price = $.grep(kprice.find('span.s-price'), function (element) {
+                    return ($(element).parent().has("span:contains('" + siteParser.searchKeys[0] + "')").length > 0);
+                });
+            }else if(prices.parent().parent().parent().has("h3:contains('Audible Audio Edition')").length > 0){ //Amazon Added Audible Audio Edition block
+                el_price = $(prices[0]);
+            }else if($(prices).length > 1){
+                el_price = $(prices[0]);
+            }else {
+                el_price = kprice.find('span.s-price');
             }
 
-            url[index] = siteParser.getUrlFromKindleEditionRow(krow);
-            review[index] = siteParser.getReviewsCountFromResult($(this));
-            if(!review[index]) review[index] = "0";
-            var kprice = siteParser.getPriceFromKindleEditionRow(krow);
-            if(kprice.length<1) {
-                kprice = $(krow).find(".toePrice a#buyPrice:first");
-            }
-            price[index] = $(kprice).text().trim();
-            url[index] = url[index].replace("&amp;", "&");
-            url[index] = url[index].replace(" ", "%20");
-            counter++;
-            index++;
+            if( el_price.length > 0) price[index] = $(el_price).text().trim();
         }
+
+        review[index] = undefined;
+
+        url[index] = url[index].replace("&amp;", "&");
+        url[index] = url[index].replace(" ", "%20");
+        index++;
+        counter++;
     });
     if(counter == 0) return 0;
 
