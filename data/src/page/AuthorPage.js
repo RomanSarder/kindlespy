@@ -46,7 +46,7 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
         result = $(this).find('.a-fixed-left-grid-inner');
         if(counter>=maxResults) return;
         no[index] = startIndex + index + 1;
-        url[index] = $(result).find('a[title="Kindle Edition"]').attr("href");
+        url[index] = $(result).find('a[title="' + siteParser.searchPattern + '"]').attr("href");
         if(!url[index]) url[index] = "";
         var kprice = $(result).find('div').filter(function () {
             return $(this).text() == siteParser.searchPattern || $(this).children("a:contains(" + siteParser.searchPattern+ ")").length > 0;
