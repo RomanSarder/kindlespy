@@ -113,3 +113,14 @@ AmazonCaParser.prototype.getTotalSearchResult = function(responseText){
     var positionStart = totalSearchResult.indexOf("of") != -1 ? totalSearchResult.indexOf("of") + 3 : 0;
     return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("results") - 1);
 };
+
+AmazonCaParser.prototype.getPrintLength = function(jqNodes) {
+    var text = jqNodes.find('#productDetailsTable .content li:contains(Print Length)').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if(text.length > 0){
+        return parseInt(text[0].nodeValue).toString();
+    }
+
+    return null;
+};
