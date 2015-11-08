@@ -190,6 +190,19 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     if(!canvas) return;
     var context = canvas.getContext("2d");
     window.myLine = new Chart(context).Line(lineChartData, {
-        bezierCurve: false
+        bezierCurve: false,
+        scaleLabel: "<%=RankTrackingTab.formatScaleLabel(value)%>"
     });
+};
+
+RankTrackingTab.formatScaleLabel = function(value){
+    var suffix = ['', 'k', 'M', 'G', 'T', 'P'];
+    var result = value;
+    var thousands = 0;
+    while(result >= 1000){
+        result = result / 1000;
+        thousands++;
+    }
+    result = Math.floor(result*100)/100;
+    return String(result) + suffix[thousands];
 };
