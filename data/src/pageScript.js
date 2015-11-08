@@ -38,7 +38,7 @@ KindleSpy.prototype.start = function(){
     $("#nav-searchbar, .nav-searchbar").submit(function()
     {
         _this.clearSearchResults();
-        setTimeout('kindleSpy.waitingForSearchResults()', 500);
+        setTimeout(function(){kindleSpy.waitingForSearchResults();}, 500);
     });
 
     _this.pullingToken = new Date().getTime();
@@ -98,7 +98,7 @@ KindleSpy.prototype.waitingForSearchResults = function(){
         || $("#bcKwText").text() !== '"'+search+'"'
         || $("#bcKwText").css("visibility") != "visible")
     {
-        return setTimeout('kindleSpy.waitingForSearchResults()', 500);
+        return setTimeout(function(){kindleSpy.waitingForSearchResults();}, 500);
     }
 
     this.startPullingSearchPage(location.href);
