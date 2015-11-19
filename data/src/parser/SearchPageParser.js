@@ -27,26 +27,35 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
         if(counter>=maxResults) return;
         no[index] = startIndex + index + 1;
         url[index] = $(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href");
-        if(!url[index]) url[index] = "";
+        if(!url[index]) {
+            index++;
+            return;
+        }
         var kprice = $(result).find('div').filter(function () {
             return $(this).text() == siteParser.searchPattern || $(this).children("a:contains(" + siteParser.searchPattern+ ")").length > 0;
-        }).parent();
+        });
         price[index] = siteParser.currencySign + "0" + siteParser.decimalSeparator + "00";
-        if($(kprice).length > 0)
-            var prices = kprice.find('span.s-price');
+        if($(kprice).length > 0){
+            var prices = kprice.next().find('span.s-price');
+            if (prices.length > 0 && prices.text().indexOf('0' + siteParser.decimalSeparator + '00') !== -1)
+                prices = kprice.parent().find('span.s-price');
+        }
+
         var el_price;
         if (typeof prices !== 'undefined') {
             if ((prices.parent().parent().has('span.s-icon-kindle-unlimited').length > 0)
                 || (prices.parent().has("span:contains('" + siteParser.searchKeys[1] + "')").length > 0)) {
-                el_price = $.grep(kprice.find('span.s-price'), function (element) {
+                el_price = $.grep(prices, function (element) {
                     return ($(element).parent().has("span:contains('" + siteParser.searchKeys[0] + "')").length > 0);
                 });
             }else if(prices.parent().parent().parent().has("h3:contains('Audible Audio Edition')").length > 0){ //Amazon Added Audible Audio Edition block
                 el_price = $(prices[0]);
-            }else if($(prices).length > 1){
+            }else if($(prices).length > 1) {
                 el_price = $(prices[0]);
-            }else {
+            }else if(kprice.find('span.s-price').length > 0){
                 el_price = kprice.find('span.s-price');
+            }else{
+                el_price =  prices;
             }
 
             if( el_price.length > 0) price[index] = $(el_price).text().trim();
@@ -76,5 +85,5 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
         }
     });
 
-    return index;
+    return counter;
 };

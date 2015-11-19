@@ -17,7 +17,7 @@ function AmazonFrParser(){
     this.searchResultsNumber = 16;
     this.authorResultsNumber = 16;
     this.publisher = "Editeur";
-    this.searchKeys = [decodeURI(encodeURI("à acheter")),"louer"];
+    this.searchKeys = [decodeURI(encodeURI("achat")),"louer"]; //à l'achat
     this.numberSign = decodeURI("n%C2%B0");
     this.searchPattern = "Format Kindle";
     this.estSalesScale = [
