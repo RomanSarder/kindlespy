@@ -18,7 +18,7 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
     var result;
 
     var listItems = jqNodes.find("#atfResults li").has('.a-fixed-left-grid-inner');
-    listItems = $.merge(listItems, jqNodes.find("#btfResults li").has('.a-fixed-left-grid-inner'));
+    listItems = $.merge(listItems, jqNodes.find("#btfResults li").has('.s-item-container'));
 
     listItems.each(function() {
         if($(this).attr('id') !== 'result_'+(startIndex+index)
