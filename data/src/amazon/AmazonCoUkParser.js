@@ -109,7 +109,7 @@ AmazonCoUkParser.prototype.getGoogleImageSearchUrlRel = function(responseText, u
     if(path.length > 5){
         this.GetResponseTextFromAmazonComParser(path[5], function(htmlFromAmazonCom){
             var jqHtml = Helper.parseHtmlToJquery(htmlFromAmazonCom);
-             return callback((jqHtml!==null) ? jqHtml.find('#main-image').attr('rel') : '');
+             return callback((jqHtml!==null) ? jqHtml.find('#imgBlkFront').attr('rel') : '');
         });
         return;
     }
@@ -123,15 +123,15 @@ AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCod
 };
 
 AmazonCoUkParser.prototype.getImageUrlSrc = function(responseText) {
-    return responseText.find('#main-image').attr('data-src');
+    return responseText.find('#imgBlkFront').attr('data-src');
 };
 
 AmazonCoUkParser.prototype.getReviews = function(responseText) {
-    var rl_reviews = responseText.find("#acr .acrCount a:first");
-    if (rl_reviews.length)
-        return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
-    else
-        return  "0";
+    var rl_reviews = responseText.find("#summaryStars a").contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if (typeof rl_reviews === 'undefined' || rl_reviews.length == 0) return '0';
+    return rl_reviews[1].nodeValue.replace('reviews','').replace('review','').replace('customer','').trim();
 };
 
 AmazonCoUkParser.prototype.getRating = function(responseText){
@@ -144,4 +144,24 @@ AmazonCoUkParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
     var positionStart = totalSearchResult.indexOf("of") != -1 ? totalSearchResult.indexOf("of") + 3 : 0;
     return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("results") - 1).replace(/[^0-9]/g, '');
+};
+
+AmazonCoUkParser.prototype.getPrintLength = function(responseText){
+    var printLengthNodes = responseText.find("#productDetailsTable li:contains('Print Length:')").contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if (typeof printLengthNodes === 'undefined' || printLengthNodes.length == 0) return '';
+    return printLengthNodes[0].nodeValue.replace('pages','').trim();
+};
+
+AmazonCoUkParser.prototype.getPrice = function(responseText){
+    var price = responseText.find(".swatchElement:contains('Kindle Edition') .a-button-inner .a-color-price");
+    if(typeof price === 'undefined' || price.length == 0) return '';
+    return price.text().trim();
+};
+
+AmazonCoUkParser.prototype.getAuthor = function(responseText){
+    var author = responseText.find(".author .contributorNameID");
+    if(typeof author === 'undefined' || author.length == 0) return '';
+    return author.text().trim();
 };
