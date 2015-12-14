@@ -162,6 +162,8 @@ KindleSpy.prototype.startPullingSearchPage = function(url){
 KindleSpy.prototype.httpGet = function(url, callback){
     $.get(url, function(responseText){
           return callback(responseText);
+    }).fail(function(){
+        return callback('');
     });
 };
 
