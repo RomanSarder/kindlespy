@@ -182,7 +182,7 @@ BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
         if (typeof entryTitle === 'undefined') return;
         var entryDescription = _this.getDescription(jqResponseText);
         if (!reviews) reviews = _this.getReviews(jqResponseText);
-        if (!price) price = _this.getPrice(jqResponseText);
+        if (!price || _this._siteParser.parsePrice(price) === 0) price = _this.getPrice(jqResponseText);
 
         var entrySalesRank = _this.getSalesRank(jqResponseText);
         var entryEstSale = _this.getEstSale(entrySalesRank);
