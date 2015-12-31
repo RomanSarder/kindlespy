@@ -58,8 +58,6 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
         price[index] = siteParser.currencySign + "0" + siteParser.decimalSeparator + "00";
         if($(kprice).length > 0) {
             var prices = kprice.next().find('span.s-price');
-            if (prices.length > 0 && prices.text().indexOf('0' + siteParser.decimalSeparator + '00') !== -1)
-                prices = kprice.parent().find('span.s-price');
         }
         var el_price;
         if (typeof prices !== 'undefined') {
