@@ -87,19 +87,19 @@ AmazonEsParser.prototype.formatPrice = function(price) {
 };
 
 AmazonEsParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    return callback(responseText.find('#main-image').attr('rel'));
+    return callback(responseText.find('#imgBlkFront').attr('rel'));
 };
 
 AmazonEsParser.prototype.getImageUrlSrc = function(responseText) {
-    return responseText.find('#main-image').attr('data-src');
+    return responseText.find('#imgBlkFront').attr('data-src');
 };
 
 AmazonEsParser.prototype.getReviews = function(responseText) {
-    var rl_reviews = responseText.find("#acr .acrCount a:first");
-    if (rl_reviews.length)
-        return $(rl_reviews).text().replace('opiniones','').replace(decodeURI("opini%C3%B3n"),'').trim();
-    else
-        return "0";
+    var rl_reviews = responseText.find('#summaryStars a').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if (typeof rl_reviews === 'undefined' || rl_reviews.length == 0) return '0';
+    return rl_reviews[1].nodeValue.replace('opiniones','').replace(decodeURI("opini%C3%B3n"),'').trim();
 };
 
 AmazonEsParser.prototype.getRating = function(responseText){
@@ -114,3 +114,29 @@ AmazonEsParser.prototype.getTotalSearchResult = function(responseText){
     var positionStart = totalSearchResult.indexOf("de") != -1 ? totalSearchResult.indexOf("de") + 3 : 0;
     return totalSearchResult.substring(positionStart, totalSearchResult.indexOf("resultados para") - 1);
 };
+
+AmazonEsParser.prototype.getPrintLength = function(jqNodes) {
+    var printLength = jqNodes.find('#productDetailsTable .content li:contains(Longitud de impresi)').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if(printLength.length > 0){
+        return parseInt(printLength[0].nodeValue).toString();
+    }
+    return null;
+};
+
+AmazonEsParser.prototype.getPrice = function(jqNodes) {
+    var priceNodes = $(jqNodes.find('#buybox .kindle-price td')[1]).contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+
+    if (typeof priceNodes !== 'undefined' && priceNodes.length > 0) return priceNodes[0].nodeValue.trim();
+
+    priceNodes = $(jqNodes.find('#tmmSwatches .a-button-text span:contains("Kindle")').next().next().find('.a-color-price')).contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+
+    if (typeof priceNodes === 'undefined' || priceNodes.length == 0) return null;
+    return priceNodes[0].nodeValue.trim();
+};
+

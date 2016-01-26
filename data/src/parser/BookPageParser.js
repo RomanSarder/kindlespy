@@ -99,7 +99,7 @@ BookPageParser.prototype.getPrice = function(jqNodes) {
          return priceBlock.text().trim();
     }
     priceBlock = jqNodes.find('#kindle_meta_binding_winner .price');
-    return priceBlock ? priceBlock.text().trim() : this._siteParser.formatPrice("0" + this._siteParser.decimalSeparator + "00");
+    return priceBlock.length > 0 ? priceBlock.text().trim() : this._siteParser.formatPrice("0" + this._siteParser.decimalSeparator + "00");
 };
 
 BookPageParser.prototype.getSalesRank = function(jqNodes) {
@@ -156,6 +156,12 @@ BookPageParser.prototype.getAuthor = function(jqNodes) {
     }
     if(author == ''){
         author = jqNodes.find('.byLinePipe').parent().find('a:first').text().trim();
+    }
+    if(author == ''){
+        var authorNodes = jqNodes.find(".author a").contents().filter(function(){
+            return this.nodeType == Node.TEXT_NODE;
+        });
+        author = authorNodes[0].nodeValue.trim();
     }
     return author;
 };
