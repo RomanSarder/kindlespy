@@ -6,11 +6,12 @@ It's a browser plugin for chrome, opera and firefox.
 
 ## Pre-requirements
 ### Firefox
-* Python version 2.* from [python.org](https://www.python.org/)
-* Mozilla [SDK](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Installation). The direct [link](https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip).
+* Node.js from [nodejs.org](https://nodejs.org/download/)
+* [jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm) tool can be installed from node.js **npm install jpm -g**
+
 * Firefox browser
 
-Note: [jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm) tool will replace cfx soon, it doesn't require Python but will need node.js instead.
+Note: Python 2.* is not needed anymore.
 
 ### Chrome
 * Chrome browser
@@ -18,10 +19,9 @@ Note: [jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm) tool will
 ## Install
 ### Firefox
 1. Run command window `cmd`
-2. Go to SDK folder and run `bin\activate`
 3. Go to the project folder `cd project_folder`
-4. Use `cfx run` command to run a new instance of Firefox with the add-on installed
-5. You can use the `cfx run --profiledir=c:\firefox-sdk\profile` to store profile data and use it in future
+4. Use `jpm run` command to run a new instance of Firefox with the add-on installed
+5. You can use the `jpm run --profile=c:\firefox-profile` to store profile data and use it in future
 
 ### Chrome
 1. Open [extensions](chrome://extensions) page in chrome
@@ -31,7 +31,7 @@ Note: [jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm) tool will
 
 # Packaging
 ### Firefox
-The command **cfx xpi** from the mozilla SDK can be used to package the add-on into an XPI file for distribution
+The command **jpm xpi** from the mozilla SDK can be used to package the add-on into an XPI file for distribution
 
 ### Chrome
 Packaging of chrome extension is described [here](https://developer.chrome.com/extensions/packaging)
