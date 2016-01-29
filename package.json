@@ -1,10 +1,15 @@
 {
   "name": "kindlespy",
   "title": "KDSPY",
-  "id": "jid1-1RpMPpIB0n7BbQ",
+  "id": "jid1-1RpMPpIB0n7BbQ@jetpack",
   "description": "KindleSpy analyses Amazon Kindle categories & author pages allowing you to find luctrative niche markets with ease.",
   "author": "5minutepublishing.com",
   "version": "4.3.14",
+  "main": "index.js",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
   "permissions": {
       "cross-domain-content": [
           "http://www.kdspy.com/",

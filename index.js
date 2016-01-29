@@ -13,6 +13,8 @@ var simpleStorage = require('sdk/simple-storage');
 var array = require('sdk/util/array');
 var pageWorker = require("sdk/page-worker");
 var { setInterval } = require("sdk/timers");
+var request = require("sdk/request").Request;
+var base64 = require("sdk/base64");
 
 // page scripts
 var workers = [];

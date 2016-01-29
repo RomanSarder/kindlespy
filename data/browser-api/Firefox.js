@@ -51,7 +51,7 @@ Api.sendMessageToActiveTab = function(message, callback){
         return callback(result);
     });
 };
-// TODO: Following code should be in main.js
+// TODO: Following code should be in index.js
 //var workers = [];
 //function initEventScript(worker){
 //    array.add(workers, worker);
@@ -76,7 +76,7 @@ Api.openNewTab = function(url){
     addon.port.emit('open-tab', url);
     addon.port.emit('close');
 };
-// TODO: Following code should be in main.js
+// TODO: Following code should be in index.js
 //popup.port.on('open-tab', function(url){
 //    tabs.open(url);
 //});
@@ -109,7 +109,7 @@ Api.storage = {
     }
 };
 
-// TODO: Following code should be in main.js
+// TODO: Following code should be in index.js
 //function storageGet(port, messageObject){
 //    var result = {};
 //    result[messageObject.key] = simpleStorage.storage[messageObject.key];
@@ -179,7 +179,7 @@ Api.createAlarm = function(alarmName, periodInMinutes){
     self.port.emit('create-alarm', {alarmName: alarmName, periodInMinutes: periodInMinutes});
 };
 
-// TODO: Following code should be in main.js
+// TODO: Following code should be in index.js
 //backgroundWorker.port.on('create-alarm', function(alarmData){
 //    setInterval(function(alarmName) {
 //        backgroundWorker.port.emit('alarm', alarmName);
