@@ -9,7 +9,7 @@ function AmazonInParser(){
     this.completionUrl = "http://completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=44571";
     this.region = AmazonInParser.region;
     this.free = 'free';
-    this.currencySign = "&#8377;";
+    this.currencySign = "\u20A8";
     this.currencySignForExport = "\u20A8";
     this.decimalSeparator = ".";
     this.thousandSeparator = ",";
@@ -140,7 +140,13 @@ AmazonInParser.prototype.getPrintLength = function(jqNodes) {
 };
 
 AmazonInParser.prototype.getPrice = function(jqNodes) {
-    var priceNodes = jqNodes.find('#priceBlock b.priceLarge span').contents().filter(function(){
+    var priceNodes = $(jqNodes.find('#buybox .kindle-price td')[1]).contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+
+    if (typeof priceNodes !== 'undefined' && priceNodes.length > 0) return priceNodes[1].nodeValue.trim();
+
+    priceNodes = jqNodes.find('#priceBlock b.priceLarge span').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
     if (typeof priceNodes === 'undefined' || priceNodes.length == 0) return '';

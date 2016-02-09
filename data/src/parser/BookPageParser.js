@@ -89,9 +89,15 @@ BookPageParser.prototype.getReviews = function(jqNodes) {
 
 BookPageParser.prototype.getPrice = function(jqNodes) {
     var price = null;
+
+    price = $(jqNodes.find('#buybox .kindle-price td')[1]).contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if (typeof price !== 'undefined' && price.length > 0 && price[0].nodeValue.trim()!= '') return price[0].nodeValue.trim();
+
     if (typeof this._siteParser.getPrice !== 'undefined')
         price = this._siteParser.getPrice(jqNodes);
-    if (price !== null) return price;
+    if (typeof price !== 'undefined' && price.length > 0) return price;
 
     var priceBlock = jqNodes.find('#priceBlock b.priceLarge');
     if(priceBlock && priceBlock.text().trim() !== '') {
