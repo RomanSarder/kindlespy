@@ -59,7 +59,10 @@ AmazonComParser.zone = "com";
 AmazonComParser.region = "USA";
 
 AmazonComParser.prototype.getTitle = function(responseText){
-    var titleNodes = responseText.find('#btAsinTitle').contents().filter(function(){
+    var titleNodes = responseText.find("#ebooksProductTitle");
+    if (typeof titleNodes !== 'undefined' && titleNodes.length > 0) return titleNodes.text().trim();
+
+    titleNodes = responseText.find('#btAsinTitle').contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
     if (typeof titleNodes === 'undefined' || titleNodes.length == 0) return '';
