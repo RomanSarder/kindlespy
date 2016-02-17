@@ -69,6 +69,10 @@ BookPageParser.prototype.getImageUrl = function(jqNodes){
 
 BookPageParser.prototype.getTitle = function(jqNodes) {
     if (typeof jqNodes === 'undefined' || jqNodes.length == 0) return '';
+
+    var titleNodes = jqNodes.find("#ebooksProductTitle");
+    if (typeof titleNodes !== 'undefined' && titleNodes.length > 0) return titleNodes.text().trim();
+
     return this._siteParser.getTitle(jqNodes);
 };
 
