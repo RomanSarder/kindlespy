@@ -105,21 +105,10 @@ AmazonCoUkParser.prototype.formatPrice = function(price) {
 };
 
 AmazonCoUkParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    var path = url.split("/");
-    if(path.length > 5){
-        this.GetResponseTextFromAmazonComParser(path[5], function(htmlFromAmazonCom){
-            var jqHtml = Helper.parseHtmlToJquery(htmlFromAmazonCom);
-             return callback((jqHtml!==null) ? jqHtml.find('#imgBlkFront').attr('rel') : '');
-        });
-        return;
-    }
-
-    return callback("");
-};
-
-AmazonCoUkParser.prototype.GetResponseTextFromAmazonComParser = function(bookCode, callback) {
-    var urlAmazonCom = "http://www.amazon.com/product/dp/" + bookCode;
-    Api.sendMessageToActiveTab({type:'http-get', url: urlAmazonCom}, callback);
+    var dataImage = responseText.find('#imgBlkFront').attr('data-a-dynamic-image');
+    var jsonStringImage = JSON.parse(dataImage);
+    var srcImageArray = Object.keys(jsonStringImage);
+    return callback(srcImageArray.length > 0 ? srcImageArray[0]: 'undefined');
 };
 
 AmazonCoUkParser.prototype.getImageUrlSrc = function(responseText) {

@@ -105,7 +105,10 @@ AmazonDeParser.prototype.formatPrice = function(price) {
 };
 
 AmazonDeParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    AmazonCoUkParser.prototype.getGoogleImageSearchUrlRel(responseText, url, callback);
+    var dataImage = responseText.find('#imgBlkFront').attr('data-a-dynamic-image');
+    var jsonStringImage = JSON.parse(dataImage);
+    var srcImageArray = Object.keys(jsonStringImage);
+    return callback(srcImageArray.length > 0 ? srcImageArray[0]: 'undefined');
 };
 
 AmazonDeParser.prototype.getImageUrlSrc = function(responseText) {

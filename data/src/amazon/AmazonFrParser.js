@@ -105,7 +105,7 @@ AmazonFrParser.prototype.formatPrice = function(price) {
 };
 
 AmazonFrParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    callback(responseText.find('#main-image').attr('rel'));
+    return callback(responseText.find('#main-image').attr('rel'));
 };
 
 AmazonFrParser.prototype.getImageUrlSrc = function(responseText) {
