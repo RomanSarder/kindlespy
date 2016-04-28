@@ -99,9 +99,8 @@ BookPageParser.prototype.getPrice = function(jqNodes) {
     });
     if (typeof price !== 'undefined' && price.length > 0 && price[0].nodeValue.trim()!= '') return price[0].nodeValue.trim();
 
-    if (typeof this._siteParser.getPrice !== 'undefined')
-        price = this._siteParser.getPrice(jqNodes);
-    if (typeof price !== 'undefined' && price.length > 0) return price;
+    if (typeof this._siteParser.getPrice !== 'undefined') price = this._siteParser.getPrice(jqNodes);
+    if (price != null && price.length > 0) return price;
 
     var priceBlock = jqNodes.find('#priceBlock b.priceLarge');
     if(priceBlock && priceBlock.text().trim() !== '') {

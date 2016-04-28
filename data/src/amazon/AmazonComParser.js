@@ -99,8 +99,8 @@ AmazonComParser.prototype.getReviewsCountFromResult = function(resultItem) {
 };
 
 AmazonComParser.prototype.parsePrice = function(price) {
-    if(price.toLowerCase() == this.free) return 0;
     if(!price) return 0;
+    if(price.toLowerCase() == this.free) return 0;
     return Helper.parseFloat(price, this.decimalSeparator);
 };
 
@@ -175,10 +175,18 @@ AmazonComParser.prototype.getAuthor = function(jqNodes) {
 };
 
 AmazonComParser.prototype.getPrice = function(jqNodes) {
-    var priceNodes = $(jqNodes.find('#tmmSwatches .a-button-text span:contains("Kindle")').next().next().find('.a-color-price')).contents().filter(function(){
+    var node = jqNodes.find('#tmmSwatches .a-button-text span:contains("Kindle")').next().next();
+    var priceNodes = $(node.find('.a-color-price')).contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
 
-    if (typeof priceNodes === 'undefined' || priceNodes.length == 0) return null;
+    if (typeof priceNodes !== 'undefined' && priceNodes.length !== 0) return priceNodes[0].nodeValue.trim();
+
+    priceNodes = $(node.find('span')).contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+
+    if (typeof priceNodes === 'undefined' || priceNodes.length === 0) return null;
+
     return priceNodes[0].nodeValue.trim();
 };
