@@ -218,9 +218,6 @@ BookStorage.prototype.trackData = function () {
                             date: today,
                             salesRank: salesRank
                         });
-                        if ((book.salesRankData.length % 30) === 0) {
-                            book.trackingEnabled = false;
-                        }
                         _this.updateBookInStorage(book.url, book);
                     });
                 });

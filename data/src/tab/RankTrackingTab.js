@@ -117,17 +117,18 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     $('#AdPanel').show();
     var contentHtml = '';
     $('#bookTitle').text(bookData.title);
-    if(bookData.trackingEnabled){
+    var points = bookData.salesRankData.slice(Math.max(bookData.salesRankData.length - 30, 1));
+    if(points.length == 1 && !bookData.trackingEnabled){
+        contentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
+   }else{
         contentHtml = '<div><canvas id="canvas" height="290" width="520"></canvas></div>';
         $('#infoPages').show();
         $('.info.single_book .info-item').css('width', '16%');
         $('#ExportBtnWordCloud').show();
         $('#BookTracked').show();
     }
-    else {
-        contentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
-        $('#enableTracking').prop('disabled', false);
-    }
+    $('#enableTracking').prop('disabled', bookData.trackingEnabled);
+    $('#disableTracking').prop('disabled', !bookData.trackingEnabled);
 
     $('#tracking-content').html(contentHtml);
     $('#enableTracking').toggle(!bookData.trackingEnabled);
@@ -142,24 +143,24 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     $('#singleResult5').html(this.siteParser.formatPrice(Helper.addCommas(Math.round(bookData.estSalesRev))));
     $('#singleResult6').html(bookData.numberOfReviews);
     var sumRank=0;
-    var points = bookData.salesRankData.length;
-    for(var j=0; j<points;j++){
-        sumRank += Helper.parseInt(bookData.salesRankData[j].salesRank, this.siteParser.decimalSeparator);
+
+    for(var j=0; j<points.length;j++){
+        sumRank += Helper.parseInt(points[j].salesRank, this.siteParser.decimalSeparator);
     }
-    var avgSalesRank = sumRank/points;
+    var avgSalesRank = sumRank/points.length;
     var bookPageParser = new BookPageParser(bookData.url);
     var estSale = bookPageParser.getEstSale(avgSalesRank);
     var salesRecv = bookPageParser.getSalesRecv(estSale, bookData.price);
     var estDailyRev = Math.floor((salesRecv/30)*100)/100;//30days
 
-    $('#days').html(points);
+    $('#days').html(points.length);
     $('#AvgSalesRank').html(Helper.addCommas(Math.floor(avgSalesRank)));
     $('#EstDailyRev').html(this.siteParser.formatPrice(Helper.addCommas(estDailyRev)));
     $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', '').replace('AA278', '').replace('PIsitb-sticker-v3-big,TopRight', '').replace('PIkin4,BottomRight', ''));
     $('#ExportBtnWordCloud').attr('book-url', bookData.url);
 
-    var chartData = bookData.salesRankData;
+    var chartData = points;
     var labels = [];
     var data = [];
     for(var i=0;i<chartData.length;i++){
