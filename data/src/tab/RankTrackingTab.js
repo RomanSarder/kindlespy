@@ -117,7 +117,7 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     $('#AdPanel').show();
     var contentHtml = '';
     $('#bookTitle').text(bookData.title);
-    var points = bookData.salesRankData.slice(Math.max(bookData.salesRankData.length - 30, 1));
+    var points = bookData.salesRankData.slice(Math.max(bookData.salesRankData.length - 30, 0));
     if(points.length == 1 && !bookData.trackingEnabled){
         contentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
    }else{
