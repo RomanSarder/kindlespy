@@ -113,11 +113,8 @@ AmazonFrParser.prototype.getImageUrlSrc = function(responseText) {
 };
 
 AmazonFrParser.prototype.getReviews = function(responseText) {
-    var rl_reviews = responseText.find("#acr .acrCount a:first");
-    if (rl_reviews.length)
-        return $(rl_reviews).text().replace('commentaires','').replace('commentaire','').trim();
-    else
-        return "0";
+    var rl_reviews = responseText.find("#acrCustomerReviewText");
+    return rl_reviews.length ? $(rl_reviews).text().replace('commentaires','').replace('commentaire','').replace('client', '').trim() : "0";
 };
 
 AmazonFrParser.prototype.getRating = function(responseText){
@@ -131,4 +128,18 @@ AmazonFrParser.prototype.getTotalSearchResult = function(responseText){
     var totalSearchResult = responseText.find("#s-result-count").text();
     var positionStart = totalSearchResult.indexOf("sur") != -1 ? totalSearchResult.indexOf("sur") + 4 : 0;
     return totalSearchResult.substring(positionStart, totalSearchResult.indexOf(decodeURI(encodeURI("résultats"))) - 1);
+};
+
+AmazonFrParser.prototype.getPrintLength = function(jqNodes) {
+    var printLengthNodes = jqNodes.find('#productDetailsTable .content li:contains(Nombre de pages)').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if (typeof printLengthNodes !== 'undefined' && printLengthNodes.length > 0) return parseInt(printLengthNodes[0].nodeValue).toString();
+
+    printLengthNodes = jqNodes.find('#aboutEbooksSection span a:first').contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if (typeof printLengthNodes !== 'undefined' && printLengthNodes.length > 0) return parseInt(printLengthNodes[0].nodeValue).toString();
+
+    return null;
 };

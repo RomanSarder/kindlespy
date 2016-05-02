@@ -115,9 +115,8 @@ AmazonInParser.prototype.getImageUrlSrc = function(responseText) {
 };
 
 AmazonInParser.prototype.getReviews = function(responseText) {
-    var rl_reviews = responseText.find("#acr .acrCount a:first");
-    if (rl_reviews.length > 0) return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
-    return "0";
+    var rl_reviews = responseText.find("#acrCustomerReviewText");
+    return rl_reviews.length ? $(rl_reviews).text().replace('customer reviews','').replace('customer review','').trim() : "0";
 };
 
 AmazonInParser.prototype.getRating = function(responseText){
