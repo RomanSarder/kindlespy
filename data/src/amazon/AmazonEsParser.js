@@ -4,9 +4,9 @@
  */
 
 function AmazonEsParser(){
-    this.mainUrl = "http://www.amazon." + AmazonEsParser.zone;
+    this.mainUrl = "//www.amazon." + AmazonEsParser.zone;
     // Amazon.de uses api from amazon.co.uk
-    this.completionUrl = "http://t1-completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=44551";
+    this.completionUrl = "//t1-completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=44551";
     this.region = AmazonEsParser.region;
     this.free = 'gratis';
     this.currencySign = "&euro;";

@@ -4,9 +4,9 @@
  */
 
 function AmazonDeParser(){
-    this.mainUrl = "http://www.amazon." + AmazonDeParser.zone;
+    this.mainUrl = "//www.amazon." + AmazonDeParser.zone;
     // Amazon.de uses api from amazon.co.uk
-    this.completionUrl = "http://completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=4";
+    this.completionUrl = "//completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=4";
     this.region = AmazonDeParser.region;
     this.areYouAnAuthorPattern = "Sind Sie ein Autor";
     this.free = 'gratis';

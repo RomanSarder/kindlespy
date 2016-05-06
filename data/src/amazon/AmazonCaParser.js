@@ -4,9 +4,9 @@
  */
 
 function AmazonCaParser(){
-    this.mainUrl = "http://www.amazon." + AmazonCaParser.zone;
+    this.mainUrl = "//www.amazon." + AmazonCaParser.zone;
     // Amazon.ca uses api from amazon.com
-    this.completionUrl = "http://completion.amazon." + AmazonComParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=7";
+    this.completionUrl = "//completion.amazon." + AmazonComParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=7";
     this.region = AmazonCaParser.region;
     this.free = 'free';
     this.currencySign = "$";

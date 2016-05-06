@@ -4,9 +4,9 @@
  */
 
 function AmazonFrParser(){
-    this.mainUrl = "http://www.amazon." + AmazonFrParser.zone;
+    this.mainUrl = "//www.amazon." + AmazonFrParser.zone;
     // Amazon.fr uses api from amazon.co.uk
-    this.completionUrl = "http://t1-completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=5";
+    this.completionUrl = "//t1-completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=5";
     this.region = AmazonFrParser.region;
     this.areYouAnAuthorPattern = "Etes-vous un auteur";
     this.free = 'gratuit';

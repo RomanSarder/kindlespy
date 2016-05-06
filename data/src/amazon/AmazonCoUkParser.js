@@ -4,8 +4,8 @@
  */
 
 function AmazonCoUkParser(){
-    this.mainUrl = "http://www.amazon." + AmazonCoUkParser.zone;
-    this.completionUrl = "http://completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=3";
+    this.mainUrl = "//www.amazon." + AmazonCoUkParser.zone;
+    this.completionUrl = "//completion.amazon." + AmazonCoUkParser.zone + "/search/complete?method=completion&search-alias=digital-text&client=amazon-search-ui&mkt=3";
     this.region = AmazonCoUkParser.region;
     this.areYouAnAuthorPattern = "Are You an Author";
     this.free = 'free';

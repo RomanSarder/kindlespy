@@ -427,7 +427,7 @@ Popup.prototype.setActivePage = function(pageNum){
 Popup.prototype.checkUrlAndLoad = function(){
     var _this = this;
     Api.sendMessageToActiveTab({type: "get-current-url"}, function(url) {
-        if (typeof url === 'undefined' || url.indexOf("http://www.amazon.") < 0)
+        if (typeof url === 'undefined' || url.indexOf("www.amazon.") < 0)
         {
             //Go To Amazon Page
             Api.openNewTab('https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html');
