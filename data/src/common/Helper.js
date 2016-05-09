@@ -151,7 +151,7 @@ Helper.isBestSellersPageFromCategoryKind = function(categoryKind){
  * @returns {boolean}
  */
 Helper.isSearchPage = function(url, siteParser){
-    return url.indexOf(siteParser.mainUrl +"/s/")==0 && url.indexOf("digital-text") > 0;
+    return url.indexOf(siteParser.mainUrl +"/s/")!=-1 && url.indexOf("digital-text") > 0;
 };
 
 /**
@@ -180,7 +180,7 @@ Helper.isAuthorPage = function(html, siteParser){
  * @returns {boolean}
  */
 Helper.isAuthorSearchResultPage = function(url, siteParser){
-    return url.indexOf(siteParser.mainUrl +"/s") == 0 && url.indexOf("field-author") > 0 && url.indexOf("digital-text") > 0;
+    return url.indexOf(siteParser.mainUrl +"/s") !=-1 && url.indexOf("field-author") > 0 && url.indexOf("digital-text") > 0;
 };
 
 /**
