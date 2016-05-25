@@ -483,6 +483,9 @@ td.wow a:hover
 #content-keyword-search .content{
     overflow: hidden;
 }
+#content-keyword-search .no-data-found-content{
+    display:none;
+}
 /*Tootip*/
 .tooltip-theme {
     border-radius: 5px;

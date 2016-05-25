@@ -26,6 +26,11 @@ SearchKeywordsTab.prototype.search = function(){
     SearchKeywordsTab.clearTable();
     $('#content-keyword-search .loading').show();
     _this.getKeywords(function(keywords){
+        if(keywords.length == 0){
+            $('#content-keyword-search .loading').hide();
+            $('#content-keyword-search .no-data-found-content').show();
+            return;
+        }
         _this.getFullData(keywords, function(response){
             _this.appendTable(response);
         });
@@ -56,6 +61,7 @@ SearchKeywordsTab.prototype.getFullData = function(list, processItemFunction){
 SearchKeywordsTab.clearTable = function(){
     $('table[name="data-keyword-search"] tbody').html('');
     $('#content-keyword-search .content').hide();
+    $('#content-keyword-search .no-data-found-content').hide();
 };
 
 SearchKeywordsTab.prototype.emphasizeKeyword = function(text, keyword){
