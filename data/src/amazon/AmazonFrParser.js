@@ -105,11 +105,13 @@ AmazonFrParser.prototype.formatPrice = function(price) {
 };
 
 AmazonFrParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    return callback(responseText.find('#main-image').attr('rel'));
-};
-
-AmazonFrParser.prototype.getImageUrlSrc = function(responseText) {
-    return responseText.find('#main-image').attr('data-src');
+    var dataImage = responseText.find('#imgBlkFront').length !== 0 ?
+        responseText.find('#imgBlkFront').attr('data-a-dynamic-image') :
+        responseText.find('#ebooksImgBlkFront').attr('data-a-dynamic-image');
+    if(typeof dataImage === 'undefined') return 'undefined';
+    var jsonStringImage = JSON.parse(dataImage);
+    var srcImageArray = Object.keys(jsonStringImage);
+    return callback(srcImageArray.length > 0 ? srcImageArray[0]: 'undefined');
 };
 
 AmazonFrParser.prototype.getReviews = function(responseText) {

@@ -87,14 +87,11 @@ AmazonCaParser.prototype.formatPrice = function(price) {
 };
 
 AmazonCaParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    var dataImage = responseText.find('#imgBlkFront').attr('data-a-dynamic-image');
+    var dataImage = responseText.find('#ebooksImgBlkFront').attr('data-a-dynamic-image');
+    if(typeof dataImage === 'undefined') return 'undefined';
     var jsonStringImage = JSON.parse(dataImage);
     var srcImageArray = Object.keys(jsonStringImage);
     return callback(srcImageArray.length > 0 ? srcImageArray[0]: 'undefined');
-};
-
-AmazonCaParser.prototype.getImageUrlSrc = function(responseText) {
-    return Helper.parseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
 AmazonCaParser.prototype.getReviews = function(responseText) {

@@ -62,7 +62,15 @@ BookPageParser.prototype.getGoogleImageSearchUrl = function(jqNodes, url, callba
 
 BookPageParser.prototype.getImageUrl = function(jqNodes){
     if (typeof jqNodes === 'undefined' || jqNodes.length == 0) return '';
-    var src = this._siteParser.getImageUrlSrc(jqNodes);
+
+    var src = jqNodes.find('#ebooksImgBlkFront').length !== 0 ?
+        jqNodes.find('#ebooksImgBlkFront').attr('data-src') :
+        jqNodes.find('#imgBlkFront').attr('data-src');
+    if (typeof src !== 'undefined' && src.length > 0) return src;
+
+    if (typeof this._siteParser.getImageUrlSrc !== "undefined")
+        src = this._siteParser.getImageUrlSrc(jqNodes);
+
     if (typeof src === 'undefined' || src.length < 1) return '';
     return src;
 };

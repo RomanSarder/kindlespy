@@ -116,11 +116,6 @@ AmazonComParser.prototype.getGoogleImageSearchUrlRel = function(responseText, ur
 };
 
 AmazonComParser.prototype.getImageUrlSrc = function(responseText) {
-    var imgBlkFront = responseText.find('#imgBlkFront');
-    if (imgBlkFront.length > 0){
-        return imgBlkFront.attr('data-src').trim();
-    }
-
     return Helper.parseString(responseText.find('#holderMainImage noscript').text(),"src=","\"", "\" ");
 };
 
