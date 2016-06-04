@@ -106,7 +106,7 @@ AmazonCoUkParser.prototype.formatPrice = function(price) {
 
 AmazonCoUkParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
     var dataImage = responseText.find('#ebooksImgBlkFront').attr('data-a-dynamic-image');
-    if(typeof dataImage === 'undefined') return 'undefined';
+    if(typeof dataImage === 'undefined') return callback('undefined');
     var jsonStringImage = JSON.parse(dataImage);
     var srcImageArray = Object.keys(jsonStringImage);
     return callback(srcImageArray.length > 0 ? srcImageArray[0]: 'undefined');
