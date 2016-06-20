@@ -17,7 +17,7 @@ function AmazonEsParser(){
     this.authorResultsNumber = 16;
     this.publisher = "Editor";
     this.searchKeys = ["para comprar","to rent"];
-    this.numberSign = decodeURI("n%C2%B0");
+    this.numberSign = decodeURI("n.%C2%B0");
     this.searchPattern = decodeURI(encodeURI("Versión Kindle"));
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 12240 },
@@ -138,5 +138,15 @@ AmazonEsParser.prototype.getPrice = function(jqNodes) {
 
     if (typeof priceNodes === 'undefined' || priceNodes.length == 0) return null;
     return priceNodes[0].nodeValue.trim();
+};
+
+AmazonEsParser.prototype.getSalesRank = function(jqNodes) {
+    var salesRankNodes = jqNodes.find("#SalesRank").contents().filter(function(){
+        return this.nodeType == Node.TEXT_NODE;
+    });
+    if (typeof salesRankNodes === 'undefined' || salesRankNodes.length < 2) return '0';
+    var salesRankString = salesRankNodes[1].nodeValue.trim();
+    if ((typeof salesRankString === 'undefined') || (salesRankString == "")) return '0';
+    return salesRankString.substring(salesRankString.indexOf(this.numberSign) + this.numberSign.length, salesRankString.indexOf('de'));
 };
 

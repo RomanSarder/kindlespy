@@ -121,15 +121,20 @@ BookPageParser.prototype.getPrice = function(jqNodes) {
 
 BookPageParser.prototype.getSalesRank = function(jqNodes) {
     if (typeof jqNodes === 'undefined' || jqNodes.length == 0) return '0';
-
+    var salesRankNodes;
     // when page refreshed it can be undefined
     if (typeof this._siteParser === 'undefined') return '0';
-    var salesRankNodes = jqNodes.find("#SalesRank").contents().filter(function(){
+
+    if (typeof this._siteParser.getSalesRank !== 'undefined') salesRankNodes = this._siteParser.getSalesRank(jqNodes);
+    if (typeof salesRankNodes !== 'undefined' && salesRankNodes.length > 0) return salesRankNodes;
+
+    salesRankNodes = jqNodes.find("#SalesRank").contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
     if (typeof salesRankNodes === 'undefined' || salesRankNodes.length < 2) return '0';
     var salesRankString = salesRankNodes[1].nodeValue.trim();
     if ((typeof salesRankString === 'undefined') || (salesRankString == "")) return '0';
+
     return salesRankString.substring(salesRankString.indexOf(this._siteParser.numberSign) + this._siteParser.numberSign.length, salesRankString.indexOf(' '));
 };
 
