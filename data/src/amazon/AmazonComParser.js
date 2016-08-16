@@ -14,7 +14,7 @@ function AmazonComParser(){
     this.decimalSeparator = ".";
     this.thousandSeparator = ",";
     this.searchResultsNumber = 16;
-    this.authorResultsNumber = 12;
+    this.authorResultsNumber = 16;
     this.publisher = "Publisher";
     this.searchKeys = ["to buy","to rent"];
     this.numberSign = "#";
