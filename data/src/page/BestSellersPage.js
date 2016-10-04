@@ -19,14 +19,14 @@ BestSellersPage.prototype.loadData = function(pullingToken, siteParser, parentUr
         pageUrl += '&tf=1';
     $.get(pageUrl, function(responseText){
         // no need jQuery here: // var jqResponseText = parseHtmlToJquery(responseText);
-        _this.parsePage(pullingToken, responseText, parentUrl);
+        _this.parsePage(pullingToken, siteParser, responseText, parentUrl);
         return callback();
     });
 };
 
-BestSellersPage.prototype.parsePage = function(pullingToken, responseText, parentUrl){
-    var patternStart = 'class="zg_itemImmersion"';
-    var patternEnd = 'class="zg_clear"';
+BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, responseText, parentUrl){
+    var patternStart = siteParser.bestSellersPatternStart;
+    var patternEnd = siteParser.bestSellersPatternEnd;
     var str = responseText;
     var pos = str.indexOf(patternStart);
 
@@ -83,7 +83,7 @@ BestSellersPage.prototype.getPageUrl = function(responsneText){
 };
 
 BestSellersPage.prototype.getReviewInfo = function(responseText){
-    var pattern = "a href";
+    var pattern = "href";
     var str = responseText;
     var pos = str.indexOf(pattern);
 

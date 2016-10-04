@@ -19,6 +19,9 @@ function AmazonComParser(){
     this.searchKeys = ["to buy","to rent"];
     this.numberSign = "#";
     this.searchPattern = "Kindle Edition";
+    this.bestSellersPatternStart = 'class="zg_itemImmersion"';
+    this.bestSellersPatternEnd = 'class="zg_clear"';
+
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 60000 },
         {min: 6, max: 10, estSale: 52500 },

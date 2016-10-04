@@ -84,6 +84,7 @@ pageMod.PageMod({
         "./src/amazon/AmazonItParser.js",
         "./src/amazon/AmazonEsParser.js",
         "./src/amazon/AmazonInParser.js",
+        "./src/amazon/AmazonJpParser.js",
         "./src/page/BestSellersPage.js",
         "./src/page/AuthorPage.js",
         "./src/page/SearchResultsPage.js",
@@ -190,6 +191,7 @@ var backgroundWorker = pageWorker.Page({
         "./src/amazon/AmazonItParser.js",
         "./src/amazon/AmazonEsParser.js",
         "./src/amazon/AmazonInParser.js",
+        "./src/amazon/AmazonJpParser.js",
         './src/background.js'
     ]
 });

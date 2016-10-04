@@ -19,6 +19,9 @@ function AmazonItParser(){
     this.searchKeys = ["da acquistare","to rent"];
     this.numberSign = "#";
     this.searchPattern = "Formato Kindle";
+    this.bestSellersPatternStart = 'class="zg_itemImmersion"';
+    this.bestSellersPatternEnd = 'class="zg_clear"';
+
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 13260 },
         {min: 6, max: 10, estSale: 11602 },

@@ -20,6 +20,9 @@ function AmazonFrParser(){
     this.searchKeys = [decodeURI(encodeURI("achat")),"louer"]; //à l'achat
     this.numberSign = decodeURI("n%C2%B0");
     this.searchPattern = "Format Kindle";
+    this.bestSellersPatternStart = 'class="zg_itemImmersion"';
+    this.bestSellersPatternEnd = 'class="zg_clear"';
+
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 7380 },
         {min: 6, max: 10, estSale: 6457 },

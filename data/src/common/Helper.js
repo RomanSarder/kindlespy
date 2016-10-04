@@ -92,6 +92,8 @@ Helper.getSiteParser = function(url){
         return new AmazonEsParser();
     if(hostname.indexOf(AmazonInParser.zone) != -1)
         return new AmazonInParser();
+    if(hostname.indexOf(AmazonJpParser.zone) != -1)
+        return new AmazonJpParser();
 };
 
 /**

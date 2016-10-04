@@ -39,12 +39,12 @@ AuthorPage.prototype.parsePage = function(pullingToken, startIndex, maxResults, 
     var index = 0;
     var result;
 
-    var listItems = jqNodes.find("#mainResults li").has('.a-fixed-left-grid-inner');
+    var listItems = jqNodes.find("#mainResults li").has('.s-item-container');
 
     listItems.each(function() {
         if($(this).attr('id') !== 'result_'+(startIndex+index)
             && $(this).attr('id') !== 'centerPlus') return;
-        result = $(this).find('.a-fixed-left-grid-inner');
+        result = $(this).find('.s-item-container');
         if(counter>=maxResults) return;
         no[index] = startIndex + index + 1;
         url[index] = $(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href");
