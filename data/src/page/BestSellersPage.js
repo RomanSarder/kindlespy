@@ -79,7 +79,8 @@ BestSellersPage.prototype.getPriceInfo = function(responseText){
 };
 
 BestSellersPage.prototype.getPageUrl = function(responsneText){
-    return Helper.parseString(responsneText, 'class="zg_title"', 'href="', '"');
+    return Helper.parseString(responsneText, 'class="a-link-normal"', 'href="', '"')
+        || Helper.parseString(responsneText, 'class="zg_title"', 'href="', '"');
 };
 
 BestSellersPage.prototype.getReviewInfo = function(responseText){
