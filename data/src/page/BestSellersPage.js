@@ -78,9 +78,11 @@ BestSellersPage.prototype.getPriceInfo = function(responseText){
     return Helper.parseString(responseText,'class="price"', ">", "<");
 };
 
-BestSellersPage.prototype.getPageUrl = function(responsneText){
-    return Helper.parseString(responsneText, 'class="a-link-normal"', 'href="', '"')
-        || Helper.parseString(responsneText, 'class="zg_title"', 'href="', '"');
+BestSellersPage.prototype.getPageUrl = function(responseText){
+    var url = Helper.parseString(responseText, 'class="a-link-normal"', 'href="', '"');
+    if (!!url) return location.origin + url;
+
+    return Helper.parseString(responseText, 'class="zg_title"', 'href="', '"');
 };
 
 BestSellersPage.prototype.getReviewInfo = function(responseText){
