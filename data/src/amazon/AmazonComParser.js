@@ -112,7 +112,7 @@ AmazonComParser.prototype.formatPrice = function(price) {
 };
 
 AmazonComParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url, callback) {
-    var dataImage = responseText.find('#imgBlkFront').attr('data-a-dynamic-image');
+    var dataImage = responseText.find('#ebooksImgBlkFront').attr('data-a-dynamic-image');
     if(typeof dataImage === 'undefined') return callback('undefined');
     var jsonStringImage = JSON.parse(dataImage);
     var srcImageArray = Object.keys(jsonStringImage);
