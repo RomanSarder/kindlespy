@@ -1,5 +1,5 @@
 /**
- * Created by Andrey Klochkov on 15.04.2015.
+ * Created by Andrey Klochkov on 08.06.2015.
  */
 
 function BrowserDetector() {

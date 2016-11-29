@@ -1,5 +1,5 @@
 /**
- * Created by Andrey Klochkov on 12.04.2015.
+ * Created by Andrey Klochkov on 08.06.2015.
  */
 
 /**
@@ -8,7 +8,10 @@
 function Api(){
 }
 
+Api.browser = 'Firefox';
 Api.messageListener = function(message, callback){};
+Api.backgroundMessageListener = function(message, callback){};
+Api.isBackgroundPage = false;
 
 /**
  * Add message listener
@@ -21,6 +24,27 @@ Api.addListener = function(messageListener){
             self.port.emit('response-' + messageObject.id, response);
         });
     });
+};
+
+/**
+ * Add background message listener
+ * @param backgroundMessageListener
+ */
+Api.addBackgroundListener = function(backgroundMessageListener){
+    Api.backgroundMessageListener = backgroundMessageListener;
+
+    self.port.on('request-bg', function(messageObject){
+        backgroundMessageListener(messageObject.message, function(response){
+            self.port.emit('response-bg-' + messageObject.id, response);
+        });
+    });
+};
+
+/**
+ * Set flag which means that we are on background page
+ */
+Api.setBackgroundPage = function(){
+    Api.isBackgroundPage = true;
 };
 
 Api._idCounter = 0;
@@ -39,15 +63,19 @@ Api.sentFromPageScript = function(){
  */
 Api.sendMessageToActiveTab = function(message, callback){
     if (typeof callback === 'undefined') callback = function(){};
-    if (Api.sentFromPageScript()){
+    if (Api.sentFromPageScript() && !Api.isBackgroundPage){
         Api.messageListener(message, function(result){
+            return callback(result);
+        });
+        Api.backgroundMessageListener(message, function(result){
             return callback(result);
         });
         return;
     }
     var messageId = Api._generateMessageId();
-    addon.port.emit('request', {id: messageId, message: message});
-    addon.port.once('response-' + messageId, function(result){
+    var port = (typeof addon !== 'undefined') ? addon.port : self.port;
+    port.emit('request', {id: messageId, message: message});
+    port.once('response-' + messageId, function(result){
         return callback(result);
     });
 };
@@ -71,6 +99,20 @@ Api.sendMessageToActiveTab = function(message, callback){
 //    }
 //});
 
+/**
+ * Send a message to background
+ * @param message
+ * @param callback
+ */
+Api.sendMessageToBackground = function(message, callback){
+    if (typeof callback === 'undefined') callback = function(){};
+    var messageId = Api._generateMessageId();
+    var port = (typeof addon !== 'undefined') ? addon.port : self.port;
+    port.emit('request-bg', {id: messageId, message: message});
+    port.once('response-bg-' + messageId, function(result){
+        return callback(result);
+    });
+};
 
 Api.openNewTab = function(url){
     addon.port.emit('open-tab', url);
@@ -88,6 +130,7 @@ Api.registerOnShowEvent = function(eventListener){
 
 Api.storage = {
     set: function(data, callback){
+        if (typeof callback === 'undefined') callback = function(){};
         var port = (typeof addon !== 'undefined') ? addon.port : self.port;
         var messageId = Api._generateMessageId();
         port.emit('storage-set', {id: messageId, data: data});
@@ -96,6 +139,7 @@ Api.storage = {
         });
     },
     get: function(key, callback){
+        if (typeof callback === 'undefined') callback = function(){};
         var port = (typeof addon !== 'undefined') ? addon.port : self.port;
         var messageId = Api._generateMessageId();
         port.emit('storage-get', {id: messageId, key: key});
@@ -185,3 +229,26 @@ Api.createAlarm = function(alarmName, periodInMinutes){
 //        backgroundWorker.port.emit('alarm', alarmName);
 //    }, alarmData.periodInMinutes * 60 * 1000, alarmData.alarmName);
 //});
+
+Api.getImageDataFromUrl = function(url, callback){
+    var messageId = Api._generateMessageId();
+    var port = (typeof addon !== 'undefined') ? addon.port : self.port;
+    port.emit('get-image-data-request', {id: messageId, message: {url: url}});
+    port.once('get-image-data-response-' + messageId, function(result){
+        return callback(result);
+    });
+};
+
+// TODO: Following code should be in index.js
+//popup.port.on('get-image-data-request', function(messageObject){
+//    console.log('get-image-data-request');
+//    request({
+//        url: messageObject.message.url,
+//        overrideMimeType:"text/plain; charset=x-user-defined",
+//        onComplete: function(imageData) {
+//            var imageData = "data:image/jpeg;base64,"+base64Encode(imageData.text);
+//            popup.port.emit('get-image-data-response-' + messageObject.id, imageData);
+//        }
+//    }).get();
+//});
+

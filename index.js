@@ -58,6 +58,12 @@ function initEventScript(worker){
     port.on('storage-clear', function(messageObject){
         storageClear(port, messageObject);
     });
+    port.on('request-bg', function(messageObject){
+        backgroundWorker.port.emit('request-bg', messageObject);
+        backgroundWorker.port.once('response-bg-' + messageObject.id, function(result){
+            port.emit('response-bg-' + messageObject.id, result);
+        });
+    });
 }
 
 // Page script
@@ -146,6 +152,17 @@ popup.port.on('open-tab', function(url){
     tabs.open(url);
 });
 
+popup.port.on('get-image-data-request', function(messageObject){
+    request({
+        url: messageObject.message.url,
+        overrideMimeType:"text/plain; charset=x-user-defined",
+        onComplete: function(imageData) {
+            var imageData = "data:image/jpeg;base64,"+base64.encode(imageData.text);
+            popup.port.emit('get-image-data-response-' + messageObject.id, imageData);
+        }
+    }).get();
+});
+
 popup.port.on('storage-set', function(messageObject){
     storageSet(popup.port, messageObject);
 });
@@ -170,6 +187,14 @@ popup.port.on('request', function(messageObject){
     }
     popup.port.emit('response-' + messageObject.id/*, undefined*/);
 });
+
+popup.port.on('request-bg', function(messageObject){
+    backgroundWorker.port.emit('request-bg', messageObject);
+    backgroundWorker.port.once('response-bg-' + messageObject.id, function(result){
+        popup.port.emit('response-bg-' + messageObject.id, result);
+    });
+});
+
 
 tabs.on('open', function () {
     closePopup();
@@ -212,5 +237,37 @@ backgroundWorker.port.on('storage-get', function(messageObject){
 
 backgroundWorker.port.on('storage-clear', function(){
     storageClear();
+});
+
+backgroundWorker.port.on('request', function(messageObject){
+    for (var i = 0; i < workers.length; i += 1) {
+        if (workers[i].tab.index === tabs.activeTab.index) {
+            workers[i].port.emit('request', messageObject);
+            workers[i].port.once('response-' + messageObject.id, function(result){
+                backgroundWorker.port.emit('response-' + messageObject.id, result);
+            });
+            return;
+        }
+    }
+    backgroundWorker.port.emit('response-' + messageObject.id/*, undefined*/);
+});
+
+var backgroundTab;
+backgroundWorker.port.on('open-tab', function(request){
+    var tab = tabs.open({
+        url: 'http://example.com',
+        inBackground: true,
+        onReady: function (tab){
+            backgroundTab = tab;
+            tab.attach({
+                contentScriptFile: [ ],
+                contentScriptOptions: request
+            })
+        }
+    });
+});
+
+backgroundWorker.port.on('close-tab', function(url){
+    backgroundTab.close();
 });
 

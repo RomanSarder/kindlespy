@@ -503,9 +503,13 @@ Popup.prototype.initRegionSelector = function(){
 };
 
 Popup.prototype.loadAdvertisementBanner = function(){
-    Api.sendMessageToActiveTab({type:'http-get', url: "http://www.kdspy.com/banner.html"}, function(responseText){
-        $("#ad").html(responseText);
-    });
+    Api.sendMessageToBackground({
+            type:'http-get-bg',
+            data: {url:"http://www.kdspy.com/banner.html"}},
+        function(responseText) {
+            if (typeof responseText === 'undefined') return;
+            $("#ad").html(responseText);
+        });
 };
 
 
