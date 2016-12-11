@@ -75,7 +75,7 @@ BestSellersPage.prototype.getNoInfo = function(responseText){
 };
 
 BestSellersPage.prototype.getPriceInfo = function(responseText){
-    return Helper.parseString(responseText,'class="price"', ">", "<");
+    return Helper.parseString(responseText,"class='p13n-sc-price'", ">", "<");
 };
 
 BestSellersPage.prototype.getPageUrl = function(responseText){
