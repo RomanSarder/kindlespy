@@ -79,10 +79,11 @@ BestSellersPage.prototype.getPriceInfo = function(responseText){
 };
 
 BestSellersPage.prototype.getPageUrl = function(responseText){
-    var url = Helper.parseString(responseText, 'class="a-link-normal"', 'href="', '"');
-    if (!!url) return location.origin + url;
+    var url = Helper.parseString(responseText, 'class="zg_title"', 'href="', '"');
+    if (!!url) return url;
 
-    return Helper.parseString(responseText, 'class="zg_title"', 'href="', '"');
+    url = Helper.parseString(responseText, 'class="a-link-normal"', 'href="', '"');
+    return location.origin + url;
 };
 
 BestSellersPage.prototype.getReviewInfo = function(responseText){
