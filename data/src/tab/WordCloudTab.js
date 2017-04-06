@@ -104,6 +104,9 @@ WordCloudTab.prototype.load = function(books){
     innerTexts = innerTexts.replace(/&/g, ' ');
     innerTexts = innerTexts.replace(/\//g, ' ');
     innerTexts = innerTexts.replace(/!/g, ' ');
+    innerTexts = innerTexts.replace(/book/g, ' ');
+    innerTexts = innerTexts.replace(/novel/g, ' ');
+    innerTexts = innerTexts.replace(/series/g, ' ');
 
     var words = innerTexts.split(" ");
 
