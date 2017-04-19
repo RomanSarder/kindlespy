@@ -48,7 +48,7 @@ AuthorPage.prototype.parsePage = function (pullingToken, startIndex, maxResults,
         result = $(this).find('.s-item-container');
         if (counter >= maxResults) return;
         no[index] = startIndex + index + 1;
-        url[index] = $(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href");
+        url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
         if (!url[index]) {
             index++;
             return;

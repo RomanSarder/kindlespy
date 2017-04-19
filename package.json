@@ -4,7 +4,7 @@
   "id": "jid1-1RpMPpIB0n7BbQ@jetpack",
   "description": "KindleSpy analyses Amazon Kindle categories & author pages allowing you to find luctrative niche markets with ease.",
   "author": "5minutepublishing.com",
-  "version": "4.3.34",
+  "version": "4.3.35",
   "main": "index.js",
   "engines": {
     "firefox": ">=38.0a1",

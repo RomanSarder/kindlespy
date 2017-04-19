@@ -307,3 +307,13 @@ Helper.isTop100Free = function(){
 Helper.getSearchUrl = function(keyword, siteParser){
     return siteParser.mainUrl + "/s/url=search-alias%3Ddigital-text&field-keywords=" + encodeURI(keyword);
 };
+/**
+ *
+ * @param url of single book in list
+ * @return url without /gp/slredirect/picassoRedirect.html
+ */
+
+Helper.getUrlWORedirect = function(url){
+    if(typeof url === "undefined" || url.indexOf("picassoRedirect.html") === -1) return url;
+    return decodeURIComponent(url.split("url=")[1]);
+}

@@ -46,7 +46,7 @@ BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, respons
         var item = str.substring(0, str.indexOf(patternEnd));
 
         no[index] = this.getNoInfo(item);
-        url[index] = this.getPageUrl(item);
+        url[index] = Helper.getUrlWORedirect(this.getPageUrl(item));
         price[index] = this.getPriceInfo(item);
         review[index] = this.getReviewInfo(item);
 
