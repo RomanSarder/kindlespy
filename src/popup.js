@@ -496,6 +496,9 @@ Popup.prototype.initRegionSelector = function(){
             case AmazonJpParser.region:
                 url = "https://www.amazon.co.jp/gp/bestsellers/digital-text/2275256051";
                 break;
+            case AmazonAuParser.region:
+                url = "https://www.amazon.com.au/gp/bestsellers/digital-text/2496762051";
+                break;
         }
 
         Api.openNewTab(url);

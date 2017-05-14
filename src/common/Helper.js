@@ -76,6 +76,8 @@ Helper.getSiteParser = function(url){
     var fullUrl = new URL(url);
     var hostname = fullUrl.hostname;
     if(hostname.indexOf('www.amazon.') == -1) return undefined;
+    if(hostname.indexOf(AmazonAuParser.zone) != -1) //check earlier than AmazonComParser because AmazonComParser==com, but AmazonAuParser=com.au
+        return new AmazonAuParser();
     if(hostname.indexOf(AmazonComParser.zone) != -1)
         return new AmazonComParser();
     if(hostname.indexOf(AmazonCoUkParser.zone) != -1)
