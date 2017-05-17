@@ -106,7 +106,7 @@ AmazonItParser.prototype.getReviews = function(responseText) {
 };
 
 AmazonItParser.prototype.getRating = function(responseText){
-    var ratingString = responseText.find("#revSum .acrRating:contains('su')");
+    var ratingString = responseText.find("#avgRating span:contains('su')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("su")[0].trim();
 };

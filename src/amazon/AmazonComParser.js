@@ -133,9 +133,7 @@ AmazonComParser.prototype.getReviews = function(responseText) {
 };
 
 AmazonComParser.prototype.getRating = function(responseText){
-    var ratingString = responseText.find("#avgRating span");
-    if (ratingString.length === 0)
-        ratingString = responseText.find("#revSum .acrRating:contains('out of')");
+    var ratingString = responseText.find(".arp-rating-out-of-text:contains('out of')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };

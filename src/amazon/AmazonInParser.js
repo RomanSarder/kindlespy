@@ -122,7 +122,7 @@ AmazonInParser.prototype.getReviews = function(responseText) {
 };
 
 AmazonInParser.prototype.getRating = function(responseText){
-    var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
+    var ratingString = responseText.find("#avgRating span:contains('out of')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };

@@ -124,7 +124,7 @@ AmazonDeParser.prototype.getReviews = function(responseText) {
 };
 
 AmazonDeParser.prototype.getRating = function(responseText){
-    var ratingString = responseText.find("#revSum .acrRating:contains('von')");
+    var ratingString = responseText.find("#avgRating span:contains('von')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("von")[0].trim();
 };

@@ -98,15 +98,12 @@ AmazonCaParser.prototype.getGoogleImageSearchUrlRel = function(responseText, url
 };
 
 AmazonCaParser.prototype.getReviews = function(responseText) {
-    var rl_reviews = responseText.find("#acr .acrCount a:first");
-    if (rl_reviews.length)
-        return $(rl_reviews).text().replace('reviews','').replace('review','').trim();
-    else
-        return  "0";
+    var rl_reviews = responseText.find("#acrCustomerReviewText");
+    return rl_reviews.length ? $(rl_reviews).text().replace('customer reviews','').replace('customer review','').trim() : "0";
 };
 
 AmazonCaParser.prototype.getRating = function(responseText){
-    var ratingString = responseText.find("#revSum .acrRating:contains('out of')");
+    var ratingString = responseText.find("#avgRating span:contains('out of')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split("out of")[0].trim();
 };

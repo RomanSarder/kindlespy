@@ -107,7 +107,7 @@ AmazonEsParser.prototype.getReviews = function(responseText) {
 
 AmazonEsParser.prototype.getRating = function(responseText){
     var pattern = decodeURI(encodeURI("de un máximo de"));
-    var ratingString = responseText.find("#revSum .acrRating:contains('" + pattern + "')");
+    var ratingString = responseText.find("#avgRating span:contains('" + pattern + "')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
     return ratingString.text().split(pattern)[0].trim();
 };

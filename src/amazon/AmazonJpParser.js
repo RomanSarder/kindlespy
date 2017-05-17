@@ -137,7 +137,7 @@ AmazonJpParser.prototype.getRating = function(responseText){
     if (ratingString.length === 0)
         ratingString = responseText.find("#revSum .acrRating:contains('つ星のうち')");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
-    return ratingString.text().split("つ星のうち")[0].trim();
+    return ratingString.text().split("つ星のうち")[1].trim();
 };
 
 AmazonJpParser.prototype.getTotalSearchResult = function(responseText){
