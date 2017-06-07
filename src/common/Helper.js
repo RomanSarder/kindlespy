@@ -140,12 +140,30 @@ Helper.isBestSellersPage = function(url, siteParser){
         || (url.indexOf(siteParser.mainUrl +"/gp/bestsellers") >= 0 && url.indexOf("digital-text") > 0);
 };
 
+/**
+ * Return bool value page is new releases.
+ * @param url
+ * @param siteParser
+ * @returns {boolean}
+ */
+Helper.isNewReleasesPage = function(url, siteParser){
+    return (url.indexOf(siteParser.mainUrl +"/gp/new-releases") >= 0 && url.indexOf("digital-text") > 0);
+};
+
 /**Return bool value is BestSellers page by categoryKind.
  * @param categoryKind
  * @returns {boolean}
  */
 Helper.isBestSellersPageFromCategoryKind = function(categoryKind){
     return categoryKind.indexOf("Seller") != -1;
+};
+
+/**Return bool value is NewReleases page by categoryKind.
+ * @param categoryKind
+ * @returns {boolean}
+ */
+Helper.isNewReleasesPageFromCategoryKind = function(categoryKind){
+    return categoryKind.indexOf("New-Releases") != -1;
 };
 
 /**
@@ -223,6 +241,12 @@ Helper.setupHeader = function(category, categoryKind){
         $("#CategoryKind").html("Best Sellers in");
         $("#title").html(category + ':');
         $('#BestSellerLink').html('Best Seller Rankings');
+        return;
+    }
+    if (Helper.isNewReleasesPageFromCategoryKind(categoryKind)){
+        $("#CategoryKind").html("New Releases in");
+        $("#title").html(category + ':');
+        $('#BestSellerLink').html('New Releases Rankings');
         return;
     }
     if(Helper.isSearchPageFromCategoryKind(categoryKind)){

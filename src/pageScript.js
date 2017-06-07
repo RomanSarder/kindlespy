@@ -75,6 +75,9 @@ KindleSpy.prototype.getPageFromCurrentPage = function(){
     if (Helper.isBestSellersPage(location.href, this.siteParser)){
         return new BestSellersPage();
     }
+    if (Helper.isNewReleasesPage(location.href, this.siteParser)){
+        return new NewReleasesPage();
+    }
     if(Helper.isSearchPage(location.href, this.siteParser)){
         return new SearchResultsPage();
     }
