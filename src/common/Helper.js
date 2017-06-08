@@ -272,6 +272,10 @@ Helper.setupFooter = function(categoryKind){
         $('#Conclusion').show();
         return;
     }
+    if (Helper.isNewReleasesPageFromCategoryKind(categoryKind)){
+        $('#Conclusion').show();
+        return;
+    }
     if(Helper.isSearchPageFromCategoryKind(categoryKind)){
         $('#Conclusion').show();
         return;
