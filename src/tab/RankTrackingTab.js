@@ -228,6 +228,7 @@ RankTrackingTab.prototype.import = function(){
     var _this = this;
     this.loadTextFromFile(function (data) {
         _this.storage.import(data, function (){
+            _this.updateRateTrackingTable();
             alert('Data successfully imported.');
         });
     });
