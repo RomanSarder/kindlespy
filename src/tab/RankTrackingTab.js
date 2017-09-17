@@ -25,7 +25,6 @@ RankTrackingTab.resetTrackingBookPage = function(bookUrl) {
     $('#days').html('');
     $('#AvgSalesRank').html('');
     $('#EstDailyRev').html('');
-    $('#authorName').html('');
     $('#bookImage').attr('src','');
     $('#enableTracking').show();
     $('#enableTracking').prop('disabled', true);
@@ -119,7 +118,7 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     $('#bookTitle').text(bookData.title);
     var points = bookData.salesRankData.slice(Math.max(bookData.salesRankData.length - 30, 0));
     if(points.length == 1 && !bookData.trackingEnabled){
-        contentHtml = '<div class="brtdisable"><div>Bestseller Rank Tracking</div><div>Currently Disabled</div></div>';
+        contentHtml = '<div class="brtdisable"><div>Rank tracking for this book is currently DISABLED</div><div>Click the button below book cover to ENABLE</div><div class="arrow"></div></div>';
    }else{
         contentHtml = '<div><canvas id="canvas" height="290" width="520"></canvas></div>';
         $('#infoPages').show();
@@ -156,7 +155,6 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     $('#days').html(points.length);
     $('#AvgSalesRank').html(Helper.addCommas(Math.floor(avgSalesRank)));
     $('#EstDailyRev').html(this.siteParser.formatPrice(Helper.addCommas(estDailyRev)));
-    $('#authorName').html(bookData.author);
     $('#bookImage').attr('src',bookData.image.replace('AA300', '').replace('AA324', '').replace('AA278', '').replace('PIsitb-sticker-v3-big,TopRight', '').replace('PIkin4,BottomRight', ''));
     $('#ExportBtnWordCloud').attr('book-url', bookData.url);
 
