@@ -4,6 +4,18 @@
 
 function Export(){
 }
+
+Export.downloadFile = function (fileContent, fileName, type) {
+    var blob = new Blob([fileContent], {type: type, charset: 'utf-8', encoding: 'utf-8'});
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
 Export.toCSV = function(data, fileName, booksNumber){
     var csvContent = "\uFEFF";
     data.forEach(function(infoArray, index){
@@ -35,16 +47,10 @@ Export.toCSV = function(data, fileName, booksNumber){
         }
     });
     
-    var blob = new Blob([csvContent], {type : 'text/csv', charset : 'utf-8', encoding:'utf-8'});
-    var url = URL.createObjectURL(blob);
     var today = new Date();
     var dd = today.getDate();
     var mm = today.getMonth()+1;
     var yyyy = today.getFullYear();
-    var link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", fileName + "-" + mm + "-" + dd + "-" + yyyy + ".csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    var generatedFileName = fileName + "-" + mm + "-" + dd + "-" + yyyy + ".csv";
+    this.downloadFile(csvContent, generatedFileName, 'text/csv');
 };

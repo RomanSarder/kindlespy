@@ -62,6 +62,7 @@ Popup.prototype.resetCss = function(){
     $('#no-compatible-aria-footer').hide();
     $('#ExportBtn').hide();
     $('#TrackedPanelFooter').hide();
+    $('#TrackingExportImport').hide();
     $('#BookTracked').hide();
     $('#totalReSalesRecvBlock').hide();
     $('#Conclusion').hide();
@@ -184,6 +185,7 @@ Popup.prototype.setupClickListeners = function(){
         $('#main-header').show();
         $('#main-content').show();
         $('#TrackedPanelFooter').show();
+        $('#TrackingExportImport').show();
         $('.info.list_books').show();
         $('.table-head').show();
         $('#AdPanel').show();
@@ -251,6 +253,14 @@ Popup.prototype.setupStaticClickListeners = function() {
                 $('#LinkBackTo').show();
             });
         });
+    });
+
+    $('#ExportTrackingBtn').click(function () {
+        new RankTrackingTab(this.siteParser).export();
+    });
+
+    $('#ImportTrackingBtn').click(function () {
+        new RankTrackingTab(this.siteParser).import();
     });
 
     $('table[name="data"] tbody').on('click', '.RankTrackingResultSingle', function(){

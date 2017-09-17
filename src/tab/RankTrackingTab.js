@@ -196,6 +196,45 @@ RankTrackingTab.prototype.updateTrackedBookView = function(bookData){
     });
 };
 
+RankTrackingTab.prototype.export = function(){
+    this.storage.export(function (storageData){
+        Export.downloadFile(JSON.stringify(storageData), 'TrackingData.json', 'application/json');
+    });
+};
+
+RankTrackingTab.prototype.loadTextFromFile = function(callback){
+    var element = document.createElement('div');
+    element.innerHTML = '<input type="file" accept=".json">';
+    var fileInput = element.firstChild;
+
+    fileInput.addEventListener('change', function() {
+        var file = fileInput.files[0];
+
+        if (file.name.match(/\.(json)$/)) {
+            var reader = new FileReader();
+
+            reader.onload = function() {
+                callback(reader.result);
+            };
+
+            reader.readAsText(file);
+        } else {
+            alert("File not supported, .json files only");
+        }
+    });
+
+    fileInput.click();
+};
+
+RankTrackingTab.prototype.import = function(){
+    var _this = this;
+    this.loadTextFromFile(function (data) {
+        _this.storage.import(data, function (){
+            alert('Data successfully imported.');
+        });
+    });
+};
+
 RankTrackingTab.formatScaleLabel = function(value){
     var suffix = ['', 'k', 'M', 'G', 'T', 'P'];
     var result = value;

@@ -256,3 +256,32 @@ BookStorage.prototype.removeBookInStorage = function(bookUrl, callback) {
         _this._storage.set(items, callback);
     });
 };
+
+/**
+ * Returns all data from storage
+ * @param {function} callback function(object storageData) {...};
+ */
+BookStorage.prototype.export = function(callback) {
+    this._storage.get('trackingData', function(items) {
+        if (typeof items !== 'undefined') {
+            return callback(items.trackingData);
+        }
+
+        return callback(null);
+    });
+};
+
+/**
+ * Import storageData into storage
+ * @param storageData string
+ * @param {function} callback function(object bytesInUse) {...};
+ */
+BookStorage.prototype.import = function(storageData, callback) {
+    items = {};
+    items.trackingData = JSON.parse(storageData);
+    BookStorage.lockStorage = true;
+    this._storage.set(items, function(bytesInUse){
+        BookStorage.lockStorage = false;
+        callback(bytesInUse);
+    });
+};
