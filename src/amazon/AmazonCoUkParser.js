@@ -119,8 +119,12 @@ AmazonCoUkParser.prototype.getReviews = function(responseText) {
     var rl_reviews = responseText.find("#summaryStars a").contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
-    if (typeof rl_reviews === 'undefined' || rl_reviews.length == 0) return '0';
-    return rl_reviews[1].nodeValue.replace('reviews','').replace('review','').replace('customer','').trim();
+    if (!(typeof rl_reviews === 'undefined' || rl_reviews.length == 0)) {
+        return rl_reviews[1].nodeValue.replace('reviews','').replace('review','').replace('customer','').trim();
+    }
+
+    rl_reviews = responseText.find("#acrCustomerReviewText");
+    return rl_reviews.length ? $(rl_reviews).text().replace('customer reviews','').replace('customer review','').trim() : "0";
 };
 
 AmazonCoUkParser.prototype.getRating = function(responseText){
