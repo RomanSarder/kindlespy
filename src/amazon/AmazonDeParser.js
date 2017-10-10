@@ -119,8 +119,15 @@ AmazonDeParser.prototype.getReviews = function(responseText) {
     var rl_reviews = responseText.find("#summaryStars a").contents().filter(function(){
         return this.nodeType == Node.TEXT_NODE;
     });
-    if (typeof rl_reviews === 'undefined' || rl_reviews.length == 0) return '0';
-    return rl_reviews[1].nodeValue.replace('Rezensionen','').replace('Rezension','').trim();
+    if (!(typeof rl_reviews === 'undefined' || rl_reviews.length == 0)) {
+        return rl_reviews[1].nodeValue.replace('Rezensionen', '').replace('Rezension', '').trim();
+    }
+    rl_reviews = responseText.find("#acrCustomerReviewText");
+    if(!(typeof rl_reviews === 'undefined' || rl_reviews.length == 0)) {
+        return $(rl_reviews).text().replace('Kundenrezensionen', '').replace('Kundenrezension', '').trim();
+    }
+    rl_reviews = responseText.find("#cmrs-atf");
+    return rl_reviews.length ? $(rl_reviews).text().replace('Kundenrezensionen auf Amazon.com', '').trim() : "0";
 };
 
 AmazonDeParser.prototype.getRating = function(responseText){
