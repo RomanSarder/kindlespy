@@ -135,9 +135,10 @@ AmazonJpParser.prototype.getReviews = function(responseText) {
 AmazonJpParser.prototype.getRating = function(responseText){
     var ratingString = responseText.find("#avgRating span");
     if (ratingString.length === 0)
-        ratingString = responseText.find("#revSum .acrRating:contains('つ星のうち')");
+        ratingString = responseText.find("#acrPopover");
     if (typeof ratingString === 'undefined' && ratingString =='') return undefined;
-    return ratingString.text().split("つ星のうち")[1].trim();
+    var ratingStringRightPart = ratingString.text().split("つ星のうち")[1];
+    return ratingStringRightPart == null ? null : ratingStringRightPart.trim();
 };
 
 AmazonJpParser.prototype.getTotalSearchResult = function(responseText){
