@@ -17,11 +17,11 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
     var counter = 0;
     var result;
 
-    var listItems = jqNodes.find("#atfResults li").has('.a-fixed-left-grid-inner');
-    listItems = $.merge(listItems, jqNodes.find("#btfResults li").has('.s-item-container'));
+    var listItems = jqNodes.find("#atfResults li").not('.AdHolder').has('.a-fixed-left-grid-inner');
+    listItems = $.merge(listItems, jqNodes.find("#btfResults li").not('.AdHolder').has('.s-item-container'));
 
     listItems.each(function() {
-        if($(this).attr('id') !== 'result_'+(startIndex+index)
+        if(!$(this).attr('id').startsWith('result_')
             && $(this).attr('id') !== 'centerPlus') return;
         result = $(this).find('.a-fixed-left-grid-inner');
         if(counter>=maxResults) return;
