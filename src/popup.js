@@ -536,12 +536,10 @@ $(window).ready(function () {
         position: 'top'
     });
 
-    ApiLoader.load(function(){
-        popup = new Popup();
-        popup.setupStaticClickListeners();
-        popup.initRegionSelector();
-        Api.registerOnShowEvent(onShow);
-    });
+    popup = new Popup();
+    popup.setupStaticClickListeners();
+    popup.initRegionSelector();
+    Api.registerOnShowEvent(onShow);
 });
 
 // run this when show the popup

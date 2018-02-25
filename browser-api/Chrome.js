@@ -3,14 +3,14 @@
  */
 
 /**
- * chrome browser API wrapper class
+ * chrome/firefox common browser API wrapper class
  */
 function Api(){
 }
 
-Api.browser = 'Chrome';
 Api.messageListener = function(message, callback){};
 Api.backgroundMessageListener = function(message, callback){};
+
 
 /**
  * Add message listener
