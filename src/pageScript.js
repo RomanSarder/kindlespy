@@ -243,5 +243,11 @@ function onMessageReceived(request, callback){
             return callback(responseText);
         });
     }
+
+    if (request.type === "download-file") {
+        Export.toCSV(request.data, request.fileName, request.booksNumber);
+        return callback();
+    }
+
     return true;
 }

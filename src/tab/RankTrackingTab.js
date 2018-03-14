@@ -55,7 +55,7 @@ RankTrackingTab.prototype.exportToCsv = function(bookData, siteParser){
             }
 
             var fileName = "rs-" + bookData.title;
-            Export.toCSV(x, fileName, bookData.salesRankData.length + 1);
+            Api.sendMessageToActiveTab({type: "download-file", data: x, fileName: fileName, booksNumber: bookData.salesRankData.length + 1});
         }
     });
 };

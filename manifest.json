@@ -53,6 +53,7 @@
             "js": [
                 "libs/jquery-3.3.1.min.js",
                 "browser-api/Chrome.js",
+                "src/common/Export.js",
                 "src/common/Helper.js",
                 "src/common/Pager.js",
                 "src/common/BookStorage.js",

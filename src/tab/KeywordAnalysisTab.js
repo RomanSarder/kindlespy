@@ -93,7 +93,7 @@ KeywordAnalysisTab.prototype.exportToCsv = function(bookData, siteParser){
     }
 
     var fileName = "ka-" + Helper.getCategoryFromBookData(bookData);
-    Export.toCSV(x, fileName, bookData.length);
+    Api.sendMessageToActiveTab({type: "download-file", data: x, fileName: fileName, booksNumber: bookData.length});
 };
 
 KeywordAnalysisTab.prototype.insertData = function(pageNumber, books, siteParser, books20)

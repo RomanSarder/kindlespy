@@ -67,7 +67,7 @@ MainTab.prototype.exportToCsv = function(bookData, siteParser){
     }
 
     var fileName = "bs-" + Helper.getCategoryFromBookData(bookData);
-    Export.toCSV(x, fileName, bookData.length);
+    Api.sendMessageToActiveTab({type: "download-file", data: x, fileName: fileName, booksNumber: bookData.length});
 };
 
 MainTab.prototype.insertData = function(pageNumber, books, siteParser, books20){

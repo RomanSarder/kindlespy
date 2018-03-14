@@ -34,7 +34,7 @@ WordCloudTab.prototype.exportToCsv = function(bookData, siteParser){
     }
 
     var fileName = "wc-"+Helper.getCategoryFromBookData(bookData);
-    Export.toCSV(x, fileName);
+    Api.sendMessageToActiveTab({type: "download-file", data: x, fileName: fileName, booksNumber: undefined});
 };
 
 WordCloudTab.prototype.shuffle = function(array) {
