@@ -1,4 +1,6 @@
 function Popup(){
+    if (Popup.instance !== null) return;
+    Popup.instance = this;
     this.booksData = [];
     this.books20 = [];
     this.activeTab = new MainTab();
@@ -26,6 +28,8 @@ function Popup(){
     this.isStaticLinkInitialized = false;
 }
 
+Popup.instance = null;
+
 Popup.prototype.resetCss = function(){
     // header
     $('#main-header').hide();
@@ -49,6 +53,7 @@ Popup.prototype.resetCss = function(){
     $('#no-data-found-content').hide();
     $('#no-supported-area').hide();
     $('#main-content').hide();
+    $('#login-content').hide();
     $('#loading-content').hide();
     $('#content-keyword-search').hide();
     $('#tracking-content').hide();
@@ -148,78 +153,86 @@ Popup.prototype.initRankTrackingTab = function(bookUrl){
     $('#tracking-content').html('');
 };
 
+Popup.prototype.showRankTrackingTab = function() {
+    this.activeTab = new RankTrackingTab(this.siteParser);
+    var tracking = this.activeTab.load();
+    $('#main-header').html('');
+    $('#data-body').html('');
+    $('.info.list_books').html(tracking.info);
+    this.resetCss();
+    $('#main-header').show();
+    $('#main-content').show();
+    $('#TrackedPanelFooter').show();
+    $('#TrackingExportImport').show();
+    $('.info.list_books').show();
+    $('.table-head').show();
+    $('#AdPanel').show();
+
+    this.loadAdvertisementBanner();
+
+    $('#data-body').css("overflow-y", "auto");
+    $('.table-head').html(tracking.header);
+    this.activeTab.updateRateTrackingTable();
+};
+
+Popup.prototype.showWordCloudTab = function() {
+    this.activeTab = new WordCloudTab(this.activeTab.pageNum);
+    var cloud = this.activeTab.load(this.booksData);
+
+    this.resetCss();
+    $('.table-head').html("");
+    $('.info.list_books').html(cloud.info);
+    $('#word-cloud-content').html(cloud.content);
+    $('#Words').html(cloud.words);
+    $('#main-header').show();
+    $('#word-cloud-content').show();
+    $('.info.list_books').show();
+    $('#WordCloudFooter').show();
+    $('#ExportBtnWordCloud').show();
+    $('#AdPanel').show();
+
+    this.loadAdvertisementBanner();
+};
+
+Popup.prototype.showBestSellerTab = function() {
+    $('#data-body').css("overflow-y" , "auto");
+    this.activeTab = new MainTab();
+    this.checkUrlAndLoad();
+};
+
+Popup.prototype.showKeywordAnalysisTab = function() {
+    this.activeTab = new KeywordAnalysisTab();
+
+    var kwdAnalysis = this.activeTab.kwdAnalysisListShow();
+    this.resetCss();
+    $('#data-body').html('');
+    $('.info.list_books').html(kwdAnalysis.info);
+    $('#main-content').show();
+    $('#main-header').show();
+    $('#BestSellersRankingFooter').show();
+    $('#ExportBtn').show();
+    $('.info.list_books').show();
+    $('.table-head').show();
+    $('#totalReSalesRecvBlock').show();
+    $('#Conclusion').show();
+
+    this.loadAdvertisementBanner();
+
+    $(".info-item").css("width","16.6%");
+    $('#data-body').css("overflow-y" , "hidden");
+    $('.table-head').html(kwdAnalysis.header);
+    this.activeTab.insertData(this.activeTab.pageNum-1, this.booksData, this.siteParser, this.books20);
+};
+
 Popup.prototype.setupClickListeners = function(){
     var _this = this;
-    $('#TitleWordCloud').click(function() {
-        _this.activeTab = new WordCloudTab(_this.activeTab.pageNum);
-        var cloud = _this.activeTab.load(_this.booksData);
+    $('#TitleWordCloud').click(this.showWordCloudTab);
 
-        _this.resetCss();
-        $('.table-head').html("");
-        $('.info.list_books').html(cloud.info);
-        $('#word-cloud-content').html(cloud.content);
-        $('#Words').html(cloud.words);
-        $('#main-header').show();
-        $('#word-cloud-content').show();
-        $('.info.list_books').show();
-        $('#WordCloudFooter').show();
-        $('#ExportBtnWordCloud').show();
-        $('#AdPanel').show();
+    $('#BestSellerLink').click(this.showBestSellerTab);
 
-        _this.loadAdvertisementBanner();
-    });
+    $('#RankTrackingResultList').click(this.showRankTrackingTab);
 
-    $('#BestSellerLink').click(function() {
-        $('#data-body').css("overflow-y" , "auto");
-        _this.activeTab = new MainTab();
-        _this.checkUrlAndLoad();
-    });
-
-    $('#RankTrackingResultList').click(function() {
-        _this.activeTab = new RankTrackingTab(_this.siteParser);
-        var tracking = _this.activeTab.load();
-        $('#main-header').html('');
-        $('#data-body').html('');
-        $('.info.list_books').html(tracking.info);
-        _this.resetCss();
-        $('#main-header').show();
-        $('#main-content').show();
-        $('#TrackedPanelFooter').show();
-        $('#TrackingExportImport').show();
-        $('.info.list_books').show();
-        $('.table-head').show();
-        $('#AdPanel').show();
-
-        _this.loadAdvertisementBanner();
-
-        $('#data-body').css("overflow-y", "auto");
-        $('.table-head').html(tracking.header);
-        _this.activeTab.updateRateTrackingTable();
-    });
-
-    $("#KeywordAnalysis").click(function() {
-        _this.activeTab = new KeywordAnalysisTab();
-
-        var kwdAnalysis = _this.activeTab.kwdAnalysisListShow();
-        _this.resetCss();
-        $('#data-body').html('');
-        $('.info.list_books').html(kwdAnalysis.info);
-        $('#main-content').show();
-        $('#main-header').show();
-        $('#BestSellersRankingFooter').show();
-        $('#ExportBtn').show();
-        $('.info.list_books').show();
-        $('.table-head').show();
-        $('#totalReSalesRecvBlock').show();
-        $('#Conclusion').show();
-
-        _this.loadAdvertisementBanner();
-
-        $(".info-item").css("width","16.6%");
-        $('#data-body').css("overflow-y" , "hidden");
-        $('.table-head').html(kwdAnalysis.header);
-        _this.activeTab.insertData(_this.activeTab.pageNum-1, _this.booksData, _this.siteParser, _this.books20);
-    });
+    $("#KeywordAnalysis").click();
 };
 
 Popup.prototype.setupStaticClickListeners = function() {
@@ -324,6 +337,7 @@ Popup.prototype.setupStaticClickListeners = function() {
         Api.sendMessageToActiveTab({type: "start-analyze-search-keywords", keyword: search});
         _this.checkUrlAndLoad();
     });
+
 
     _this.isStaticLinkInitialized = true;
 };
@@ -452,7 +466,6 @@ Popup.prototype.checkUrlAndLoad = function(){
             if (pageName == 'SingleBookPage') {
                 _this.activeTab = new RankTrackingTab(_this.siteParser);
                 _this.initRankTrackingTab(url);
-                //_this.activeTab.loadDetails(url);
                 return;
             }
 
@@ -525,8 +538,6 @@ Popup.prototype.loadAdvertisementBanner = function(){
         });
 };
 
-
-var popup = undefined;
 $(window).ready(function () {
     $('#bullet-1, #bullet-2, #bullet-3').tooltipster({
         animation: 'fade',
@@ -536,7 +547,7 @@ $(window).ready(function () {
         position: 'top'
     });
 
-    popup = new Popup();
+    var popup = new Popup();
     popup.setupStaticClickListeners();
     popup.initRegionSelector();
     Api.registerOnShowEvent(onShow);
@@ -544,10 +555,10 @@ $(window).ready(function () {
 
 // run this when show the popup
 function onShow(){
-    popup.resetCss();
-    popup.activeTab = new MainTab();
+    Popup.instance.resetCss();
+    Popup.instance.activeTab = new MainTab();
     SearchKeywordsTab.clearTable();
     SearchKeywordsTab.searchedKeyword = '';
-    popup.checkUrlAndLoad();
+    Popup.instance.checkUrlAndLoad();
 }
 
