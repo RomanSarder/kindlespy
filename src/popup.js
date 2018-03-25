@@ -26,6 +26,8 @@ function Popup(){
 
     this.isRefreshStarted = false;
     this.isStaticLinkInitialized = false;
+    this.loginTab = new LoginTab();
+    this.url = '';
 }
 
 Popup.instance = null;
@@ -54,6 +56,7 @@ Popup.prototype.resetCss = function(){
     $('#no-supported-area').hide();
     $('#main-content').hide();
     $('#login-content').hide();
+    $('#trial-expired-content').hide();
     $('#loading-content').hide();
     $('#content-keyword-search').hide();
     $('#tracking-content').hide();
@@ -106,7 +109,7 @@ Popup.prototype.refreshData = function(){
         Helper.setupHeader(_this.booksData[0].Category, _this.booksData[0].CategoryKind);
 
         if (_this.isErrorWindow) {
-            _this.checkUrlAndLoad();
+            _this.startKdspy();
             return;
         }
 
@@ -197,7 +200,7 @@ Popup.prototype.showWordCloudTab = function() {
 Popup.prototype.showBestSellerTab = function() {
     $('#data-body').css("overflow-y" , "auto");
     this.activeTab = new MainTab();
-    this.checkUrlAndLoad();
+    this.startKdspy();
 };
 
 Popup.prototype.showKeywordAnalysisTab = function() {
@@ -226,13 +229,13 @@ Popup.prototype.showKeywordAnalysisTab = function() {
 
 Popup.prototype.setupClickListeners = function(){
     var _this = this;
-    $('#TitleWordCloud').click(this.showWordCloudTab);
+    $('#TitleWordCloud').click(function(){_this.showWordCloudTab();});
 
-    $('#BestSellerLink').click(this.showBestSellerTab);
+    $('#BestSellerLink').click(function(){_this.showBestSellerTab();});
 
-    $('#RankTrackingResultList').click(this.showRankTrackingTab);
+    $('#RankTrackingResultList').click(function(){_this.showRankTrackingTab();});
 
-    $("#KeywordAnalysis").click();
+    $("#KeywordAnalysis").click(function(){_this.showKeywordAnalysisTab();});
 };
 
 Popup.prototype.setupStaticClickListeners = function() {
@@ -243,7 +246,7 @@ Popup.prototype.setupStaticClickListeners = function() {
         $('#data-body').css("overflow-y", "auto");
         _this.activeTab = new MainTab();
         _this.resetCss();
-        _this.checkUrlAndLoad();
+        _this.startKdspy();
     });
 
     $('#enableTracking').click(function () {
@@ -335,7 +338,7 @@ Popup.prototype.setupStaticClickListeners = function() {
         _this.activeTab = new MainTab();
         var search = $(this).attr('keyword');
         Api.sendMessageToActiveTab({type: "start-analyze-search-keywords", keyword: search});
-        _this.checkUrlAndLoad();
+        _this.startKdspy();
     });
 
 
@@ -448,9 +451,59 @@ Popup.prototype.setActivePage = function(pageNum){
     this.activeTab.insertData(pageNum-1, this.booksData, this.siteParser, this.books20);
 };
 
-Popup.prototype.checkUrlAndLoad = function(){
+Popup.prototype.checkAndStartKdspy = function() {
+    var _this = this;
+    this.loginTab.isCheckAccessNeeded(function (isCheckAccessNeeded) {
+        if (!isCheckAccessNeeded) {
+            _this.startKdspy();
+        }else{
+            _this.loginTab.isTrialExpired(function (isTrialExpired) {
+                if (isTrialExpired) {
+                    _this.loginTab.showTrialExpired();
+                    console.log('trial expired!!!');
+                    return;
+                }
+                _this.startKdspy();
+            });
+        }
+    });
+};
+
+Popup.prototype.startKdspy = function() {
+    var _this = this;
+    var url = this.url;
+    // load
+    this.siteParser = Helper.getSiteParser(url);
+    $("#regionSelector").val(this.siteParser.region);
+    Api.sendMessageToActiveTab({type: "get-type-page"}, function (pageName) {
+        if (pageName == 'SingleBookPage') {
+            _this.activeTab = new RankTrackingTab(_this.siteParser);
+            _this.initRankTrackingTab(url);
+            return;
+        }
+
+        new MainTab().loadPageNum(function () {
+            new KeywordAnalysisTab().loadPageNum(function () {
+                _this.getData(function (result) {
+                    _this.booksData = result.books;
+                    _this.books20 = result.books20;
+                    _this.loadData(_this.booksData, _this.books20);
+                    _this.loadAdvertisementBanner();
+                });
+            });
+        });
+
+        if (!_this.isRefreshStarted) {
+            _this.refreshData();
+            _this.isRefreshStarted = true;
+        }
+    });
+};
+
+Popup.prototype.checkUrlAndLogin = function(){
     var _this = this;
     Api.sendMessageToActiveTab({type: "get-current-url"}, function(url) {
+        _this.url = url;
         if (typeof url === 'undefined' || url.indexOf("www.amazon.") < 0)
         {
             //Go To Amazon Page
@@ -459,31 +512,11 @@ Popup.prototype.checkUrlAndLoad = function(){
             return;
         }
 
-        // load
-        _this.siteParser = Helper.getSiteParser(url);
-        $("#regionSelector").val(_this.siteParser.region);
-        Api.sendMessageToActiveTab({type: "get-type-page"}, function(pageName) {
-            if (pageName == 'SingleBookPage') {
-                _this.activeTab = new RankTrackingTab(_this.siteParser);
-                _this.initRankTrackingTab(url);
-                return;
-            }
-
-            new MainTab().loadPageNum(function(){
-                new KeywordAnalysisTab().loadPageNum(function(){
-                    _this.getData(function(result){
-                        _this.booksData = result.books;
-                        _this.books20 = result.books20;
-                        _this.loadData(_this.booksData, _this.books20);
-                        _this.loadAdvertisementBanner();
-                    });
-                });
-            });
-
-            if (!_this.isRefreshStarted) {
-                _this.refreshData();
-                _this.isRefreshStarted = true;
-            }
+        // starting point
+        // show login tab
+        _this.loginTab.isLoggedIn(function(isLoggedIn){
+            if (isLoggedIn) _this.checkAndStartKdspy();
+            else _this.loginTab.load();
         });
     });
 };
@@ -559,6 +592,6 @@ function onShow(){
     Popup.instance.activeTab = new MainTab();
     SearchKeywordsTab.clearTable();
     SearchKeywordsTab.searchedKeyword = '';
-    Popup.instance.checkUrlAndLoad();
+    Popup.instance.checkUrlAndLogin();
 }
 

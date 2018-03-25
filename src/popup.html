@@ -120,17 +120,27 @@
 
                 </div>
                 <div class="content" id="login-content">
-                    <div>
-                        <div>
+                    <div class="">
+                        <div class="login-block login-border">
                             <label for="username">Login username or email address:</label>
                             <input id="username" type="text"/>
                             <label for="password">Password:</label>
                             <input id="password" type="password"/>
-                            <button id="login-button">Log In</button>
+                            <button id="login-button" class="button button-green">Log In</button>
                         </div>
-                        <div>
+                        <div class="login-block centered">
+                            <p id="login-failed-message" class="hidden validation-error">Login failed. Please check your username/password and try again.</p>
                             <a href="#" id="reset-password">Click here to reset password</a>
                         </div>
+                    </div>
+                </div>
+                <div class="content" id="trial-expired-content">
+                    <div class="centered full-width">
+                    <img alt="expired" src="../icons/forbidden.png"/>
+                    <h1>Your 30-Day Trial to KDSPY has EXPIRED!</h1>
+                    <p>Are you ready to unlock the power of KDSPY with full, unrestricted use, for just a one-time fee of $47?</p>
+                    <button class="button button-green button-big">I'm ready, unlock my account &gt;</button>
+                    <a class="underlined">Or, learn more about KDSPY here &gt;</a>
                     </div>
                 </div>
                 <div class="content" id="no-data-found-content">
