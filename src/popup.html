@@ -6,7 +6,8 @@
 <body style="margin: 0 auto; width:770px; height: 591px;">
     <div style="width:770px; height: 591px;">
         <div class="top">
-            <div class="logo"><img src="../icons/kdspy-4-logo-sml.png" style="height: 58px;padding-left:20px;padding-top:6px;"></div>
+            <div class="logo"><img src="../icons/kdspy-4-logo-sml.png"></div>
+            <div class="logout" id="logout-button"><img src="../icons/logout.png"><span>Logout</span></div>
         </div>
         <div class="body">
             <div class="left-panel panel">
@@ -120,7 +121,7 @@
 
                 </div>
                 <div class="content" id="login-content">
-                    <div class="">
+                    <div>
                         <div class="login-block login-border">
                             <label for="username">Login username or email address:</label>
                             <input id="username" type="text"/>
@@ -137,10 +138,10 @@
                 <div class="content" id="trial-expired-content">
                     <div class="centered full-width">
                     <img alt="expired" src="../icons/forbidden.png"/>
-                    <h1>Your 30-Day Trial to KDSPY has EXPIRED!</h1>
+                    <h1>Your Trial to KDSPY has EXPIRED!</h1>
                     <p>Are you ready to unlock the power of KDSPY with full, unrestricted use, for just a one-time fee of $47?</p>
-                    <button class="button button-green button-big">I'm ready, unlock my account &gt;</button>
-                    <a class="underlined">Or, learn more about KDSPY here &gt;</a>
+                    <button id="unlock-account-button" class="button button-green button-big">I'm ready, unlock my account &gt;</button>
+                    <a href="#" id="learn-more-about-kdspy" class="underlined black">Or, learn more about KDSPY here &gt;</a>
                     </div>
                 </div>
                 <div class="content" id="no-data-found-content">
@@ -208,17 +209,17 @@
                     <div style="display: table;text-align: center;"><a href="#" style="margin-left: 20px;" id="PullResult">Pull Results 1-20</a></div>
                 </div>
                 <div class="search-btn">
-                    <div class="footer-btn-panel-common" style="border-right : 0px solid #999999;padding:0 18px;">
+                    <div class="footer-btn-panel-common" style="border-right : 0px solid #999999;">
                         <div class="footer-btn-panel-text">Search</div>
                         <div><img src="../icons/search-ico.png" class="search"></div></div>
                 </div>
                 <div id="ExportBtn" book-url="" style="float:left;width:70px;">
-                    <div class="footer-btn-panel-common" style="padding:0 18px;">
+                    <div class="footer-btn-panel-common">
                         <div class="footer-btn-panel-text">Export</div>
                         <div><img src="../icons/download.png" id="Export" style="height: 35px;width: 35px;"></div></div>
                 </div>
                 <div class="help-btn">
-                    <div class="footer-btn-panel-common" style="border-right:1px solid #999999;padding:0 18px;">
+                    <div class="footer-btn-panel-common" style="border-right:1px solid #999999;">
                         <div class="footer-btn-panel-text">Help</div>
                         <div style="margin-top:4px;">
                             <img src="../icons/help.png" class="help">
@@ -285,7 +286,7 @@
             </div>
             <div id="no-compatible-aria-footer" style="display:none;margin-left: 376px;">
                 <div class="search-btn">
-                    <div class="footer-btn-panel-common" style="border-right : 0px solid #999999;padding:0 18px;">
+                    <div class="footer-btn-panel-common" style="border-right : 0px solid #999999;">
                         <div class="footer-btn-panel-text">Search</div>
                         <div>
                             <img src="../icons/search-ico.png" class="search">
@@ -301,7 +302,7 @@
                     </div>
                 </div>
                 <div class="help-btn">
-                    <div class="footer-btn-panel-common" style="padding:0 18px;">
+                    <div class="footer-btn-panel-common">
                         <div class="footer-btn-panel-text" >Help</div>
                         <div style="margin-top:4px;">
                             <img src="../icons/help.png" class="help">
@@ -316,7 +317,7 @@
             </div>
             <div id="TrackingExportImport" style="float: right">
                 <div id="ExportTrackingBtn" style="float: left; width: 70px; display: block;">
-                    <div class="footer-btn-panel-common" style="padding:0 18px;">
+                    <div class="footer-btn-panel-common">
                         <div class="footer-btn-panel-text">Export</div>
                         <div>
                             <img src="../icons/download.png" id="ExportTracking" style="height: 35px;width: 35px;">
@@ -324,7 +325,7 @@
                     </div>
                 </div>
                 <div id="ImportTrackingBtn" style="float: left; width: 70px; display: block;">
-                    <div class="footer-btn-panel-common" style="padding:0 18px;">
+                    <div class="footer-btn-panel-common">
                         <div class="footer-btn-panel-text">Import</div>
                         <div>
                             <img src="../icons/upload.png" id="ImportTracking" style="height: 35px;width: 35px;">
@@ -336,6 +337,25 @@
                 <div style="display:table;text-align:center;margin:0 auto;border-left : 1px solid #999999; padding:0 18px;height:59px;">
                     <div style="font-size:11px; margin-top: 10px">Export</div>
                     <div style="font-size:16px;font-weight:bold"><img src="../icons/download.png" id="ExportWordCloud" style="height: 35px;width: 35px;"></div>
+                </div>
+            </div>
+            <div id="login-footer">
+                <div class="footer-btn-right help-btn">
+                    <div class="footer-btn-panel-common">
+                        <div class="footer-btn-panel-text">Support</div>
+                        <div style="margin-top:4px;">
+                            <img src="../icons/help.png" class="support">
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-btn-right">
+                    <div class="footer-btn-panel-common">
+                        <div class="footer-btn-panel-text">Recommended</div>
+                        <div class="image-frame">
+                            <span class="image-frame-helper"></span>
+                            <img src="../icons/thumb.png" class="recommended">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -25,14 +25,26 @@ function LoginTab(){
     var _this = this;
     this.loginContent = $('#login-content');
     this.trialExpiredContent = $('#trial-expired-content');
+    this.loginFooter = $('#login-footer');
     this.username = $('#username');
     this.password = $('#password');
     this.loginButton = $('#login-button');
+    this.unlockAccountButton = $('#unlock-account-button');
     this.resetPassword = $('#reset-password');
+    this.learnMoreAboutKdspy = $('#learn-more-about-kdspy');
     this.loginFailedMessage = $('#login-failed-message');
     this.storage = Api.storage;
 
     this.loginButton.click(function(){_this.onLoginClick();});
+    this.unlockAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/order.php');});
+    this.resetPassword.click(function(){Api.openNewTab('https://www.publishingaltitude.com/wp-login.php?action=lostpassword');});
+    this.learnMoreAboutKdspy.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade/');});
+    $("#username,#password").keyup(function(event) {
+        const enterKeyCode = 13;
+        if (event.keyCode === enterKeyCode) {
+            _this.loginButton.click();
+        }
+    });
 }
 
 LoginTab.prototype.getUserAccessLevel = function() {
@@ -95,6 +107,8 @@ LoginTab.prototype.getUserAccessLevel = function() {
 LoginTab.prototype.onLoginClick = function(){
     var _this = this;
 
+    if (_this.loginButton.prop('disabled')) return;
+    _this.loginButton.prop('disabled', true);
     var authPromise = $.post(wpAuthEndPoint, {username: _this.username.val(), password: _this.password.val()})
         .then(function(result) {
             console.log(result);
@@ -121,7 +135,14 @@ LoginTab.prototype.onLoginClick = function(){
         .catch(function(error) {
             console.log('login failed: ' + error);
             _this.loginFailedMessage.show();
+        })
+        .finally(function(){
+            _this.loginButton.prop('disabled', false);
         });
+};
+
+LoginTab.prototype.onLogoutClick = function() {
+    return this.setLoginData(defaultLoginData);
 };
 
 var defaultLoginData = {
@@ -159,21 +180,14 @@ LoginTab.prototype.setupStaticClickListeners = function(){
     });
 };
 
-LoginTab.prototype.loadPageNum = function(callback){
-    var _this = this;
-    callback = Helper.valueOrDefault(callback, function() {});
-    Api.sendMessageToActiveTab({type: "get-pageNum", tab: 'LoginTab'}, function(pageNum){
-        _this.pageNum = parseInt(pageNum);
-        callback();
-    });
-};
-
 LoginTab.prototype.load = function(){
     this.loginContent.show();
+    this.loginFooter.show();
 };
 
 LoginTab.prototype.showTrialExpired = function(){
     this.trialExpiredContent.show();
+    this.loginFooter.show();
 };
 
 LoginTab.prototype.isLoggedIn = function(callback) {
@@ -200,8 +214,19 @@ LoginTab.prototype.isCheckAccessNeeded = function(callback) {
 
 LoginTab.prototype.isTrialExpired = function(callback) {
     callback = Helper.valueOrDefault(callback, function() {});
-    this.getUserAccessLevel()
-        .then(function (accessLevelInfo) {
-            callback(accessLevelInfo.isTrialExpired);
-        });
+    var _this = this;
+
+    this.isCheckAccessNeeded(function (isCheckAccessNeeded) {
+        if (!isCheckAccessNeeded) {
+            _this.getLoginData()
+                .then(function (loginData) {
+                    callback(loginData.isTrialExpired);
+                });
+        } else {
+            _this.getUserAccessLevel()
+                .then(function (accessLevelInfo) {
+                    callback(accessLevelInfo.isTrialExpired);
+                });
+        }
+    });
 };

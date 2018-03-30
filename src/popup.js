@@ -27,6 +27,7 @@ function Popup(){
     this.isRefreshStarted = false;
     this.isStaticLinkInitialized = false;
     this.loginTab = new LoginTab();
+    this.logoutButton = $('#logout-button');
     this.url = '';
 }
 
@@ -76,6 +77,7 @@ Popup.prototype.resetCss = function(){
     $('#Conclusion').hide();
     $('#ExportBtnWordCloud').hide();
     $('#AdPanel').hide();
+    $('#login-footer').hide();
 };
 
 Popup.prototype.compare = function(a,b) {
@@ -298,6 +300,14 @@ Popup.prototype.setupStaticClickListeners = function() {
         Api.openNewTab('http://www.kdspy.com/help/');
     });
 
+    $('.support').click(function(){
+        Api.openNewTab('https://www.publishingaltitude.com/support/');
+    });
+
+    $('.recommended').click(function(){
+        Api.openNewTab('https://www.publishingaltitude.com/resources/');
+    });
+
     $('#go-categories').click(function(){
         Api.openNewTab('https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html');
     });
@@ -341,6 +351,12 @@ Popup.prototype.setupStaticClickListeners = function() {
         _this.startKdspy();
     });
 
+    this.logoutButton.click(function(){
+        _this.loginTab.onLogoutClick()
+            .then(function(){
+                window.close();
+            });
+    });
 
     _this.isStaticLinkInitialized = true;
 };
@@ -453,19 +469,16 @@ Popup.prototype.setActivePage = function(pageNum){
 
 Popup.prototype.checkAndStartKdspy = function() {
     var _this = this;
-    this.loginTab.isCheckAccessNeeded(function (isCheckAccessNeeded) {
-        if (!isCheckAccessNeeded) {
-            _this.startKdspy();
-        }else{
-            _this.loginTab.isTrialExpired(function (isTrialExpired) {
-                if (isTrialExpired) {
-                    _this.loginTab.showTrialExpired();
-                    console.log('trial expired!!!');
-                    return;
-                }
-                _this.startKdspy();
-            });
+    _this.logoutButton.show();
+    this.loginTab.isTrialExpired(function (isTrialExpired) {
+        if (isTrialExpired) {
+            _this.resetCss();
+            _this.loginTab.showTrialExpired();
+            console.log('trial expired!!!');
+            return;
         }
+
+        _this.startKdspy();
     });
 };
 
@@ -516,7 +529,10 @@ Popup.prototype.checkUrlAndLogin = function(){
         // show login tab
         _this.loginTab.isLoggedIn(function(isLoggedIn){
             if (isLoggedIn) _this.checkAndStartKdspy();
-            else _this.loginTab.load();
+            else {
+                _this.logoutButton.hide();
+                _this.loginTab.load();
+            }
         });
     });
 };

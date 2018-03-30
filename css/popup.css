@@ -525,6 +525,7 @@ td.wow a:hover
     margin:0 auto;
     border-left : 1px solid #999999;
     height:59px;
+    padding:0 18px;
 }
 
 .footer-btn-panel-text{
@@ -542,6 +543,25 @@ td.wow a:hover
 .search-btn{
     float:left;
     width:76px;
+}
+
+.footer-btn-left {
+    float: left;
+}
+
+.footer-btn-right {
+    float: right;
+}
+
+.image-frame img {
+    vertical-align: middle;
+    max-height: 37px;
+}
+
+.image-frame-helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
 }
 
 .hidden {
@@ -583,6 +603,7 @@ td.wow a:hover
 .button {
     display: block;
     padding: 5px 30px;
+    cursor: pointer;
 }
 
 .button-green {
@@ -643,4 +664,28 @@ td.wow a:hover
 .login-block a, .login-block p {
     font-size: 1.2em;
     margin: 20px auto 10px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo {
+    height: 58px;
+    width: auto;
+    padding-left: 20px;
+    padding-top: 6px;
+    display: inline-block;
+}
+
+.logout {
+    width: 50px;
+    margin-top: 10px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.black {
+    color: black;
 }
