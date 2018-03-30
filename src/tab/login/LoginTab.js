@@ -55,16 +55,12 @@ LoginTab.prototype.getUserAccessLevel = function() {
 
     var wlmAuthPromise = $.get(wlmAuthEndPoint)
         .then(function (result) {
-            console.log('then: ' + result);
             if (result.success === 1) return result.lock;
             throw 'wlm auth failed';
         })
         .then(function (lock) {
             var stringForHash = lock + wlmApiKey;
-            console.log(stringForHash);
             var md5 = Helper.md5(stringForHash);
-            console.log('lock: ' + lock);
-            console.log('md5: ' + md5);
 
             return $.ajax({
                 url: wlmAuthEndPoint,
@@ -84,7 +80,6 @@ LoginTab.prototype.getUserAccessLevel = function() {
         })
         .then(function (result) {
             var levels = result.member[0].Levels;
-            console.log(levels);
             var accessLevels = Object.values(levels)
                 .filter(function(item){return typeof(item) !== "string"})
                 .map(function(item){return {name: item.Name, isExpired: item.Expired}});
@@ -112,7 +107,6 @@ LoginTab.prototype.onLoginClick = function(){
     _this.loginButton.prop('disabled', true);
     var authPromise = $.post(wpAuthEndPoint, {username: _this.username.val(), password: _this.password.val()})
         .then(function(result) {
-            console.log(result);
             return $.ajax({
                 url: userinfoEndPoint,
                 type: 'GET',
@@ -134,7 +128,8 @@ LoginTab.prototype.onLoginClick = function(){
             Popup.instance.checkAndStartKdspy();
         })
         .catch(function(error) {
-            console.log('login failed: ' + error);
+            console.log('login failed: ');
+            console.log(error);
             _this.loginFailedMessage.show();
         })
         .finally(function(){

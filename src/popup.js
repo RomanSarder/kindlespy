@@ -474,7 +474,6 @@ Popup.prototype.checkAndStartKdspy = function() {
         if (isTrialExpired) {
             _this.resetCss();
             _this.loginTab.showTrialExpired();
-            console.log('trial expired!!!');
             return;
         }
 
