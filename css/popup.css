@@ -550,7 +550,8 @@ td.wow a:hover
 }
 
 .footer-btn-right {
-    float: right;
+    float: right !important;
+    min-width: 80px;
 }
 
 .image-frame img {
