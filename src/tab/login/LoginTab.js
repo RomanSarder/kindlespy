@@ -5,7 +5,8 @@
 //LoginTab.debug = true;
 
 // Wordpress root URL
-const wpRoot = 'https://www.5minpub.co';
+const wpRoot = 'https://www.publishingaltitude.com';
+//const wpRoot = 'https://www.5minpub.co';
 // Wordpress API
 const wpAuthEndPoint = wpRoot + '/wp-json/jwt-auth/v1/token';
 const userinfoEndPoint = wpRoot + '/wp-json/wp/v2/users/me';
