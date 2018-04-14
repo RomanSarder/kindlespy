@@ -25,10 +25,18 @@ BestSellersPage.prototype.loadData = function(pullingToken, siteParser, parentUr
 };
 
 BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, responseText, parentUrl){
+    // new layout from 14.04.2018
+    const newPatternStart = 'class="zg-item-immersion"';
+    const newPatternEnd = '</li>';
     var patternStart = siteParser.bestSellersPatternStart;
     var patternEnd = siteParser.bestSellersPatternEnd;
     var str = responseText;
     var pos = str.indexOf(patternStart);
+    if (pos === -1) {
+        patternStart = newPatternStart;
+        patternEnd = newPatternEnd;
+        pos = str.indexOf(patternStart);
+    }
 
     var no = [];
     var url = [];
@@ -45,7 +53,7 @@ BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, respons
         str = str.substr(pos + patternStart.length);
         var item = str.substring(0, str.indexOf(patternEnd));
 
-        no[index] = this.getNoInfo(item);
+        no[index] = this.getNoInfo(item, siteParser);
         url[index] = Helper.getUrlWORedirect(this.getPageUrl(item));
         price[index] = this.getPriceInfo(item);
         review[index] = this.getReviewInfo(item);
@@ -70,7 +78,13 @@ BestSellersPage.prototype.getCategoryInfo = function(responseText){
     return Helper.parseString(responseText, 'class="category"', '>', '<');
 };
 
-BestSellersPage.prototype.getNoInfo = function(responseText){
+AmazonComParser.prototype.getRankNo = function(responseText) {
+    return Helper.parseString(responseText, 'class="zg-badge-text"', ">#", "<");
+};
+BestSellersPage.prototype.getNoInfo = function(responseText, siteParser){
+    // new layout from 14.04.2018
+    var rankNo = Helper.parseString(responseText, 'class="zg-badge-text"', ">#", "<");
+    if (rankNo !== '') return rankNo;
     return Helper.parseString(responseText, 'class="zg_rankNumber"', ">", ".");
 };
 

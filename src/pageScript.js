@@ -9,6 +9,7 @@ function KindleSpy(){
     _this.parentUrl = ''; // trimmed Url
     _this.siteParser = undefined;
     // used to invalidate the current data is being pulled when the other pulling with new parameters started
+    _this.bestSellerResultsNumber = 20;
     _this.pullingToken = 0;
     _this.currentPage = undefined;
     _this.pagesPulled = 0;
@@ -144,9 +145,10 @@ KindleSpy.prototype.parseDataFromBookPageAndSend = function(pullingToken, num, u
 };
 
 KindleSpy.prototype.startPulling = function(pageNumber){
-    if (pageNumber <= this.pagesPulled) return;
-    this.pagesPulled = pageNumber;
+    var _this = this;
+    if (pageNumber * this.bestSellerResultsNumber <= this.pagesPulled * this.siteParser.bestSellerResultsNumber) return;
     var searchKeyword = Helper.getParameterByName(this.url, "field-keywords");
+    _this.pagesPulled++;
     var data = this.pageData.get();
     data.isWaitingForPulling = true;
     data.isPulling = true;

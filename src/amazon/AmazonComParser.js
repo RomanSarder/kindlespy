@@ -13,6 +13,7 @@ function AmazonComParser(){
     this.currencySignForExport = "$";
     this.decimalSeparator = ".";
     this.thousandSeparator = ",";
+    this.bestSellerResultsNumber = 50;
     this.searchResultsNumber = 16;
     this.authorResultsNumber = 12;
     this.publisher = "Publisher";

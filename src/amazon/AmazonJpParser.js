@@ -13,6 +13,7 @@ function AmazonJpParser(){
     this.currencySignForExport = "￥";
     this.decimalSeparator = ".";
     this.thousandSeparator = ",";
+    this.bestSellerResultsNumber = 20;
     this.searchResultsNumber = 16;
     this.authorResultsNumber = 24;
     this.publisher = "出版社";
