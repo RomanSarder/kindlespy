@@ -20,8 +20,8 @@ function AmazonComParser(){
     this.searchKeys = ["to buy","to rent"];
     this.numberSign = "#";
     this.searchPattern = "Kindle Edition";
-    this.bestSellersPatternStart = 'class="zg-item-immersion"';
-    this.bestSellersPatternEnd = '</li>';
+    this.bestSellersPatternStart = 'class="zg_itemImmersion"';
+    this.bestSellersPatternEnd = 'class="zg_clear"';
 
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 60000 },
@@ -187,8 +187,4 @@ AmazonComParser.prototype.getPrice = function(jqNodes) {
     if (typeof priceNodes === 'undefined' || priceNodes.length === 0) return null;
 
     return priceNodes[0].nodeValue.trim();
-};
-
-AmazonComParser.prototype.getRankNo = function(responseText) {
-    return Helper.parseString(responseText, 'class="zg-badge-text"', ">#", "<");
 };

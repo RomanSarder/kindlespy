@@ -25,10 +25,18 @@ BestSellersPage.prototype.loadData = function(pullingToken, siteParser, parentUr
 };
 
 BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, responseText, parentUrl){
+    // new layout from 14.04.2018
+    const newPatternStart = 'class="zg-item-immersion"';
+    const newPatternEnd = '</li>';
     var patternStart = siteParser.bestSellersPatternStart;
     var patternEnd = siteParser.bestSellersPatternEnd;
     var str = responseText;
     var pos = str.indexOf(patternStart);
+    if (pos === -1) {
+        patternStart = newPatternStart;
+        patternEnd = newPatternEnd;
+        pos = str.indexOf(patternStart);
+    }
 
     var no = [];
     var url = [];
@@ -70,8 +78,13 @@ BestSellersPage.prototype.getCategoryInfo = function(responseText){
     return Helper.parseString(responseText, 'class="category"', '>', '<');
 };
 
+AmazonComParser.prototype.getRankNo = function(responseText) {
+    return Helper.parseString(responseText, 'class="zg-badge-text"', ">#", "<");
+};
 BestSellersPage.prototype.getNoInfo = function(responseText, siteParser){
-    if (typeof siteParser.getRankNo !== 'undefined') return siteParser.getRankNo(responseText);
+    // new layout from 14.04.2018
+    var rankNo = Helper.parseString(responseText, 'class="zg-badge-text"', ">#", "<");
+    if (rankNo !== '') return rankNo;
     return Helper.parseString(responseText, 'class="zg_rankNumber"', ">", ".");
 };
 
