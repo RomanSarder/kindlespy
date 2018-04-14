@@ -45,7 +45,7 @@ BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, respons
         str = str.substr(pos + patternStart.length);
         var item = str.substring(0, str.indexOf(patternEnd));
 
-        no[index] = this.getNoInfo(item);
+        no[index] = this.getNoInfo(item, siteParser);
         url[index] = Helper.getUrlWORedirect(this.getPageUrl(item));
         price[index] = this.getPriceInfo(item);
         review[index] = this.getReviewInfo(item);
@@ -70,7 +70,8 @@ BestSellersPage.prototype.getCategoryInfo = function(responseText){
     return Helper.parseString(responseText, 'class="category"', '>', '<');
 };
 
-BestSellersPage.prototype.getNoInfo = function(responseText){
+BestSellersPage.prototype.getNoInfo = function(responseText, siteParser){
+    if (typeof siteParser.getRankNo !== 'undefined') return siteParser.getRankNo(responseText);
     return Helper.parseString(responseText, 'class="zg_rankNumber"', ">", ".");
 };
 
