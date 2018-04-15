@@ -16,7 +16,7 @@ html {
 }
 
 body, div, a, p, table, tr, td, th {
-    font-family: Ubuntu-Regular, sans-serif;
+    font-family: arial;
     font-size: 12px;
 }
 
@@ -603,6 +603,7 @@ td.wow a:hover
     height: auto;
     font-size: 1.4em;
     line-height: normal;
+    padding-top: 30px;
 }
 
 #trial-expired-content img {
@@ -611,25 +612,39 @@ td.wow a:hover
 }
 
 #trial-expired-content h1 {
-    font-size: 2.5em;
+    font-family: Ubuntu-Bold;
+    font-size: 42px;
+    color: #403866;
+    line-height: 1.2;
 }
 
 .container-btn {
     display: block;
-    padding: 5px 243px;
+    padding: 15px 120px;
     cursor: pointer;
 }
 
-#trial-expired-content p, #trial-expired-content a {
-	font-family: Ubuntu-Bold;
-    font-size: 1.5em;
-    margin-right: 150px;
-    margin-left: 150px;
+#trial-expired-content p {
+    font-family: Ubuntu-Bold;
+    font-size: 17px;
+    color: #403866;
+    margin-right: 120px;
+    margin-left: 120px;
 }
 
+#trial-expired-content a{
+    font-family: Ubuntu-Bold;
+    font-size: 14px;
+    color: #666666;
+    margin-right: 145px;
+    margin-left: 145px;
+    text-decoration: none;
+    cursor: pointer;
+}
 
 /*Login Form*/
 #login-content {
+    font-family: Ubuntu-Regular, sans-serif;
 	width: 100%;
     max-height: none;
     height: auto;
@@ -642,11 +657,12 @@ td.wow a:hover
 }
 
 /*[ Utility ]*/
-.txt1 {
+.reset-pass {
   font-family: Ubuntu-Regular;
   font-size: 16px;
-  color: #827ffe;
+  color: #666666;
   line-height: 1.4;
+  text-decoration: none;
 }
 
 .flex-sb-m {
