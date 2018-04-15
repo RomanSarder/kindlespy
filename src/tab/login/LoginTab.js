@@ -102,6 +102,7 @@ LoginTab.prototype.getUserAccessLevel = function() {
 
 LoginTab.prototype.onLoginClick = function(){
     var _this = this;
+    validationForm();
 
     if (_this.loginButton.prop('disabled')) return;
     _this.loginButton.prop('disabled', true);
