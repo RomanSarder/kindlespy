@@ -614,25 +614,14 @@ td.wow a:hover
     font-size: 2.5em;
 }
 
-.button {
+.container-btn {
     display: block;
-    padding: 5px 30px;
+    padding: 5px 243px;
     cursor: pointer;
 }
 
-.button-green {
-    color: #fff;
-    background-color: #090;
-    border: 1px solid #000;
-}
-
-.button-big {
-    margin: 40px auto;
-    padding: 20px 60px;
-    font-size: 1.4em;
-}
-
 #trial-expired-content p, #trial-expired-content a {
+	font-family: Ubuntu-Bold;
     font-size: 1.5em;
     margin-right: 150px;
     margin-left: 150px;
@@ -646,6 +635,10 @@ td.wow a:hover
     height: auto;
     padding-left: 180px;
     padding-top: 50px;
+}
+
+.login-block {
+    max-width: 380px;
 }
 
 /*[ Utility ]*/
@@ -829,6 +822,7 @@ td.wow a:hover
   display: flex;
   flex-wrap: wrap;
   margin-top: 17px;
+  cursor: pointer;
 }
 
 .login-form-btn {
@@ -858,10 +852,12 @@ td.wow a:hover
   -o-transition: all 0.4s;
   -moz-transition: all 0.4s;
   transition: all 0.4s;
+  cursor: pointer;
 }
 
 .login-form-btn:hover {
   background-color: #403866;
+  cursor: pointer;
 }
 /*---------login end-----------*/
 

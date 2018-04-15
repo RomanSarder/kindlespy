@@ -37,7 +37,7 @@ function LoginTab(){
     this.storage = Api.storage;
 
     this.loginButton.click(function(){_this.onLoginClick();});
-    this.unlockAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/order.php');});
+    this.unlockAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade.php');});
     this.resetPassword.click(function(){Api.openNewTab('https://www.publishingaltitude.com/wp-login.php?action=lostpassword');});
     this.learnMoreAboutKdspy.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade/');});
     $("#username,#password").keyup(function(event) {
