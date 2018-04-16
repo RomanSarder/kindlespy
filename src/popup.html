@@ -1,6 +1,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="../css/popup.css">
+	<link rel="stylesheet" href="../fonts/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/tooltipster.css">
 </head>
 <body style="margin: 0 auto; width:770px; height: 591px;">
@@ -120,28 +121,53 @@
                 <div class="content" id="word-cloud-content" style="display: none;">
 
                 </div>
-                <div class="content" id="login-content">
-                    <div>
-                        <div class="login-block login-border">
-                            <label for="username">Login username or email address:</label>
-                            <input id="username" type="text"/>
-                            <label for="password">Password:</label>
-                            <input id="password" type="password"/>
-                            <button id="login-button" class="button button-green">Log In</button>
-                        </div>
-                        <div class="login-block centered">
-                            <p id="login-failed-message" class="hidden validation-error">Login failed. Please check your username/password and try again.</p>
-                            <a href="#" id="reset-password">Click here to reset password</a>
-                        </div>
+				
+                <div class="content container-login" id="login-content">
+                    <div class="wrap-login">
+						<div class="login-form validate-form">
+							<span class="login-form-title">
+								KDSPY LOGIN
+							</span>
+							<div class="wrap-input validate-input" data-validate="Username is required">
+								<input id="username" class="input" type="text" name="username" placeholder="Username">
+								<span class="focus-input"></span>
+							</div>
+							<div class="wrap-input validate-input" data-validate="Password is required">
+								<input id="password" class="input" type="password" name="pass" placeholder="Password">
+								<span class="focus-input"></span>
+							</div>
+							<div class="flex-sb-m">
+								<div class="contact-form-checkbox">
+									<input class="input-checkbox" id="ckb-remember" type="checkbox" name="remember-me" checked>
+									<label class="label-checkbox" for="ckb-remember">
+										Remember me
+									</label>
+								</div>
+								<div>
+									<a href="#" id="reset-password" class="reset-pass">
+										Forgot your details?
+									</a>
+								</div>
+							</div>
+							<div class="container-login-form-btn">
+								<button id="login-button" class="login-form-btn">LOGIN</button>
+							</div>
+						</div>
+                    </div>
+					<div class="login-block centered">
+                        <p id="login-failed-message" class="hidden validation-error">Login failed. Please check your username/password and try again.</p>     
                     </div>
                 </div>
+				
                 <div class="content" id="trial-expired-content">
                     <div class="centered full-width">
                     <img alt="expired" src="../icons/forbidden.png"/>
-                    <h1>Your Trial to KDSPY has EXPIRED!</h1>
-                    <p>Are you ready to unlock the power of KDSPY with full, unrestricted use, for just a one-time fee of $47?</p>
-                    <button id="unlock-account-button" class="button button-green button-big">I'm ready, unlock my account &gt;</button>
-                    <a href="#" id="learn-more-about-kdspy" class="underlined black">Or, learn more about KDSPY here &gt;</a>
+                    <h1>YOUR TRIAL HAS EXPIRED!</h1>
+                    <p>Activate KDSPY for JUST $47 (one-time fee). Unlimited Use.</p>
+					<div class="container-btn">
+						<button id="unlock-account-button" class="login-form-btn">ACTIVATE NOW &gt;</button>
+					</div>
+                    <a href="#" id="learn-more-about-kdspy" class="black">Or, learn more about KDSPY here &gt;</a>
                     </div>
                 </div>
                 <div class="content" id="no-data-found-content">
@@ -346,15 +372,6 @@
                         <div class="image-frame" style="margin-top:4px;">
                             <span class="image-frame-helper"></span>
                             <img src="../icons/help.png" class="support">
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-btn-right">
-                    <div class="footer-btn-panel-common">
-                        <div class="footer-btn-panel-text">Recommended</div>
-                        <div class="image-frame">
-                            <span class="image-frame-helper"></span>
-                            <img src="../icons/thumb.png" class="recommended">
                         </div>
                     </div>
                 </div>

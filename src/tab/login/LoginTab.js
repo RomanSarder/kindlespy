@@ -36,8 +36,11 @@ function LoginTab(){
     this.loginFailedMessage = $('#login-failed-message');
     this.storage = Api.storage;
 
+    //validation form
+    this.inputForm = $('.validate-input .input');
+
     this.loginButton.click(function(){_this.onLoginClick();});
-    this.unlockAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/order.php');});
+    this.unlockAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade.php');});
     this.resetPassword.click(function(){Api.openNewTab('https://www.publishingaltitude.com/wp-login.php?action=lostpassword');});
     this.learnMoreAboutKdspy.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade/');});
     $("#username,#password").keyup(function(event) {
@@ -45,6 +48,13 @@ function LoginTab(){
         if (event.keyCode === enterKeyCode) {
             _this.loginButton.click();
         }
+    });
+
+    //validation form
+    $('.validate-form .input').each(function () {
+        $(this).focus(function () {
+            _this.hideValidate(this);
+        });
     });
 }
 
@@ -100,13 +110,16 @@ LoginTab.prototype.getUserAccessLevel = function() {
         });
 };
 
-LoginTab.prototype.onLoginClick = function(){
+LoginTab.prototype.onLoginClick = function() {
     var _this = this;
 
     if (_this.loginButton.prop('disabled')) return;
+    if (!_this.isFormValid()) return;
+
     _this.loginButton.prop('disabled', true);
+
     var authPromise = $.post(wpAuthEndPoint, {username: _this.username.val(), password: _this.password.val()})
-        .then(function(result) {
+        .then(function (result) {
             return $.ajax({
                 url: userinfoEndPoint,
                 type: 'GET',
@@ -225,4 +238,44 @@ LoginTab.prototype.isTrialExpired = function(callback) {
                 });
         }
     });
+};
+
+//validation form
+LoginTab.prototype.isFormValid = function() {
+    var check = true;
+    var input = this.inputForm;
+
+    for (var i = 0; i < input.length; i++) {
+        if (this.validate(input[i]) === false) {
+            this.showValidate(input[i]);
+            check=false;
+        }
+    }
+
+    return check;
+};
+
+LoginTab.prototype.validate = function(input) {
+    var input = $(input);
+
+    if(input.attr('type') == 'email' || input.attr('name') == 'email') {
+        if(input.val().trim().match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/) == null) {
+            return false;
+        }
+    }
+    else {
+        if(input.val().trim() == ''){
+            return false;
+        }
+    }
+};
+
+LoginTab.prototype.showValidate = function(input) {
+    var thisAlert = $(input).parent();
+    $(thisAlert).addClass('alert-validate');
+};
+
+LoginTab.prototype.hideValidate = function(input) {
+    var thisAlert = $(input).parent();
+    $(thisAlert).removeClass('alert-validate');
 };
