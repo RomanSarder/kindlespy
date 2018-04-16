@@ -114,22 +114,20 @@ LoginTab.prototype.onLoginClick = function() {
     var _this = this;
 
     if (_this.loginButton.prop('disabled')) return;
+    if (!_this.isFormValid()) return;
 
     _this.loginButton.prop('disabled', true);
-    var authPromise;
 
-    if (_this.isFormValid()) {
-        authPromise = $.post(wpAuthEndPoint, {username: _this.username.val(), password: _this.password.val()})
-            .then(function (result) {
-                return $.ajax({
-                    url: userinfoEndPoint,
-                    type: 'GET',
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader('Authorization', 'Bearer ' + result.token);
-                    }
-                });
+    var authPromise = $.post(wpAuthEndPoint, {username: _this.username.val(), password: _this.password.val()})
+        .then(function (result) {
+            return $.ajax({
+                url: userinfoEndPoint,
+                type: 'GET',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + result.token);
+                }
             });
-    }
+        });
 
     var loginDataPromise = _this.getLoginData();
     return Promise.all([authPromise, loginDataPromise])
