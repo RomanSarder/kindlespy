@@ -3,6 +3,8 @@
  */
 
 //LoginTab.debug = true;
+//LoginTab.simulateLoginSuccess = true;
+//LoginTab.simulateTrialExpired = false;
 
 // Wordpress root URL
 const wpRoot = 'https://www.publishingaltitude.com';
@@ -98,6 +100,7 @@ LoginTab.prototype.getUserAccessLevel = function() {
                 ||accessLevels.some(function(item){return item.name === kindleSpyTrialLevel && !item.isExpired})) isTrialExpired = false;
 
             loginDataTmp.lastAccessCheck = Date.now();
+            if (typeof LoginTab.simulateTrialExpired !== 'undefined' ) isTrialExpired = LoginTab.simulateTrialExpired;
             loginDataTmp.isTrialExpired = isTrialExpired;
             return _this.setLoginData(loginDataTmp);
         })
@@ -115,6 +118,26 @@ LoginTab.prototype.onLoginClick = function() {
 
     if (_this.loginButton.prop('disabled')) return;
     if (!_this.isFormValid()) return;
+
+    const loginSuccessAction = function() {
+        Popup.instance.checkAndStartKdspy();
+    };
+    const loginErrorAction = function(error) {
+        _this.loginFailedMessage.show();
+        console.log('login failed: ');
+        console.log(error);
+    };
+
+    if (typeof LoginTab.simulateLoginSuccess !== 'undefined') {
+        if (LoginTab.simulateLoginSuccess) {
+            _this.setLoginData({isLoggedIn: true, login: 'dummy_user', userId: 999999})
+                .then(function(){
+                    loginSuccessAction();
+                });
+        }
+        else loginErrorAction('simulated login error');
+        return;
+    }
 
     _this.loginButton.prop('disabled', true);
 
@@ -137,14 +160,8 @@ LoginTab.prototype.onLoginClick = function() {
             loginData.userId = userinfo.id;
             return _this.setLoginData(loginData);
         })
-        .then(function() {
-            Popup.instance.checkAndStartKdspy();
-        })
-        .catch(function(error) {
-            console.log('login failed: ');
-            console.log(error);
-            _this.loginFailedMessage.show();
-        })
+        .then(loginSuccessAction)
+        .catch(loginErrorAction)
         .finally(function(){
             _this.loginButton.prop('disabled', false);
         });
