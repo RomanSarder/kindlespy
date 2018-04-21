@@ -17,10 +17,10 @@ AuthorSearchResultsPage.prototype.loadData = function(pullingToken, siteParser, 
     var _this = this;
     var itemsPerPage = siteParser.authorResultsNumber;
     if (typeof _this.authorSearchResultsPager === 'undefined') {
-        _this.authorSearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
+        _this.authorSearchResultsPager = new Pager(itemsPerPage, function(startFromIndex, responseText, parentUrl){
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
             var category = jqResponseText.find("#s-result-count > span > span").text().trim().replace(/"/g,'');
-            return new SearchPageParser().parsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, category, siteParser, "Author");
+            return new SearchPageParser().parsePage(pullingToken, startFromIndex, jqResponseText, parentUrl, category, siteParser, "Author");
         }, function(url, page){
             return url + '&page=' + page;
         });

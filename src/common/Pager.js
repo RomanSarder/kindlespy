@@ -3,14 +3,14 @@
  */
 
 function Pager(itemsPerPage, pullItemsFunction, getPageUrlFunction){
-    this.itemsInResult = 20;
+    this.itemsInResult = 0;
     this.itemsPerPage = itemsPerPage;
     this.lastPage = 1;
     this.alreadyPulled = 0;
     this.pagesLoaded = 0;
     this.isInProgress = false;
     this.isStopped = false;
-    this.pullItemsFunction = pullItemsFunction || function(startFromIndex, maxResults, responseText, ParentUrl){};
+    this.pullItemsFunction = pullItemsFunction || function(startFromIndex, responseText, ParentUrl){};
     this.getPageUrlFunction = getPageUrlFunction || function(url, page){};
 }
 
@@ -20,9 +20,10 @@ Pager.prototype.loadNextPage = function(parentUrl, callback){
     if (this.isInProgress) return setTimeout(this.loadNextPage.bind(this, parentUrl, callback), 100);
 
     this.isInProgress = true;
+    this.itemsInResult += 20;
 
     var _this = this;
-    var totalItemsLoaded = 0;
+    var totalItemsLoaded = (this.lastPage - 1) * this.itemsPerPage;
     var pulledItems;
     var i = this.lastPage;
     var prevPulledItems = 0;
@@ -35,10 +36,10 @@ Pager.prototype.loadNextPage = function(parentUrl, callback){
             var startFromIndex = (i - 1) * _this.itemsPerPage + _this.alreadyPulled;
             var maxResults = _this.itemsInResult - totalItemsLoaded;
             prevPulledItems = pulledItems;
-            pulledItems = _this.pullItemsFunction(startFromIndex, maxResults, responseText, parentUrl);
+            pulledItems = _this.pullItemsFunction(startFromIndex, responseText, parentUrl);
 
             if (typeof pulledItems === 'undefined' ||
-                (prevPulledItems == 0 && pulledItems == 0)) {
+                (prevPulledItems === 0 && pulledItems === 0)) {
                 _this.isInProgress = false;
                 return;
             }
@@ -51,6 +52,13 @@ Pager.prototype.loadNextPage = function(parentUrl, callback){
                 _this.pagesLoaded++;
                 _this.lastPage = i-1;
                 _this.alreadyPulled = pulledItems;
+                if (_this.alreadyPulled >= _this.itemsPerPage){
+                    // we pulled full page or more
+                    var remaining = _this.alreadyPulled % _this.itemsPerPage;
+                    var pages = (_this.alreadyPulled - remaining) / _this.itemsPerPage;
+                    _this.alreadyPulled = remaining;
+                    _this.lastPage += pages;
+                }
                 _this.isInProgress = false;
                 if (typeof callback !== 'undefined')
                     callback();

@@ -5,7 +5,7 @@
 function SearchPageParser(kindleSpy){
 }
 
-SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxResults, jqNodes, parentUrl, category, siteParser, type)
+SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, jqNodes, parentUrl, category, siteParser, type)
 {
     var _this = this;
     var no = [];
@@ -13,7 +13,6 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
     var price = [];
     var review = [];
 
-    var index = 0;
     var counter = 0;
     var result;
 
@@ -21,10 +20,11 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
     listItems = $.merge(listItems, jqNodes.find("#btfResults li").not('.AdHolder').has('.s-item-container'));
 
     listItems.each(function() {
-        if(!$(this).attr('id').startsWith('result_')
-            && $(this).attr('id') !== 'centerPlus') return;
+        const blockId = $(this).attr('id');
+        if(!blockId.startsWith('result_')
+            && blockId !== 'centerPlus') return;
+        var index = blockId.split('_')[1];
         result = $(this).find('.a-fixed-left-grid-inner');
-        if(counter>=maxResults) return;
         no[index] = startIndex + index + 1;
         url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
         if(!url[index]) {
@@ -65,10 +65,9 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
 
         url[index] = url[index].replace("&amp;", "&");
         url[index] = url[index].replace(" ", "%20");
-        index++;
         counter++;
     });
-    if(counter == 0) return 0;
+    if(counter === 0) return 0;
 
     var totalResults = Helper.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.decimalSeparator);
     kindleSpy.saveTotalResults(totalResults);
@@ -80,7 +79,7 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, maxRes
                 function wrapper(){
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);
                 }
-                setTimeout(wrapper, i*1000);
+                setTimeout(wrapper, (i-startIndex)*1000);
             })
         }
     });
