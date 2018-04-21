@@ -20,9 +20,9 @@ SearchResultsPage.prototype.loadData = function(pullingToken, siteParser, parent
     this.searchKeyword = search;
 
     if (typeof this.searchResultsPager === 'undefined') {
-        this.searchResultsPager = new Pager(itemsPerPage, function(startFromIndex, maxResults, responseText, parentUrl){
+        this.searchResultsPager = new Pager(itemsPerPage, function(startFromIndex, responseText, parentUrl){
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
-            return new SearchPageParser().parsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, search, siteParser, "Search");
+            return new SearchPageParser().parsePage(pullingToken, startFromIndex, jqResponseText, parentUrl, search, siteParser, "Search");
         }, function(url, page){
             return url + '&page=' + page;
         });

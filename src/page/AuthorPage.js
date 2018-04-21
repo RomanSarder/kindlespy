@@ -18,9 +18,9 @@ AuthorPage.prototype.loadData = function (pullingToken, siteParser, parentUrl, s
     var _this = this;
     var itemsPerPage = siteParser.authorResultsNumber;
     if (typeof this.authorPager === 'undefined') {
-        this.authorPager = new Pager(itemsPerPage, function (startFromIndex, maxResults, responseText, parentUrl) {
+        this.authorPager = new Pager(itemsPerPage, function (startFromIndex, responseText, parentUrl) {
             var jqResponseText = Helper.parseHtmlToJquery(responseText);
-            return _this.parsePage(pullingToken, startFromIndex, maxResults, jqResponseText, parentUrl, siteParser);
+            return _this.parsePage(pullingToken, startFromIndex, jqResponseText, parentUrl, siteParser);
         }, function (url, page) {
             return url + '?page=' + page;
         });
@@ -29,7 +29,7 @@ AuthorPage.prototype.loadData = function (pullingToken, siteParser, parentUrl, s
     this.authorPager.loadNextPage(parentUrl, callback);
 };
 
-AuthorPage.prototype.parsePage = function (pullingToken, startIndex, maxResults, jqNodes, parentUrl, siteParser) {
+AuthorPage.prototype.parsePage = function (pullingToken, startIndex, jqNodes, parentUrl, siteParser) {
     var no = [];
     var url = [];
     var price = [];
@@ -46,7 +46,6 @@ AuthorPage.prototype.parsePage = function (pullingToken, startIndex, maxResults,
         if ($(this).attr('id') !== 'result_' + (startIndex + index)
             && $(this).attr('id') !== 'centerPlus') return;
         result = $(this).find('.s-item-container');
-        if (counter >= maxResults) return;
         no[index] = startIndex + index + 1;
         url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
         if (!url[index]) {
@@ -73,7 +72,7 @@ AuthorPage.prototype.parsePage = function (pullingToken, startIndex, maxResults,
         index++;
         counter++;
     });
-    if (counter == 0) return 0;
+    if (counter === 0) return 0;
 
     category = jqNodes.find("#entityHeader").text().trim();
     var tmpSplit = category.split("by");
@@ -88,7 +87,7 @@ AuthorPage.prototype.parsePage = function (pullingToken, startIndex, maxResults,
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
                 }
 
-                setTimeout(wrapper, i * 1000);
+                setTimeout(wrapper, (i-startIndex)*1000);
             })
         }
     });

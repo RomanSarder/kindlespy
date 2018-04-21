@@ -13,7 +13,9 @@ function AmazonComParser(){
     this.currencySignForExport = "$";
     this.decimalSeparator = ".";
     this.thousandSeparator = ",";
-    this.bestSellerResultsNumber = 50;
+    // dynamic number, depends on old or new design
+    // should be 20 or 50 items per page
+    this.bestSellerResultsNumber = $('.zg_rankDiv').length || $('.zg-badge-text').length;
     this.searchResultsNumber = 16;
     this.authorResultsNumber = 12;
     this.publisher = "Publisher";

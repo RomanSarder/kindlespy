@@ -8,8 +8,8 @@ function KindleSpy(){
     _this.url = '';
     _this.parentUrl = ''; // trimmed Url
     _this.siteParser = undefined;
+    _this.kdspyResultsNumber = 20;
     // used to invalidate the current data is being pulled when the other pulling with new parameters started
-    _this.bestSellerResultsNumber = 20;
     _this.pullingToken = 0;
     _this.currentPage = undefined;
     _this.pagesPulled = 0;
@@ -144,9 +144,16 @@ KindleSpy.prototype.parseDataFromBookPageAndSend = function(pullingToken, num, u
     });
 };
 
+KindleSpy.prototype.getPageResultsNumber = function(){
+    if (this.currentPage.name === BestSellersPage.name) return this.siteParser.bestSellerResultsNumber;
+    if (this.currentPage.name === SearchResultsPage.name) return this.siteParser.searchResultsNumber;
+    if (this.currentPage.name === AuthorPage.name) return this.siteParser.authorResultsNumber;
+    return 0;
+};
+
 KindleSpy.prototype.startPulling = function(pageNumber){
     var _this = this;
-    if (pageNumber * this.bestSellerResultsNumber <= this.pagesPulled * this.siteParser.bestSellerResultsNumber) return;
+    if (pageNumber * this.kdspyResultsNumber <= this.pagesPulled * this.getPageResultsNumber()) return;
     var searchKeyword = Helper.getParameterByName(this.url, "field-keywords");
     _this.pagesPulled++;
     var data = this.pageData.get();
