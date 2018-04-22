@@ -100,7 +100,7 @@ MainTab.prototype.insertData = function(pageNumber, books, siteParser, books20){
                 "<a target='_blank' href='" + books[i].GoogleImageSearchUrl + "' >C</a>" + "</td>" +
                 "<td style='padding-left:15px; width:30px;'>" +books[i].PrintLength + "</td>" +
                 "<td style='width:50px;'>"+ books[i].FormattedPrice +"</td>" +
-                "<td style='width:60px;' align='center'>" + Helper.addCommas(books[i].EstSales) +"</td>" +
+                "<td style='width:55px;' align='center'>" + Helper.addCommas(books[i].EstSales) +"</td>" +
                 "<td style='width:80px;'><div style='float:left'> "+ siteParser.currencySign +" </div> <div style='float:right'>"+ Helper.addCommas(Math.round(books[i].SalesRecv)) +"</div></td>" +
                 "<td style='width:50px;' align='right'>"+ books[i].Reviews +"</td>" +
                 "<td style='width:80px;padding-right : 10px;' align='right'>"+ books[i].SalesRank +"</td>"+
