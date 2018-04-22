@@ -7,6 +7,7 @@ function BestSellersPage(){
     BestSellersPage.prototype._singletonInstance = this;
 
     this.name = BestSellersPage.name;
+    this.bestSellerResultsPager = undefined;
 }
 
 BestSellersPage.name = 'best-seller';
@@ -14,14 +15,21 @@ BestSellersPage.name = 'best-seller';
 BestSellersPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
     callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
-    var pageUrl = parentUrl + "?pg=" + pageNumber;
-    if(Helper.isTop100Free())
-        pageUrl += '&tf=1';
-    $.get(pageUrl, function(responseText){
-        // no need jQuery here: // var jqResponseText = parseHtmlToJquery(responseText);
-        _this.parsePage(pullingToken, siteParser, responseText, parentUrl);
-        return callback();
-    });
+
+    var itemsPerPage = siteParser.bestSellerResultsNumber;
+
+    if (typeof this.bestSellerResultsPager === 'undefined') {
+        this.bestSellerResultsPager = new Pager(itemsPerPage, function(startFromIndex, responseText, parentUrl){
+            return  _this.parsePage(pullingToken, siteParser, responseText, parentUrl);
+        }, function(url, page){
+            var pageUrl = url + "?pg=" + page;
+            if (Helper.isTop100Free())
+                pageUrl += '&tf=1';
+            return pageUrl;
+        });
+    }
+
+    this.bestSellerResultsPager.loadNextPage(parentUrl, callback);
 };
 
 BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, responseText, parentUrl){
@@ -45,7 +53,6 @@ BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, respons
     var category;
 
     var index = 0;
-    var bIsExist = [];
     category = this.getCategoryInfo(str).trim();
 
     while (pos >= 0)
@@ -72,6 +79,8 @@ BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, respons
             })
         }
     });
+
+    return index;
 };
 
 BestSellersPage.prototype.getCategoryInfo = function(responseText){
