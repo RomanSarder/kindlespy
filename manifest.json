@@ -13,7 +13,8 @@
         "storage",
         "alarms",
         "http://*/*",
-        "https://*/*"
+        "https://*/*",
+        "cookies"
     ],
     "background": {
         "scripts": [

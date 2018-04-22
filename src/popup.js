@@ -58,6 +58,11 @@ Popup.prototype.resetCss = function(){
     $('#main-content').hide();
     $('#login-content').hide();
     $('#trial-expired-content').hide();
+
+    //inactive account
+    $('#cancelled-text').hide();
+    $('#unlock-cancelled-account-button').hide();
+
     $('#loading-content').hide();
     $('#content-keyword-search').hide();
     $('#tracking-content').hide();
@@ -470,16 +475,26 @@ Popup.prototype.setActivePage = function(pageNum){
 Popup.prototype.checkAndStartKdspy = function() {
     var _this = this;
     _this.logoutButton.show();
-    this.loginTab.isTrialExpired(function (isTrialExpired) {
-        if (isTrialExpired) {
+
+    this.loginTab.isAccountInactive(function (isAccountInactive) {
+        if (isAccountInactive) {
             _this.resetCss();
-            _this.loginTab.showTrialExpired();
+            _this.loginTab.showAccountInactive();
             return;
         }
 
-        _this.startKdspy();
+        _this.loginTab.isTrialExpired(function (isTrialExpired) {
+            if (isTrialExpired) {
+                _this.resetCss();
+                _this.loginTab.showTrialExpired();
+                return;
+            }
+
+            _this.startKdspy();
+        });
     });
 };
+
 
 Popup.prototype.startKdspy = function() {
     var _this = this;
