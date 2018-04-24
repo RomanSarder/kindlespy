@@ -25,6 +25,26 @@ const wlmApiKey =  'c4dc64af38e139488a4b82c1d1a10b44';
 const kindleSpyLevel = 'KindleSpy';
 const kindleSpyTrialLevel = 'KindleSpy Trial';
 
+//I think we should redefine setLoginData by defaultData, when browser was opened
+window.onload = function() {
+    debugger;
+    console.log("onload");
+    var rememberData = false;
+
+    chrome.cookies.get({url: "http://developer.chrome.com/extensions/popup.html", name: "rememberLogin"}, function(cookie) {
+        if (cookie) {
+            console.log("LOadCookie", JSON.stringify(cookie));
+            if(cookie.value === 'true' ) rememberData = true;
+        }
+    });
+
+    if(!rememberData)
+    {
+        //return this.setLoginData(defaultLoginData);
+    }
+
+};
+
 function LoginTab(){
     if ( LoginTab.prototype._singletonInstance )
         return LoginTab.prototype._singletonInstance;
@@ -146,15 +166,8 @@ LoginTab.prototype.onLoginClick = function() {
          });
     }*/
 
-    debugger;
-    //10 * 365 * 24 * 60 * 60 * 1000 === 315360000000, or 10 years in milliseconds
-    var expiryDate = new Date(Number(new Date()) + 315360000000);
-    /*var expireDate = ((_this.ckbRemember).is(":checked")) ? Number(expiryDate) : 0;
-    chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "expireDate", value: "true", expirationDate: expireDate }, function (cookie) {
-        console.log(JSON.stringify(cookie)); });*/
-
     if((_this.ckbRemember).is(":checked")){
-        chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "expireDate", value: Number(expiryDate), expirationDate: Number(expiryDate) }, function (cookie) {
+        chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "rememberLogin", value: "true", expirationDate: Number(expiryDate) }, function (cookie) {
             console.log(JSON.stringify(cookie)); });
     }
 
@@ -225,14 +238,14 @@ var defaultLoginData = {
 LoginTab.prototype.getLoginData = function() {
     var _this = this;
     return new Promise(function(resolve, reject){
-        /*_this.storage.get('loginData', function(result) {
+        _this.storage.get('loginData', function(result) {
             if (typeof result === 'undefined') result = {};
             if (typeof result.loginData === 'undefined') result.loginData = defaultLoginData;
             console.log("myloginData", result.loginData);
             resolve(result.loginData);
-        });*/
+        });
 
-        chrome.cookies.get({url: "http://developer.chrome.com/extensions/popup.html", name: "loginData"}, function(cookie) {
+        /*chrome.cookies.get({url: "http://developer.chrome.com/extensions/popup.html", name: "loginData"}, function(cookie) {
             var loginData = {};
             if (cookie) {
                (cookie.value === 'undefined' ) ? loginData = defaultLoginData : loginData = JSON.parse(cookie.value);
@@ -240,7 +253,7 @@ LoginTab.prototype.getLoginData = function() {
             console.log("myloginData", loginData);
 
             resolve(loginData);
-        });
+        });*/
 
     });
 };
@@ -248,15 +261,15 @@ LoginTab.prototype.getLoginData = function() {
 LoginTab.prototype.setLoginData = function(loginData) {
     var _this = this;
     return new Promise(function(resolve, reject){
-        /*_this.storage.set({loginData: loginData}, function() {
+        _this.storage.set({loginData: loginData}, function() {
             resolve();
-        });*/
+        });
 
-        chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "loginData", value: JSON.stringify(loginData) }, function (cookie) {
+        /*chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "loginData", value: JSON.stringify(loginData) }, function (cookie) {
             console.log("SETCookie");
             console.log(JSON.stringify(cookie));
             resolve();
-        });
+        });*/
 
     });
 };
