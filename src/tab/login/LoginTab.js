@@ -37,7 +37,7 @@ function LoginTab(){
     this.expiredButton = $('#unlock-account-button');
     this.cancelledTitle = $('#cancelled-text');
     this.cancelledButton = $('#unlock-cancelled-account-button');
-
+    this.ckbRemember = $('#ckb-remember');
     this.loginFooter = $('#login-footer');
     this.username = $('#username');
     this.password = $('#password');
@@ -107,13 +107,13 @@ LoginTab.prototype.getUserAccessLevel = function() {
             var levels = result.member[0].Levels;
             var accessLevels = Object.values(levels)
                 .filter(function(item){return typeof(item) !== "string"})
-                .map(function(item){return {name: item.Name, isExpired: item.Expired, Cancelled: item.Cancelled}});
+                .map(function(item){return {name: item.Name, isExpired: item.Expired, isCancelled: item.Cancelled}});
 
             if(accessLevels.some(function(item){return item.name === kindleSpyLevel})
                 ||accessLevels.some(function(item){return item.name === kindleSpyTrialLevel && !item.isExpired})) isTrialExpired = false;
 
-            if(accessLevels.some(function(item){return item.Cancelled === "1"})) isAccountInactive = true;
-            
+            if(accessLevels.some(function(item){return item.isCancelled === "1"})) isAccountInactive = true;
+
             loginDataTmp.lastAccessCheck = Date.now();
             if (typeof LoginTab.simulateTrialExpired !== 'undefined' ) isTrialExpired = LoginTab.simulateTrialExpired;
             loginDataTmp.isTrialExpired = isTrialExpired;
@@ -134,7 +134,7 @@ LoginTab.prototype.getUserAccessLevel = function() {
 LoginTab.prototype.onLoginClick = function() {
     var _this = this;
 
-    if($('#ckb-remember').is(":checked")) {
+    /*if($('#ckb-remember').is(":checked")) {
         console.info("cookies");
         //chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "cookieCkbRemember", value: "true" });
         chrome.cookies.set({
@@ -143,7 +143,19 @@ LoginTab.prototype.onLoginClick = function() {
             value: "true"
         }, function (cookie) {
             console.log(JSON.stringify(cookie));
-        });
+         });
+    }*/
+
+    debugger;
+    //10 * 365 * 24 * 60 * 60 * 1000 === 315360000000, or 10 years in milliseconds
+    var expiryDate = new Date(Number(new Date()) + 315360000000);
+    /*var expireDate = ((_this.ckbRemember).is(":checked")) ? Number(expiryDate) : 0;
+    chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "expireDate", value: "true", expirationDate: expireDate }, function (cookie) {
+        console.log(JSON.stringify(cookie)); });*/
+
+    if((_this.ckbRemember).is(":checked")){
+        chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "expireDate", value: Number(expiryDate), expirationDate: Number(expiryDate) }, function (cookie) {
+            console.log(JSON.stringify(cookie)); });
     }
 
     if (_this.loginButton.prop('disabled')) return;
@@ -213,21 +225,39 @@ var defaultLoginData = {
 LoginTab.prototype.getLoginData = function() {
     var _this = this;
     return new Promise(function(resolve, reject){
-        _this.storage.get('loginData', function(result) {
+        /*_this.storage.get('loginData', function(result) {
             if (typeof result === 'undefined') result = {};
             if (typeof result.loginData === 'undefined') result.loginData = defaultLoginData;
-
+            console.log("myloginData", result.loginData);
             resolve(result.loginData);
+        });*/
+
+        chrome.cookies.get({url: "http://developer.chrome.com/extensions/popup.html", name: "loginData"}, function(cookie) {
+            var loginData = {};
+            if (cookie) {
+               (cookie.value === 'undefined' ) ? loginData = defaultLoginData : loginData = JSON.parse(cookie.value);
+            }
+            console.log("myloginData", loginData);
+
+            resolve(loginData);
         });
+
     });
 };
 
 LoginTab.prototype.setLoginData = function(loginData) {
     var _this = this;
     return new Promise(function(resolve, reject){
-        _this.storage.set({loginData: loginData}, function() {
+        /*_this.storage.set({loginData: loginData}, function() {
+            resolve();
+        });*/
+
+        chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "loginData", value: JSON.stringify(loginData) }, function (cookie) {
+            console.log("SETCookie");
+            console.log(JSON.stringify(cookie));
             resolve();
         });
+
     });
 };
 
