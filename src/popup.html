@@ -136,19 +136,6 @@
 								<input id="password" class="input" type="password" name="pass" placeholder="Password">
 								<span class="focus-input"></span>
 							</div>
-							<div class="flex-sb-m">
-								<div class="contact-form-checkbox">
-									<input class="input-checkbox" id="ckb-remember" type="checkbox" name="remember-me" checked>
-									<label class="label-checkbox" for="ckb-remember">
-										Remember me
-									</label>
-								</div>
-								<div>
-									<a href="#" id="reset-password" class="reset-pass">
-										Forgot your details?
-									</a>
-								</div>
-							</div>
 							<div class="container-login-form-btn">
 								<button id="login-button" class="login-form-btn">LOGIN</button>
 							</div>
@@ -162,14 +149,17 @@
                 <div class="content" id="trial-expired-content">
                     <div class="centered full-width">
                     <img alt="expired" src="../icons/forbidden.png"/>
-                    <h1>YOUR TRIAL HAS EXPIRED!</h1>
+                    <h1 id="expired-text">YOUR TRIAL HAS EXPIRED!</h1>
+                    <h1 id="cancelled-text">YOUR ACCOUNT IS INACTIVE</h1>
                     <p>Activate KDSPY for JUST $47 (one-time fee). Unlimited Use.</p>
 					<div class="container-btn">
 						<button id="unlock-account-button" class="login-form-btn">ACTIVATE NOW &gt;</button>
+                        <button id="unlock-cancelled-account-button" class="login-form-btn">ACTIVATE NOW &gt;</button>
 					</div>
                     <a href="#" id="learn-more-about-kdspy" class="black">Or, learn more about KDSPY here &gt;</a>
                     </div>
                 </div>
+
                 <div class="content" id="no-data-found-content">
                     <div>
                         <div style="width:72%; margin:0 auto;line-height:25px;font-size:18px;">

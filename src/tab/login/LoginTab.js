@@ -5,10 +5,13 @@
 //LoginTab.debug = true;
 //LoginTab.simulateLoginSuccess = true;
 //LoginTab.simulateTrialExpired = false;
+//LoginTab.simulateAccountInactive = true;
 
 // Wordpress root URL
 const wpRoot = 'https://www.publishingaltitude.com';
+//test Wordpress
 //const wpRoot = 'https://www.5minpub.co';
+
 // Wordpress API
 const wpAuthEndPoint = wpRoot + '/wp-json/jwt-auth/v1/token';
 const userinfoEndPoint = wpRoot + '/wp-json/wp/v2/users/me';
@@ -28,11 +31,16 @@ function LoginTab(){
     var _this = this;
     this.loginContent = $('#login-content');
     this.trialExpiredContent = $('#trial-expired-content');
+    this.expiredTitle = $('#expired-text');
+    this.expiredButton = $('#unlock-account-button');
+    this.cancelledTitle = $('#cancelled-text');
+    this.cancelledButton = $('#unlock-cancelled-account-button');
     this.loginFooter = $('#login-footer');
     this.username = $('#username');
     this.password = $('#password');
     this.loginButton = $('#login-button');
     this.unlockAccountButton = $('#unlock-account-button');
+    this.unlockCancelledAccountButton = $('#unlock-cancelled-account-button');
     this.resetPassword = $('#reset-password');
     this.learnMoreAboutKdspy = $('#learn-more-about-kdspy');
     this.loginFailedMessage = $('#login-failed-message');
@@ -43,6 +51,7 @@ function LoginTab(){
 
     this.loginButton.click(function(){_this.onLoginClick();});
     this.unlockAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade.php');});
+    this.unlockCancelledAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/activate.php');});
     this.resetPassword.click(function(){Api.openNewTab('https://www.publishingaltitude.com/wp-login.php?action=lostpassword');});
     this.learnMoreAboutKdspy.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade/');});
     $("#username,#password").keyup(function(event) {
@@ -84,6 +93,7 @@ LoginTab.prototype.getUserAccessLevel = function() {
 
     var loginDataTmp;
     var isTrialExpired = true;
+    var isAccountInactive = false;
 
     return Promise.all([loginDataPromise, wlmAuthPromise])
         .then(function ([loginData, subscriptionInfo]) {
@@ -94,18 +104,23 @@ LoginTab.prototype.getUserAccessLevel = function() {
             var levels = result.member[0].Levels;
             var accessLevels = Object.values(levels)
                 .filter(function(item){return typeof(item) !== "string"})
-                .map(function(item){return {name: item.Name, isExpired: item.Expired}});
+                .map(function(item){return {name: item.Name, isExpired: item.Expired, isCancelled: item.Cancelled}});
 
             if(accessLevels.some(function(item){return item.name === kindleSpyLevel})
                 ||accessLevels.some(function(item){return item.name === kindleSpyTrialLevel && !item.isExpired})) isTrialExpired = false;
 
+            if(accessLevels.some(function(item){return item.name === kindleSpyLevel && item.isCancelled === "1"})) isAccountInactive = true;
+
             loginDataTmp.lastAccessCheck = Date.now();
             if (typeof LoginTab.simulateTrialExpired !== 'undefined' ) isTrialExpired = LoginTab.simulateTrialExpired;
             loginDataTmp.isTrialExpired = isTrialExpired;
+
+            if (typeof LoginTab.simulateAccountInactive !== 'undefined' ) isAccountInactive = LoginTab.simulateAccountInactive;
+            loginDataTmp.isAccountInactive = isAccountInactive;
             return _this.setLoginData(loginDataTmp);
         })
         .then(function(){
-            return {isTrialExpired: isTrialExpired};
+            return {isTrialExpired: isTrialExpired, isAccountInactive: isAccountInactive};
         })
         .catch(function (error) {
             console.log('get access level failed: ');
@@ -176,6 +191,7 @@ var defaultLoginData = {
     isLoggedIn: false,
     login: '',
     isTrialExpired: false,
+    isAccountInactive: false,
     lastAccessCheck: null
 };
 
@@ -185,7 +201,6 @@ LoginTab.prototype.getLoginData = function() {
         _this.storage.get('loginData', function(result) {
             if (typeof result === 'undefined') result = {};
             if (typeof result.loginData === 'undefined') result.loginData = defaultLoginData;
-
             resolve(result.loginData);
         });
     });
@@ -213,6 +228,21 @@ LoginTab.prototype.load = function(){
 
 LoginTab.prototype.showTrialExpired = function(){
     this.trialExpiredContent.show();
+    this.loginFooter.show();
+};
+
+LoginTab.prototype.showAccountInactive = function(){
+    this.trialExpiredContent.show();
+    this.cancelledTitle.show();
+    this.cancelledButton.show();
+    this.expiredTitle.hide();
+    this.expiredButton.hide();
+
+    this.loginFooter.show();
+};
+
+LoginTab.prototype.showCancelledContent = function(){
+    this.cancelledContent.show();
     this.loginFooter.show();
 };
 
@@ -252,6 +282,25 @@ LoginTab.prototype.isTrialExpired = function(callback) {
             _this.getUserAccessLevel()
                 .then(function (accessLevelInfo) {
                     callback(accessLevelInfo.isTrialExpired);
+                });
+        }
+    });
+};
+
+LoginTab.prototype.isAccountInactive = function(callback) {
+    callback = Helper.valueOrDefault(callback, function() {});
+    var _this = this;
+
+    this.isCheckAccessNeeded(function (isCheckAccessNeeded) {
+        if (!isCheckAccessNeeded) {
+            _this.getLoginData()
+                .then(function (loginData) {
+                    callback(loginData.isAccountInactive);
+                });
+        } else {
+            _this.getUserAccessLevel()
+                .then(function (accessLevelInfo) {
+                    callback(accessLevelInfo.isAccountInactive);
                 });
         }
     });
