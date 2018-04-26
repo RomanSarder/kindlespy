@@ -4,15 +4,13 @@
 
 //LoginTab.debug = true;
 //LoginTab.simulateLoginSuccess = true;
-//LoginTab.simulateTrialExpired = true;
+//LoginTab.simulateTrialExpired = false;
 //LoginTab.simulateAccountInactive = true;
 
 // Wordpress root URL
-//const wpRoot = 'https://www.publishingaltitude.com';
-
+const wpRoot = 'https://www.publishingaltitude.com';
 //test Wordpress
-const wpRoot = 'https://www.5minpub.co';
-
+//const wpRoot = 'https://www.5minpub.co';
 
 // Wordpress API
 const wpAuthEndPoint = wpRoot + '/wp-json/jwt-auth/v1/token';
@@ -24,26 +22,6 @@ const wlmApiKey =  'c4dc64af38e139488a4b82c1d1a10b44';
 
 const kindleSpyLevel = 'KindleSpy';
 const kindleSpyTrialLevel = 'KindleSpy Trial';
-
-//I think we should redefine setLoginData by defaultData, when browser was opened
-window.onload = function() {
-    debugger;
-    console.log("onload");
-    var rememberData = false;
-
-    chrome.cookies.get({url: "http://developer.chrome.com/extensions/popup.html", name: "rememberLogin"}, function(cookie) {
-        if (cookie) {
-            console.log("LOadCookie", JSON.stringify(cookie));
-            if(cookie.value === 'true' ) rememberData = true;
-        }
-    });
-
-    if(!rememberData)
-    {
-        //return this.setLoginData(defaultLoginData);
-    }
-
-};
 
 function LoginTab(){
     if ( LoginTab.prototype._singletonInstance )
@@ -57,7 +35,6 @@ function LoginTab(){
     this.expiredButton = $('#unlock-account-button');
     this.cancelledTitle = $('#cancelled-text');
     this.cancelledButton = $('#unlock-cancelled-account-button');
-    this.ckbRemember = $('#ckb-remember');
     this.loginFooter = $('#login-footer');
     this.username = $('#username');
     this.password = $('#password');
@@ -132,7 +109,7 @@ LoginTab.prototype.getUserAccessLevel = function() {
             if(accessLevels.some(function(item){return item.name === kindleSpyLevel})
                 ||accessLevels.some(function(item){return item.name === kindleSpyTrialLevel && !item.isExpired})) isTrialExpired = false;
 
-            if(accessLevels.some(function(item){return item.isCancelled === "1"})) isAccountInactive = true;
+            if(accessLevels.some(function(item){return item.name === kindleSpyLevel && item.isCancelled === "1"})) isAccountInactive = true;
 
             loginDataTmp.lastAccessCheck = Date.now();
             if (typeof LoginTab.simulateTrialExpired !== 'undefined' ) isTrialExpired = LoginTab.simulateTrialExpired;
@@ -153,23 +130,6 @@ LoginTab.prototype.getUserAccessLevel = function() {
 
 LoginTab.prototype.onLoginClick = function() {
     var _this = this;
-
-    /*if($('#ckb-remember').is(":checked")) {
-        console.info("cookies");
-        //chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "cookieCkbRemember", value: "true" });
-        chrome.cookies.set({
-            name: "cookieCkbRemember",
-            url: "http://developer.chrome.com/extensions/popup.html",
-            value: "true"
-        }, function (cookie) {
-            console.log(JSON.stringify(cookie));
-         });
-    }*/
-
-    if((_this.ckbRemember).is(":checked")){
-        chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "rememberLogin", value: "true", expirationDate: Number(expiryDate) }, function (cookie) {
-            console.log(JSON.stringify(cookie)); });
-    }
 
     if (_this.loginButton.prop('disabled')) return;
     if (!_this.isFormValid()) return;
@@ -241,20 +201,8 @@ LoginTab.prototype.getLoginData = function() {
         _this.storage.get('loginData', function(result) {
             if (typeof result === 'undefined') result = {};
             if (typeof result.loginData === 'undefined') result.loginData = defaultLoginData;
-            console.log("myloginData", result.loginData);
             resolve(result.loginData);
         });
-
-        /*chrome.cookies.get({url: "http://developer.chrome.com/extensions/popup.html", name: "loginData"}, function(cookie) {
-            var loginData = {};
-            if (cookie) {
-               (cookie.value === 'undefined' ) ? loginData = defaultLoginData : loginData = JSON.parse(cookie.value);
-            }
-            console.log("myloginData", loginData);
-
-            resolve(loginData);
-        });*/
-
     });
 };
 
@@ -264,13 +212,6 @@ LoginTab.prototype.setLoginData = function(loginData) {
         _this.storage.set({loginData: loginData}, function() {
             resolve();
         });
-
-        /*chrome.cookies.set({ url: "http://developer.chrome.com/extensions/popup.html", name: "loginData", value: JSON.stringify(loginData) }, function (cookie) {
-            console.log("SETCookie");
-            console.log(JSON.stringify(cookie));
-            resolve();
-        });*/
-
     });
 };
 
