@@ -665,14 +665,9 @@ td.wow a:hover
   text-decoration: none;
 }
 
-.flex-sb-m {
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -moz-box;
-	display: -ms-flexbox;
+.flex-center-m {
 	display: flex;
-	justify-content: space-between;
-	-ms-align-items: center;
+	justify-content: center;
 	align-items: center;
 }
 
@@ -831,13 +826,10 @@ td.wow a:hover
 /*[ Button ]*/
 .container-login-form-btn {
   width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-box;
-  display: -ms-flexbox;
   display: flex;
   flex-wrap: wrap;
   margin-top: 17px;
+    margin-bottom: 10px;
   cursor: pointer;
 }
 
