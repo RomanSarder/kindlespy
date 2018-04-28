@@ -33,6 +33,8 @@ function LoginTab(){
     this.trialExpiredContent = $('#trial-expired-content');
     this.expiredTitle = $('#expired-text');
     this.expiredButton = $('#unlock-account-button');
+    this.noDataButton = $('#no-data-button');
+    this.noSupportButton = $('#no-support-button')
     this.cancelledTitle = $('#cancelled-text');
     this.cancelledButton = $('#unlock-cancelled-account-button');
     this.loginFooter = $('#login-footer');
@@ -43,6 +45,8 @@ function LoginTab(){
     this.unlockCancelledAccountButton = $('#unlock-cancelled-account-button');
     this.resetPassword = $('#reset-password');
     this.learnMoreAboutKdspy = $('#learn-more-about-kdspy');
+    this.learnMoreAboutNoSupport = $('#learn-more-about-no-support');
+    this.learnMoreAboutNoData = $('#learn-more-about-no-data');
     this.loginFailedMessage = $('#login-failed-message');
     this.storage = Api.storage;
 
@@ -53,7 +57,11 @@ function LoginTab(){
     this.unlockAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade.php');});
     this.unlockCancelledAccountButton.click(function(){Api.openNewTab('https://www.kdspy.com/activate.php');});
     this.resetPassword.click(function(){Api.openNewTab('https://www.publishingaltitude.com/wp-login.php?action=lostpassword');});
+    this.noDataButton.click(function(){Api.openNewTab('https://www.publishingaltitude.com/support/');});
+    this.noSupportButton.click(function(){Api.openNewTab('https://s3-us-west-2.amazonaws.com/kindlespy/kindlestore.html');});
     this.learnMoreAboutKdspy.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade/');});
+    this.learnMoreAboutNoSupport.click(function(){Api.openNewTab('https://www.kdspy.com/help/location/');});
+    this.learnMoreAboutNoData.click(function(){Api.openNewTab('https://www.kdspy.com/help/data/');});
     $("#username,#password").keyup(function(event) {
         const enterKeyCode = 13;
         if (event.keyCode === enterKeyCode) {

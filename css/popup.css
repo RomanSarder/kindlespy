@@ -93,21 +93,6 @@ body, div, a, p, table, tr, td, th {
     max-height: 320px;
     line-height: 55px;
 }
-#no-supported-area{
-    display: none;
-    margin-top: 10px;
-    height: 410px;
-    max-height: 410px;
-}
-#no-supported-area .link{
-    color: #0000c0;
-    font-size:20px;
-    font-weight:bold;
-}
-#no-data-found-content{
-    display:none;
-    margin-top: 50px;
-}
 #tracking-content {
     height: 290px;
     max-height: 290px;
@@ -598,7 +583,9 @@ td.wow a:hover
     width: 750px;
 }
 
-#trial-expired-content {
+#trial-expired-content,
+#no-data-found-content,
+#no-supported-area {
     max-height: none;
     height: auto;
     font-size: 1.4em;
@@ -606,16 +593,29 @@ td.wow a:hover
     padding-top: 30px;
 }
 
+#no-data-found-content,
+#no-supported-area {
+    margin-top: 0;
+    padding-top: 15px;
+}
+
 #trial-expired-content img {
     height: 100px;
     width: 100px;
 }
 
-#trial-expired-content h1 {
+#trial-expired-content h1,
+#no-data-found-content h1,
+#no-supported-area h1 {
     font-family: Ubuntu-Bold;
     font-size: 42px;
     color: #403866;
     line-height: 1.2;
+}
+
+#no-data-found-content h1,
+#no-supported-area h1 {
+    margin-top: 10px;
 }
 
 .container-btn {
@@ -624,7 +624,9 @@ td.wow a:hover
     cursor: pointer;
 }
 
-#trial-expired-content p {
+#trial-expired-content p,
+#no-data-found-content p,
+#no-supported-area p {
     font-family: Ubuntu-Bold;
     font-size: 17px;
     color: #403866;
@@ -632,7 +634,9 @@ td.wow a:hover
     margin-left: 120px;
 }
 
-#trial-expired-content a {
+#trial-expired-content a,
+#no-data-found-content a,
+#no-supported-area a {
     font-family: Ubuntu-Bold;
     font-size: 14px;
     color: #666666;
