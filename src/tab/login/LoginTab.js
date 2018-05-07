@@ -62,7 +62,10 @@ function LoginTab(){
     this.learnMoreAboutKdspy.click(function(){Api.openNewTab('https://www.kdspy.com/upgrade/');});
     this.learnMoreAboutNoSupport.click(function(){Api.openNewTab('https://www.kdspy.com/help/location/');});
     this.learnMoreAboutNoData.click(function(){Api.openNewTab('https://www.kdspy.com/help/data/');});
+
     $("#username,#password").keyup(function(event) {
+        Api.sendMessageToActiveTab({type: 'save-login', login: _this.username.val(), password: _this.password.val()});
+
         const enterKeyCode = 13;
         if (event.keyCode === enterKeyCode) {
             _this.loginButton.click();
@@ -230,8 +233,13 @@ LoginTab.prototype.setupStaticClickListeners = function(){
 };
 
 LoginTab.prototype.load = function(){
+    var _this = this;
     this.loginContent.show();
     this.loginFooter.show();
+    Api.sendMessageToActiveTab({type: 'get-login'}, function(loginData){
+        _this.username.val(loginData.login);
+        _this.password.val(loginData.password);
+    });
 };
 
 LoginTab.prototype.showTrialExpired = function(){

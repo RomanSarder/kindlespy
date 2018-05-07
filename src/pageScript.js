@@ -13,6 +13,8 @@ function KindleSpy(){
     _this.pullingToken = 0;
     _this.currentPage = undefined;
     _this.pagesPulled = 0;
+    _this.login = '';
+    _this.password = '';
 
     _this.parserAsyncRunner = new AsyncRunner();
     _this.parserAsyncRunner.itemFinished = function(){
@@ -256,6 +258,16 @@ function onMessageReceived(request, callback){
     if (request.type === "download-file") {
         Export.toCSV(request.data, request.fileName, request.booksNumber);
         return callback();
+    }
+
+    if (request.type === "save-login") {
+        kindleSpy.login = request.login;
+        kindleSpy.password = request.password;
+        return callback();
+    }
+
+    if (request.type === "get-login") {
+        return callback({login: kindleSpy.login, password: kindleSpy.password});
     }
 
     return true;
