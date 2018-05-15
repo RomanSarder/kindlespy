@@ -217,7 +217,8 @@ Helper.isSingleBookPage = function(url, siteParser){
     return (mainUrl.indexOf(siteParser.mainUrl) >= 0
         && fullUrl.length > 4
         && (fullUrl[4].indexOf("dp") >= 0)
-        || fullUrl[3].indexOf("dp") == 0);
+        || fullUrl[3] === 'gp'
+        || fullUrl[3].indexOf("dp") === 0);
 };
 
 /**
