@@ -80,7 +80,6 @@ BookPageParser.prototype.getTitle = function(jqNodes) {
 
     var titleNodes = jqNodes.find("#ebooksProductTitle");
     if (typeof titleNodes !== 'undefined' && titleNodes.length > 0) return titleNodes.text().trim();
-
     return this._siteParser.getTitle(jqNodes);
 };
 
@@ -201,10 +200,31 @@ BookPageParser.prototype.getSalesRankFromUrl = function(url, callback) {
     });
 };
 
+BookPageParser.prototype.isBookKindle = function (jqNodes, url) {
+    console.log(url);
+    if (typeof jqNodes === 'undefined' || jqNodes.length == 0) {
+        return '';
+    }
+    const kindleTitleNode = jqNodes.find('#ebooksProductTitle');
+    console.log(jqNodes.find('#ebooksProductTitle'));
+    console.log(jqNodes.find('#productTitle'));
+    return kindleTitleNode.length > 0;
+}
+
+BookPageParser.prototype.isBookPage = function () {
+    return window.location.href.indexOf('books') >= 0;
+}
+
 BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
     var _this = this;
     Api.sendMessageToActiveTab({type:'http-get', url: url}, function(responseText){
         var jqResponseText = Helper.parseHtmlToJquery(responseText);
+        if (_this.isBookPage()) {
+            if (_this.isBookKindle(jqResponseText, url)) {
+                console.log('excluding...')
+                return;
+            }
+        }
         var entryTitle = _this.getTitle(jqResponseText);
         if (entryTitle == '') entryTitle = _this.getAuthorTitle(jqResponseText);
         if (typeof entryTitle === 'undefined') return;
