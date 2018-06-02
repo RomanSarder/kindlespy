@@ -209,13 +209,11 @@ BookPageParser.prototype.getBookType = function(jqNodes) {
 BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
     var _this = this;
     Api.sendMessageToActiveTab({type:'http-get', url: url}, function(responseText){
-        console.log('getting url', url);
         var jqResponseText = Helper.parseHtmlToJquery(responseText);
         var entryTitle = _this.getTitle(jqResponseText);
         if (entryTitle == '') entryTitle = _this.getAuthorTitle(jqResponseText);
         if (typeof entryTitle === 'undefined') return;
         var bookType = _this.getBookType(jqResponseText);
-        console.log('type', bookType)
         var entryDescription = _this.getDescription(jqResponseText);
         if (!reviews) reviews = _this.getReviews(jqResponseText);
         if (!price || _this._siteParser.parsePrice(price) === 0) price = _this.getPrice(jqResponseText);

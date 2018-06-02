@@ -31,7 +31,10 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, jqNode
             bookPageLinks.each(function () {
                 var newLink = $(this).attr('href');
                 newLink = newLink.replace("&amp;", "&").replace(" ", "%20");
-                url.push(Helper.getUrlWORedirect(newLink))
+                newLink = Helper.getUrlWORedirect(newLink)
+                if (newLink) {
+                    url.push(newLink)
+                }
             })
         } else {
             url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
@@ -71,9 +74,6 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, jqNode
         }
 
         review[index] = undefined;
-
-        // url[index] = url[index].replace("&amp;", "&");
-        // url[index] = url[index].replace(" ", "%20");
         counter++;
     });
     if(counter === 0) return 0;

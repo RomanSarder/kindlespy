@@ -52,7 +52,10 @@ AuthorPage.prototype.parsePage = function (pullingToken, startIndex, jqNodes, pa
             bookPageLinks.each(function () {
                 var newLink = $(this).attr('href');
                 newLink = newLink.replace("&amp;", "&").replace(" ", "%20");
-                url.push(Helper.getUrlWORedirect(newLink))
+                newLink = Helper.getUrlWORedirect(newLink)
+                if (newLink) {
+                    url.push(newLink)
+                }
             })
         } else {
             url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
