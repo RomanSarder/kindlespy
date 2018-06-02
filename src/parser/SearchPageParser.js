@@ -18,18 +18,27 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, jqNode
 
     var listItems = jqNodes.find("#atfResults li").not('.AdHolder').has('.a-fixed-left-grid-inner');
     listItems = $.merge(listItems, jqNodes.find("#btfResults li").not('.AdHolder').has('.s-item-container'));
-
     listItems.each(function() {
         const blockId = $(this).attr('id');
-        if(!blockId.startsWith('result_')
-            && blockId !== 'centerPlus') return;
+        if(!blockId.startsWith('result_') && blockId !== 'centerPlus') {
+            return;
+        }
         var index = blockId.split('_')[1];
         result = $(this).find('.a-fixed-left-grid-inner');
         no[index] = startIndex + index + 1;
-        url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
-        if(!url[index]) {
-            index++;
-            return;
+        var bookPageLinks = $(this).find('.a-column.a-span7 a').has('h3')
+        if (bookPageLinks.length > 0) {
+            bookPageLinks.each(function () {
+                var newLink = $(this).attr('href');
+                newLink = newLink.replace("&amp;", "&").replace(" ", "%20");
+                url.push(Helper.getUrlWORedirect(newLink))
+            })
+        } else {
+            url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
+            if(!url[index]) {
+                index++;
+                return;
+            }
         }
         var kprice = $(result).find('div').filter(function () {
             return $(this).text() == siteParser.searchPattern || $(this).children("a:contains(" + siteParser.searchPattern+ ")").length > 0;
@@ -63,15 +72,15 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, jqNode
 
         review[index] = undefined;
 
-        url[index] = url[index].replace("&amp;", "&");
-        url[index] = url[index].replace(" ", "%20");
+        // url[index] = url[index].replace("&amp;", "&");
+        // url[index] = url[index].replace(" ", "%20");
         counter++;
     });
     if(counter === 0) return 0;
 
     var totalResults = Helper.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.decimalSeparator);
     kindleSpy.saveTotalResults(totalResults);
-
+    console.log('urls', url)
     url.forEach(function(item, i) {
         if (typeof url[i] !== 'undefined' && url[i].length > 0
             && typeof price[i] !== 'undefined' && price[i].length > 0){

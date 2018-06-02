@@ -14,6 +14,7 @@ function SearchResultsPage(){
 SearchResultsPage.name = 'search';
 
 SearchResultsPage.prototype.loadData = function(pullingToken, siteParser, parentUrl, search, pageNumber, callback){
+    console.log('loading data');
     callback = Helper.valueOrDefault(callback, function(){});
     var _this = this;
     var itemsPerPage = siteParser.searchResultsNumber;
@@ -27,6 +28,6 @@ SearchResultsPage.prototype.loadData = function(pullingToken, siteParser, parent
             return url + '&page=' + page;
         });
     }
-
+    console.log('loading next page')
     this.searchResultsPager.loadNextPage(parentUrl, callback);
 };

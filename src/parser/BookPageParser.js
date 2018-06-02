@@ -202,19 +202,14 @@ BookPageParser.prototype.getSalesRankFromUrl = function(url, callback) {
 
 BookPageParser.prototype.getBookType = function(jqNodes) {
     if (typeof jqNodes === 'undefined' || jqNodes.length == 0) return '';
-
     const type = jqNodes.find('#ebooksProductTitle').next('span').text() || jqNodes.find('#productTitle').next('span').text();
-    // console.log('ebook', jqNodes.find('#ebooksProductTitle'))
-    // console.log('book', jqNodes.find('#productTitle'));
-    // console.log('ebook next', jqNodes.find('#ebooksProductTitle').next('span').text())
-    // console.log('book next', jqNodes.find('#productTitle').next('span').text())
-    // console.log('titleNode', type.trim())
     return type.trim();
 }
 
 BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
     var _this = this;
     Api.sendMessageToActiveTab({type:'http-get', url: url}, function(responseText){
+        console.log('getting url', url);
         var jqResponseText = Helper.parseHtmlToJquery(responseText);
         var entryTitle = _this.getTitle(jqResponseText);
         if (entryTitle == '') entryTitle = _this.getAuthorTitle(jqResponseText);
