@@ -84,6 +84,7 @@ AuthorPage.prototype.parsePage = function (pullingToken, startIndex, jqNodes, pa
             && typeof price[i] !== 'undefined' && price[i].length > 0) {
             kindleSpy.parserAsyncRunner.start(function (callback) {
                 function wrapper() {
+                    console.log('url', url[i])
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
                 }
 
