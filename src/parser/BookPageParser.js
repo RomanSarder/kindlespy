@@ -200,6 +200,18 @@ BookPageParser.prototype.getSalesRankFromUrl = function(url, callback) {
     });
 };
 
+BookPageParser.prototype.getBookType = function(jqNodes) {
+    if (typeof jqNodes === 'undefined' || jqNodes.length == 0) return '';
+
+    const type = jqNodes.find('#ebooksProductTitle').next('span').text() || jqNodes.find('#productTitle').next('span').text();
+    // console.log('ebook', jqNodes.find('#ebooksProductTitle'))
+    // console.log('book', jqNodes.find('#productTitle'));
+    // console.log('ebook next', jqNodes.find('#ebooksProductTitle').next('span').text())
+    // console.log('book next', jqNodes.find('#productTitle').next('span').text())
+    // console.log('titleNode', type.trim())
+    return type.trim();
+}
+
 BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
     var _this = this;
     Api.sendMessageToActiveTab({type:'http-get', url: url}, function(responseText){
@@ -207,6 +219,8 @@ BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
         var entryTitle = _this.getTitle(jqResponseText);
         if (entryTitle == '') entryTitle = _this.getAuthorTitle(jqResponseText);
         if (typeof entryTitle === 'undefined') return;
+        var bookType = _this.getBookType(jqResponseText);
+        console.log('type', bookType)
         var entryDescription = _this.getDescription(jqResponseText);
         if (!reviews) reviews = _this.getReviews(jqResponseText);
         if (!price || _this._siteParser.parsePrice(price) === 0) price = _this.getPrice(jqResponseText);
@@ -233,6 +247,7 @@ BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
 
                 return callback({
                     title: entryTitle,
+                    type: bookType,
                     description: entryDescription,
                     price: realPrice,
                     formattedPrice: (price == _this._siteParser.free) ? _this._siteParser.free : _this._siteParser.formatPrice(realPrice),
