@@ -3,9 +3,9 @@
  */
 
 //LoginTab.debug = true;
-LoginTab.simulateLoginSuccess = true;
-LoginTab.simulateTrialExpired = false;
-LoginTab.simulateAccountInactive = false;
+//LoginTab.simulateLoginSuccess = true;
+//LoginTab.simulateTrialExpired = false;
+//LoginTab.simulateAccountInactive = true;
 
 // Wordpress root URL
 const wpRoot = 'https://www.publishingaltitude.com';

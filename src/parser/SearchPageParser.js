@@ -80,7 +80,6 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, jqNode
 
     var totalResults = Helper.parseInt(siteParser.getTotalSearchResult(jqNodes), siteParser.decimalSeparator);
     kindleSpy.saveTotalResults(totalResults);
-    console.log('urls', url)
     url.forEach(function(item, i) {
         if (typeof url[i] !== 'undefined' && url[i].length > 0
             && typeof price[i] !== 'undefined' && price[i].length > 0){
