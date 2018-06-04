@@ -27,6 +27,5 @@ SearchResultsPage.prototype.loadData = function(pullingToken, siteParser, parent
             return url + '&page=' + page;
         });
     }
-
     this.searchResultsPager.loadNextPage(parentUrl, callback);
 };

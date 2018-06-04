@@ -137,7 +137,9 @@ Helper.getCategoryFromBookData = function(bookData){
  */
 Helper.isBestSellersPage = function(url, siteParser){
     return (url.indexOf(siteParser.mainUrl +"/Best-Sellers-Kindle-Store") >= 0 && url.indexOf("digital-text") > 0)
-        || (url.indexOf(siteParser.mainUrl +"/gp/bestsellers") >= 0 && url.indexOf("digital-text") > 0);
+        || (url.indexOf(siteParser.mainUrl +"/gp/bestsellers") >= 0 && url.indexOf("digital-text") >= 0)
+        || (url.indexOf(siteParser.mainUrl + "/gp/bestsellers") >= 0 && url.indexOf("books") >= 0)
+        || (url.indexOf(siteParser.mainUrl + "/best-sellers-books-Amazon") >= 0 && url.indexOf("books") >=0)
 };
 
 /**
@@ -147,7 +149,7 @@ Helper.isBestSellersPage = function(url, siteParser){
  * @returns {boolean}
  */
 Helper.isNewReleasesPage = function(url, siteParser){
-    return (url.indexOf(siteParser.mainUrl +"/gp/new-releases") >= 0 && url.indexOf("digital-text") > 0);
+    return (url.indexOf(siteParser.mainUrl +"/gp/new-releases") >= 0 && (url.indexOf("digital-text") > 0 || url.indexOf("books")));
 };
 
 /**Return bool value is BestSellers page by categoryKind.
@@ -173,7 +175,7 @@ Helper.isNewReleasesPageFromCategoryKind = function(categoryKind){
  * @returns {boolean}
  */
 Helper.isSearchPage = function(url, siteParser){
-    return url.indexOf(siteParser.mainUrl +"/s/")!=-1 && url.indexOf("digital-text") > 0;
+    return url.indexOf(siteParser.mainUrl +"/s/")!=-1 && (url.indexOf("digital-text") > 0 || url.indexOf("books") > 0);
 };
 
 /**

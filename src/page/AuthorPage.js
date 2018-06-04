@@ -47,10 +47,22 @@ AuthorPage.prototype.parsePage = function (pullingToken, startIndex, jqNodes, pa
             && $(this).attr('id') !== 'centerPlus') return;
         result = $(this).find('.s-item-container');
         no[index] = startIndex + index + 1;
-        url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
-        if (!url[index]) {
-            index++;
-            return;
+        var bookPageLinks = $(this).find('.a-column.a-span7 a').has('h3')
+        if (bookPageLinks.length > 0) {
+            bookPageLinks.each(function () {
+                var newLink = $(this).attr('href');
+                newLink = newLink.replace("&amp;", "&").replace(" ", "%20");
+                newLink = Helper.getUrlWORedirect(newLink)
+                if (newLink) {
+                    url.push(newLink)
+                }
+            })
+        } else {
+            url[index] = Helper.getUrlWORedirect($(result).find('a:contains("' + siteParser.searchPattern + '")').attr("href"));
+            if(!url[index]) {
+                index++;
+                return;
+            }
         }
         var kprice = $(result).find('div').filter(function () {
             return $(this).text() == siteParser.searchPattern || $(this).children("a:contains(" + siteParser.searchPattern + ")").length > 0;
