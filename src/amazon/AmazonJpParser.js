@@ -24,7 +24,7 @@ function AmazonJpParser(){
     this.searchPattern = "Kindle版";
     this.bestSellersPatternStart = 'class="zg_item_compact"';
     this.bestSellersPatternEnd = 'class="zg_clear"';
-
+    this.estSalesPercentage = 9;
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 33000 },
         {min: 6, max: 10, estSale: 28875 },

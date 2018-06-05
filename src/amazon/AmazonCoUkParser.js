@@ -24,7 +24,7 @@ function AmazonCoUkParser(){
     this.searchPattern = "Kindle Edition";
     this.bestSellersPatternStart = 'class="zg_itemImmersion"';
     this.bestSellersPatternEnd = 'class="zg_clear"';
-
+    this.estSalesPercentage = 23;
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 27000 },
         {min: 6, max: 10, estSale: 23625 },

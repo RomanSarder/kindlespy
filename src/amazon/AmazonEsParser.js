@@ -24,7 +24,7 @@ function AmazonEsParser(){
     this.searchPattern = decodeURI(encodeURI("Versión Kindle"));
     this.bestSellersPatternStart = 'class="zg_itemImmersion"';
     this.bestSellersPatternEnd = 'class="zg_clear"';
-
+    this.estSalesPercentage = 11;
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 12240 },
         {min: 6, max: 10, estSale: 10710 },

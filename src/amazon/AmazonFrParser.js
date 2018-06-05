@@ -25,7 +25,7 @@ function AmazonFrParser(){
     this.searchPattern = "Format Kindle";
     this.bestSellersPatternStart = 'class="zg_itemImmersion"';
     this.bestSellersPatternEnd = 'class="zg_clear"';
-
+    this.estSalesPercentage = 9;
     this.estSalesScale = [
         {min: 1, max: 5, estSale: 7380 },
         {min: 6, max: 10, estSale: 6457 },
