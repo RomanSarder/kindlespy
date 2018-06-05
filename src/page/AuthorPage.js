@@ -99,7 +99,7 @@ AuthorPage.prototype.parsePage = function (pullingToken, startIndex, jqNodes, pa
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, "Author", callback);
                 }
 
-                setTimeout(wrapper, (i-startIndex)*1000);
+                setTimeout(wrapper, (i-startIndex)*700);
             })
         }
     });

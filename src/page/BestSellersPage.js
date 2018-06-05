@@ -75,7 +75,7 @@ BestSellersPage.prototype.parsePage = function(pullingToken, siteParser, respons
                 function wrapper(){
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, "Seller", callback);
                 }
-                setTimeout(wrapper, i*1000);
+                setTimeout(wrapper, i*700);
             })
         }
     });
