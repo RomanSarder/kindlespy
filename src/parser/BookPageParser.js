@@ -137,16 +137,25 @@ BookPageParser.prototype.getSalesRank = function(jqNodes) {
     return salesRankString.substring(salesRankString.indexOf(this._siteParser.numberSign) + this._siteParser.numberSign.length, salesRankString.indexOf(' '));
 };
 
-BookPageParser.prototype.getEstSale = function(salesRank) {
-    var data = this._siteParser.estSalesScale;
+BookPageParser.prototype.getEstSale = function(salesRank, bookType) {
     if (typeof salesRank === 'undefined') return 1;
-    var sale = salesRank.toString().replace(this._siteParser.thousandSeparator, "");
-
-    for (var i = 0; i < data.length; i++) {
-        if (sale >= data[i].min && sale <= data[i].max) return data[i].estSale;
+    let alpha;
+    let beta;
+    let epsilon; 
+    let bookTypesArr = Helper.getBookTypes();
+    let isPaperBook = bookTypesArr.some(el => el === bookType);
+    let bsr = parseInt(salesRank.toString().replace(this._siteParser.thousandSeparator, ""), 10);
+    if (condition) {
+        alpha = -0.34034503; // R23
+        beta = -0.07791303; // R24
+        epsilon = 3.98993694; // R22
+    } else {
+        alpha = -0.33483877; // R23
+        beta = -0.06198923; // R24
+        epsilon = 3.69500221; // R22
     }
-
-    return "0";
+    let estSales = Math.round(Math.pow(10,(epsilon + alpha * Math.log10(bsr) + beta * Math.pow(Math.log10(bsr),2))) * 15 * 1.08 );
+    return Math.round(estSales * this._siteParser.estSalesPercentage)
 };
 
 BookPageParser.prototype.getSalesRecv = function(estsales, price) {
@@ -219,7 +228,7 @@ BookPageParser.prototype.getBookData = function(url, price, reviews, callback) {
         if (!price || _this._siteParser.parsePrice(price) === 0) price = _this.getPrice(jqResponseText);
 
         var entrySalesRank = _this.getSalesRank(jqResponseText);
-        var entryEstSale = _this.getEstSale(entrySalesRank);
+        var entryEstSale = _this.getEstSale(entrySalesRank, bookType);
         var realPrice = _this._siteParser.parsePrice(price);
         var entrySalesRecv = _this.getSalesRecv(entryEstSale, realPrice);
         var entryPrintLength = _this.getPrintLength(jqResponseText);

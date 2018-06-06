@@ -24,41 +24,7 @@ function AmazonJpParser(){
     this.searchPattern = "Kindle版";
     this.bestSellersPatternStart = 'class="zg_item_compact"';
     this.bestSellersPatternEnd = 'class="zg_clear"';
-
-    this.estSalesScale = [
-        {min: 1, max: 5, estSale: 33000 },
-        {min: 6, max: 10, estSale: 28875 },
-        {min: 11, max: 20, estSale: 24750 },
-        {min: 21, max: 35, estSale: 20625 },
-        {min: 36, max: 100, estSale: 15125 },
-        {min: 101, max: 200, estSale: 8250 },
-        {min: 201, max: 350, estSale: 3300 },
-        {min: 351, max: 500, estSale: 1650 },
-        {min: 501, max: 750, estSale: 1238},
-        {min: 751, max: 1500, estSale: 908 },
-        {min: 1501, max: 3000, estSale: 701 },
-        {min: 3001, max: 4000, estSale: 578 },
-        {min: 4001, max: 5000, estSale: 468 },
-        {min: 5001, max: 6000, estSale: 413 },
-        {min: 6001, max: 7000, estSale: 344 },
-        {min: 7001, max: 8000, estSale: 275 },
-        {min: 8001, max: 9000, estSale: 206 },
-        {min: 9001, max: 10000, estSale: 165 },
-        {min: 10001, max: 12000, estSale: 118 },
-        {min: 12001, max: 15000, estSale: 96 },
-        {min: 15001, max: 17500, estSale: 85 },
-        {min: 17501, max: 20000, estSale: 78 },
-        {min: 20001, max: 25000, estSale: 67 },
-        {min: 25001, max: 30000, estSale: 55 },
-        {min: 30001, max: 35000, estSale: 39 },
-        {min: 35001, max: 50000, estSale: 30 },
-        {min: 50001, max: 65000, estSale: 14 },
-        {min: 65001, max: 80000, estSale: 7 },
-        {min: 80001, max: 100000, estSale: 4 },
-        {min: 100001, max: 200000, estSale: 1 },
-        {min: 200001, max: 500000, estSale: 1 },
-        {min: 500001, max: -1, estSale: 1}
-    ];
+    this.estSalesPercentage = 9;
 }
 
 AmazonJpParser.zone = "co.jp";

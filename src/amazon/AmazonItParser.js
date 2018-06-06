@@ -24,41 +24,7 @@ function AmazonItParser(){
     this.searchPattern = "Formato Kindle";
     this.bestSellersPatternStart = 'class="zg_itemImmersion"';
     this.bestSellersPatternEnd = 'class="zg_clear"';
-
-    this.estSalesScale = [
-        {min: 1, max: 5, estSale: 13260 },
-        {min: 6, max: 10, estSale: 11602 },
-        {min: 11, max: 20, estSale: 9945 },
-        {min: 21, max: 35, estSale: 8287 },
-        {min: 36, max: 100, estSale: 6077 },
-        {min: 101, max: 200, estSale: 3315 },
-        {min: 201, max: 350, estSale: 1326 },
-        {min: 351, max: 500, estSale: 663 },
-        {min: 501, max: 750, estSale: 497 },
-        {min: 751, max: 1500, estSale: 364 },
-        {min: 1501, max: 3000, estSale: 282 },
-        {min: 3001, max: 4000, estSale: 232 },
-        {min: 4001, max: 5000, estSale: 188 },
-        {min: 5001, max: 6000, estSale: 166 },
-        {min: 6001, max: 7000, estSale: 138 },
-        {min: 7001, max: 8000, estSale: 110 },
-        {min: 8001, max: 9000, estSale: 83 },
-        {min: 9001, max: 10000, estSale: 66 },
-        {min: 10001, max: 12000, estSale: 47 },
-        {min: 12001, max: 15000, estSale: 38 },
-        {min: 15001, max: 17500, estSale: 34 },
-        {min: 17501, max: 20000, estSale: 31 },
-        {min: 20001, max: 25000, estSale: 27 },
-        {min: 25001, max: 30000, estSale: 22 },
-        {min: 30001, max: 35000, estSale: 15 },
-        {min: 35001, max: 50000, estSale: 12 },
-        {min: 50001, max: 65000, estSale: 5 },
-        {min: 65001, max: 80000, estSale: 2 },
-        {min: 80001, max: 100000, estSale: 1 },
-        {min: 100001, max: 200000, estSale: 1 },
-        {min: 200001, max: 500000, estSale: 1 },
-        {min: 500001, max: -1, estSale: 1}
-    ];
+    this.estSalesPercentage = 8;
 }
 
 AmazonItParser.zone = "it";

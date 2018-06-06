@@ -353,6 +353,25 @@ Helper.getUrlWORedirect = function(url){
 };
 
 /**
+ * @returns array of known book types
+ */
+Helper.getBookTypes = function() {
+    return [
+        'Paperback',
+        'Hardcover',
+        'Loose Leaf',
+        'Spiral-bound',
+        'Flexibound',
+        'Plastic Comb',
+        'Calendar',
+        'Diary',
+        'Mass Market Paperback',
+        'Board Book',
+    ]
+}
+
+
+/**
  * Return MD5 hash of given string
  * @param s
  * @returns {string} MD5 hash
