@@ -25,5 +25,5 @@ AuthorSearchResultsPage.prototype.loadData = function(pullingToken, siteParser, 
             return url + '&page=' + page;
         });
     }
-    setTimeout(this.authorSearchResultsPager.loadNextPage.bind(this.authorSearchResultsPager, parentUrl, callback), 700);
+    setTimeout(this.authorSearchResultsPager.loadNextPage.bind(this.authorSearchResultsPager, parentUrl, callback), kindleSpy.requestDelay);
 };

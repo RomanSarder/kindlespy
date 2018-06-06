@@ -15,6 +15,7 @@ function KindleSpy(){
     _this.pagesPulled = 0;
     _this.login = '';
     _this.password = '';
+    _this.requestDelay = 700;
 
     _this.parserAsyncRunner = new AsyncRunner();
     _this.parserAsyncRunner.itemFinished = function(){
