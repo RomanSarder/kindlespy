@@ -24,40 +24,6 @@ function AmazonAuParser(){
     this.bestSellersPatternStart = 'class="zg_itemImmersion"';
     this.bestSellersPatternEnd = 'class="zg_clear"';
     this.estSalesPercentage = 15;
-    this.estSalesScale = [
-        {min: 1, max: 5, estSale: 19800 },
-        {min: 6, max: 10, estSale: 17325 },
-        {min: 11, max: 20, estSale: 14850 },
-        {min: 21, max: 35, estSale: 12375 },
-        {min: 36, max: 100, estSale: 9075 },
-        {min: 101, max: 200, estSale: 4950 },
-        {min: 201, max: 350, estSale: 1980 },
-        {min: 351, max: 500, estSale: 990 },
-        {min: 501, max: 750, estSale: 742 },
-        {min: 751, max: 1500, estSale: 544 },
-        {min: 1501, max: 3000, estSale: 420 },
-        {min: 3001, max: 4000, estSale: 346 },
-        {min: 4001, max: 5000, estSale: 280 },
-        {min: 5001, max: 6000, estSale: 247 },
-        {min: 6001, max: 7000, estSale: 206 },
-        {min: 7001, max: 8000, estSale: 165 },
-        {min: 8001, max: 9000, estSale: 123 },
-        {min: 9001, max: 10000, estSale: 99 },
-        {min: 10001, max: 12000, estSale: 70 },
-        {min: 12001, max: 15000, estSale: 57 },
-        {min: 15001, max: 17500, estSale: 51 },
-        {min: 17501, max: 20000, estSale: 46 },
-        {min: 20001, max: 25000, estSale: 40 },
-        {min: 25001, max: 30000, estSale: 33 },
-        {min: 30001, max: 35000, estSale: 23 },
-        {min: 35001, max: 50000, estSale: 18 },
-        {min: 50001, max: 65000, estSale: 8 },
-        {min: 65001, max: 80000, estSale: 3 },
-        {min: 80001, max: 100000, estSale: 2 },
-        {min: 100001, max: 200000, estSale: 1 },
-        {min: 200001, max: 500000, estSale: 1 },
-        {min: 500001, max: -1, estSale: 1}
-    ];
 }
 
 AmazonAuParser.zone = "au";

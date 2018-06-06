@@ -138,18 +138,13 @@ BookPageParser.prototype.getSalesRank = function(jqNodes) {
 };
 
 BookPageParser.prototype.getEstSale = function(salesRank, bookType) {
-    var bsr;
-    var alpha;
-    var beta;
-    var epsilon; 
-    var condition;
-    var estSales;
-    var data;
-    var bookTypesArr = Helper.getBookTypes();
-    condition = bookTypesArr.some(el => el === bookType);
-    data = this._siteParser.estSalesScale;
     if (typeof salesRank === 'undefined') return 1;
-    bsr = parseInt(salesRank.toString().replace(this._siteParser.thousandSeparator, ""), 10);
+    let alpha;
+    let beta;
+    let epsilon; 
+    let bookTypesArr = Helper.getBookTypes();
+    let isPaperBook = bookTypesArr.some(el => el === bookType);
+    let bsr = parseInt(salesRank.toString().replace(this._siteParser.thousandSeparator, ""), 10);
     if (condition) {
         alpha = -0.34034503; // R23
         beta = -0.07791303; // R24
@@ -159,7 +154,7 @@ BookPageParser.prototype.getEstSale = function(salesRank, bookType) {
         beta = -0.06198923; // R24
         epsilon = 3.69500221; // R22
     }
-    estSales = Math.round(Math.pow(10,(epsilon + alpha * Math.log10(bsr) + beta * Math.pow(Math.log10(bsr),2))) * 15 * 1.08 );
+    let estSales = Math.round(Math.pow(10,(epsilon + alpha * Math.log10(bsr) + beta * Math.pow(Math.log10(bsr),2))) * 15 * 1.08 );
     return Math.round(estSales * this._siteParser.estSalesPercentage)
 };
 
