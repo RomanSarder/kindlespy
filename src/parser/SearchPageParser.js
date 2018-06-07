@@ -87,7 +87,7 @@ SearchPageParser.prototype.parsePage = function(pullingToken, startIndex, jqNode
                 function wrapper(){
                     kindleSpy.parseDataFromBookPageAndSend(pullingToken, no[i], url[i], price[i], parentUrl, "", review[i], category, type, callback);
                 }
-                setTimeout(wrapper, (i-startIndex)*1000);
+                setTimeout(wrapper, (i-startIndex)*kindleSpy.requestDelay);
             })
         }
     });
